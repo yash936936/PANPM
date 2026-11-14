@@ -62,7 +62,7 @@ PANPM/
     `-- logs/events.jsonl
 ```
 
-The directories and documentation scripts are scaffolded. The research implementation modules listed in `docs/architecture.md` are planned and do not exist yet.
+The directory structure and documentation scripts are scaffolded. Generic Phase 0 metadata utilities now exist under `src/data/`; PPMI-specific ingestion, MRI preprocessing, models, genetics and RL implementation remain planned.
 
 ## Where to look by task
 
