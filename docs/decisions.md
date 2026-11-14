@@ -52,3 +52,11 @@
 **Reason:** The user reports no PPMI access and no files. Software-level schema validation can be developed against the documented PANPM data dictionary, but feasibility and scientific modelling require approved source data.
 
 **Consequences:** Phase 0 remains incomplete. Do not select an MRI modality, define PPMI source mappings, train diagnostic/progression models or train PPO until approved metadata and a leakage-safe participant manifest exist.
+
+
+## D-010 - Treat public PPMI tooling as implementation reference, not source truth (2026-11-15)
+**Decision:** Review and adapt public PPMI-oriented code patterns only after checking provenance, licence, table grain, validation and fit to PANPM. Do not treat public repositories as a source of PPMI participant data or assume their source mappings and MRI sequence heuristics are correct for the current release.
+
+**Reason:** PIE and PIE-clean document useful cleaning and imaging workflows, but explicitly do not distribute PPMI participant data. PIE also documents potential LONI MRI weighting-label issues that require verification against actual acquisition metadata.
+
+**Consequences:** PANPM adds a public-source review document and generic CSV discovery. PPMI source mapping and MRI sequence selection remain blocked on official documentation and approved metadata.
