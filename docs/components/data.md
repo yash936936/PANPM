@@ -9,13 +9,13 @@ Import approved PPMI exports, normalize participant/visit/scan relationships, va
 ## Implemented utilities
 
 - `source_mapping.py`: validates explicit mappings from source export columns to PANPM fields. It does not guess PPMI field names.
-- `inventory.py`: discovers CSV exports recursively, skips hidden directories, reads headers, counts rows, summarizes missing values and records relative paths, file size, release identifier and SHA-256 checksum without loading participant-level values.
+- `inventory.py`: discovers CSV exports recursively, skips hidden directories, reads headers, counts rows, summarizes missing values and records relative paths, file size, release identifier and SHA-256 checksum without loading participant-level values.\n- `scripts/inventory_exports.py`: command-line entry point for creating a JSON inventory from an approved local export directory; output contains metadata only.
 - `manifest.py`: creates keyed HMAC participant pseudonyms and aggregates series counts by supplied modality label. The HMAC secret is supplied at runtime and must remain outside Git.
 - `schema.py`: defines minimum required columns for the normalized participant, clinical visit, imaging scan, progression target and split tables; checks declared unique keys and participant foreign-key links. These are PANPM internal contracts, not claims about PPMI source headers.
 
 ## Route
 
-The planned pipeline inventories approved exports first. A researcher reviews the actual headers and authors a mapping specification. Mapped tables are checked against the internal contracts and participant links before cohort construction. No source-specific mapping, MRI sequence classifier or image parser exists.
+Run `python scripts/inventory_exports.py --root /secure/path/to/exports --release-id <release-id> --output /secure/path/to/inventory.json` to create a metadata-only inventory. Keep the export root and inventory output outside the Git repository.\n\nThe planned pipeline inventories approved exports first. A researcher reviews the actual headers and authors a mapping specification. Mapped tables are checked against the internal contracts and participant links before cohort construction. No source-specific mapping, MRI sequence classifier or image parser exists.
 
 ## Config surface and invariants
 
