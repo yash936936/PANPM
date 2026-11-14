@@ -9,7 +9,7 @@ Import approved PPMI exports, normalize participant/visit/scan relationships, va
 ## Implemented utilities
 
 - `source_mapping.py`: validates explicit mappings from source export columns to PANPM fields. It does not guess PPMI field names.
-- `inventory.py`: reads CSV headers, counts rows, summarizes missing values and records file size, release identifier and SHA-256 checksum.
+- `inventory.py`: discovers CSV exports recursively, skips hidden directories, reads headers, counts rows, summarizes missing values and records relative paths, file size, release identifier and SHA-256 checksum without loading participant-level values.
 - `manifest.py`: creates keyed HMAC participant pseudonyms and aggregates series counts by supplied modality label. The HMAC secret is supplied at runtime and must remain outside Git.
 - `schema.py`: defines minimum required columns for the normalized participant, clinical visit, imaging scan, progression target and split tables; checks declared unique keys and participant foreign-key links. These are PANPM internal contracts, not claims about PPMI source headers.
 
