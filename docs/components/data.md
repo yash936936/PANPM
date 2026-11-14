@@ -1,6 +1,6 @@
 # Component: data
 
-> Location: `src/data/`. Phase 0 utilities and source-independent table contracts are implemented; no PPMI exports have been inspected.
+> Location: `src/data/`. Generic Phase 0 inventory utilities and conservative PPMI source contracts are implemented; approved participant-level exports have not been inspected.
 
 ## Purpose
 
@@ -8,44 +8,64 @@ Import approved PPMI exports, normalize participant/visit/scan relationships, va
 
 ## Implemented utilities
 
-- `source_mapping.py`: validates explicit mappings from source export columns to PANPM fields. It does not guess PPMI field names.
-- `inventory.py`: discovers CSV exports recursively, skips hidden directories, reads headers, counts rows, summarizes missing values and records relative paths, file size, release identifier and SHA-256 checksum without loading participant-level values.\n- `scripts/inventory_exports.py`: command-line entry point for creating a JSON inventory from an approved local export directory; output contains metadata only.
-- `manifest.py`: creates keyed HMAC participant pseudonyms and aggregates series counts by supplied modality label. The HMAC secret is supplied at runtime and must remain outside Git.
-- `schema.py`: defines minimum required columns for the normalized participant, clinical visit, imaging scan, progression target and split tables; checks declared unique keys and participant foreign-key links. These are PANPM internal contracts, not claims about PPMI source headers.
+- `source_mapping.py`: validates explicit mappings from source export columns to PANPM fields. It does not guess field names.
+- `inventory.py`: discovers CSV exports recursively, skips hidden directories, reads headers, counts rows, summarizes missing values and records relative paths, file size, release identifier and SHA-256 checksum without retaining participant-level rows.
+- `scripts/inventory_exports.py`: command-line entry point for metadata-only inventory. Keep output outside Git.
+- `manifest.py`: creates keyed HMAC participant pseudonyms and aggregates series counts by supplied modality label. The HMAC secret remains outside Git.
+- `schema.py`: defines PANPM internal table contracts and validates declared keys and participant links.
+- `ppmi_contracts.py`: records selected source table fields from the supplied annotated PPMI dictionary and validates only documented participant/visit linkage fields. It does not enforce ambiguous uniqueness declarations or infer data availability.
+
+## PPMI source tables reviewed
+
+See [`docs/ppmi-source-catalog.md`](../ppmi-source-catalog.md) for exact extracted definitions and caveats.
+
+| Source table | Documented role | PANPM use |
+|---|---|---|
+| `PATIENT_STATUS` | Participant identity, cohort and enrollment status | Restricted participant/cohort source |
+| `MRI` | MRI assessment at participant/event level | Assessment status and clinical MRI fields |
+| `MRI_ACQUISITION` | Acquisition date, protocol, QC and sequence flags | Candidate modality/sequence metadata |
+| `MRIQC` | T1-weighted MRIQC metrics | Image-level QC features, if present |
+| `GMVOLUME` | Extracted grey-matter volume | Derived imaging feature, if present |
+| `DTIROI` | DTI region-of-interest measurements | Derived diffusion feature, if present |
+
+The guide and code list contain differences in cohort descriptions. Preserve the original source values and define a versioned analytic cohort rule separately.
 
 ## Route
 
-Run `python scripts/inventory_exports.py --root /secure/path/to/exports --release-id <release-id> --output /secure/path/to/inventory.json` to create a metadata-only inventory. Keep the export root and inventory output outside the Git repository.\n\nThe planned pipeline inventories approved exports first. A researcher reviews the actual headers and authors a mapping specification. Mapped tables are checked against the internal contracts and participant links before cohort construction. No source-specific mapping, MRI sequence classifier or image parser exists.
+1. Inventory the approved export tree and record the download date, release identifier and checksums.
+2. Compare actual headers with the source catalog and `PPMI_SOURCE_TABLES`.
+3. Review table grain and actual key cardinality before joining. Do not assume a one-row-per-participant/event rule solely from a field name.
+4. Create explicit mappings into PANPM normalized tables and record unmatched rows.
+5. Pseudonymize participant identifiers before ordinary analysis tables; keep the HMAC secret and crosswalk in restricted storage.
+6. Build participant-by-sequence coverage and outcome completeness manifests before choosing model inputs.
 
-## Config surface and invariants
+## Invariants
 
-- Data release and source file checksums are mandatory.
-- Participant keys used in analysis are pseudonymous.
-- Source identifiers and mapping keys stay in restricted storage.
-- Joins must validate expected cardinality and record unmatched rows.
-- No source file is overwritten; raw data are immutable.
-- Missingness is retained and categorized rather than silently converted to zero.
-- HMAC secret material is not committed and pseudonyms are not treated as anonymization.
-- Clinical visit rows are not forced to be unique by participant and visit because multiple assessment states may exist.
+- Raw exports are immutable and never committed.
+- Data download date, release identifier and source checksums are recorded for every build.
+- Missingness is retained and categorized rather than converted to zero.
+- Joins validate cardinality and report unmatched rows.
+- HMAC pseudonyms are linkage protection, not anonymization.
+- All visits and scans from a participant remain in one split.
+- Diagnosis labels and future progression outcomes are not exposed as RL observations.
 
 ## Known limits
 
-No PPMI export field names, release version, actual modality coverage or imaging metadata have been inspected. The current helpers and contracts have not been executed in a local repository checkout. They do not parse DICOM/NIfTI, align visits, select index dates, define outcomes or perform MRI quality control.
+No approved PPMI participant-level exports, LONI metadata or MRI files have been inspected. No cohort counts, sequence coverage, scanner/site distribution or endpoint completeness has been computed. The source contracts are based on reference-document definitions only. They do not parse DICOM/NIfTI, determine MRI sequence identity, align progression visits, define the final analytic cohort or run QC.
 
 <!-- BEGIN GENERATED: do not edit between markers -->
 
 ### Files and exports
 
-| File | Exports | Responsibility (first header-comment line) |
+| File | Exports | Responsibility |
 |---|---|---|
-| `src/data/inventory.py` | `sha256_file`, `read_csv_header`, `inspect_csv`, `count_csv_rows`, `summarize_values` | Inventory approved tabular exports and imaging metadata without loading images. |
-| `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Create pseudonymous participant coverage manifests from approved metadata. |
-| `src/data/schema.py` | `CONTRACTS`, `TableContract`, `ValidationIssue`, `validate_table`, `validate_participant_links` | Define normalized PANPM table contracts and validate keys and participant links. |
-| `src/data/source_mapping.py` | `MappingSpec` | Validate explicit mappings from source export columns to PANPM fields. |
+| `src/data/inventory.py` | CSV inventory helpers | Metadata-only export inventory |
+| `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Pseudonymous participant and modality coverage |
+| `src/data/ppmi_contracts.py` | `PPMI_SOURCE_TABLES`, `validate_ppmi_source_header` | Conservative source-table contracts |
+| `src/data/schema.py` | `CONTRACTS`, `validate_table`, `validate_participant_links` | PANPM normalized schema contracts |
+| `src/data/source_mapping.py` | `MappingSpec` | Explicit source-column mappings |
 
-**Imports other areas:** (none)
-
-**Tests:** `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_schema.py`, `tests/test_data_source_mapping.py`
+**Tests:** `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_schema.py`, `tests/test_data_source_mapping.py`, `tests/test_ppmi_contracts.py`
 
 <!-- END GENERATED -->
 
