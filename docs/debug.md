@@ -1,5 +1,22 @@
 # Debug log - PANPM
 
+## DBG-006 - Extract official PPMI reference documents (2026-11-15)
+**Sources inspected:** PPMI Data User Guide (cover updated August 6, 2026), Annotated Data Dictionary (May 23, 2025), and Annotated Code List (May 23, 2025). Also inspected the uploaded screenshot of the PPMI Data Resources download page.
+
+**Findings:** Identified source definitions for PATIENT_STATUS, MRI, MRI_ACQUISITION, MRIQC, GMVOLUME and DTIROI. Extracted MRI sequence flags for T1-weighted, T2-FLAIR, DTI, resting-state fMRI and neuromelanin MT; MRI acquisition quality and protocol codes; MRI assessment codes; and cohort codes 1, 2, 3, 4, 7 and 8. Recorded the discrepancy between the guide's five-cohort summary and the annotated code list's additional genetic registry codes. Also recorded the guide's conflicting revision dates on its cover and introductory page.
+
+**Change:** Added `docs/ppmi-source-catalog.md`, `src/data/ppmi_contracts.py` and `tests/test_ppmi_contracts.py`. Contracts validate only selected documented participant/visit linkage fields and deliberately avoid enforcing ambiguous MRI_ACQUISITION uniqueness declarations.
+
+**Tested:** Not run. The repository could not be cloned locally in the previous session, and no verified GitHub Actions run has been observed for this change. No claim is made that pytest or Ruff passes.
+
+**Not tested:** Approved PPMI participant-level exports, LONI image metadata, actual DICOM/NIfTI files, table grain, MRI sequence prevalence, cohort overlap, progression endpoint completeness, preprocessing, supervised models or RL.
+
+**Next:** Obtain approved PPMI data access and actual export files. Inventory them locally outside Git and reconcile the source contracts against real headers and row cardinality before building release-specific mappings.
+
+---
+
+# Debug log - PANPM
+
 ## DBG-003 - Canonical schema contracts (2026-11-15)
 **Symptom / need:** PPMI access and data files are not available, so the data pipeline cannot yet validate real exports or cohort joins.
 
