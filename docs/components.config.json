@@ -1,0 +1,45 @@
+{
+  "areas": [
+    {
+      "name": "data",
+      "dir": "src/data",
+      "kind": "research component"
+    },
+    {
+      "name": "preprocessing",
+      "dir": "src/preprocessing",
+      "kind": "research component"
+    },
+    {
+      "name": "genetics",
+      "dir": "src/genetics",
+      "kind": "research component"
+    },
+    {
+      "name": "models",
+      "dir": "src/models",
+      "kind": "research component"
+    },
+    {
+      "name": "rl",
+      "dir": "src/rl",
+      "kind": "research component"
+    },
+    {
+      "name": "evaluation",
+      "dir": "src/evaluation",
+      "kind": "research component"
+    },
+    {
+      "name": "visualization",
+      "dir": "src/visualization",
+      "kind": "research component"
+    }
+  ],
+  "extensions": [
+    ".py"
+  ],
+  "testDirs": [
+    "tests"
+  ]
+}

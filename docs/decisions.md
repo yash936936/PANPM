@@ -1,0 +1,46 @@
+# Decisions - PANPM
+
+> Append-only decision log. New decisions go at the top. Do not edit or delete older entries. Supersede a decision with a new ID and reference the old one.
+
+## D-008 - Research-only claims and data handling - 2026-11-15
+**Decision:** PANPM is a research prototype, not a diagnostic or treatment system. Raw PPMI data, direct identifiers, participant-level genetic data, credentials and private paths must not be committed or copied into ordinary logs.
+**Why:** The project uses sensitive participant-level research data and has no clinical validation or authorization for clinical use.
+**Affects:** all phases; `AGENTS.md`, data ingestion, reports and release materials.
+
+## D-007 - Subject-level split and label isolation - 2026-11-15
+**Decision:** all visits and scans from one participant stay in one partition. Diagnosis labels and future progression outcomes may be used in training loss/reward calculation only, and must never be exposed as agent observations or used to select the final test policy.
+**Why:** Prevent participant leakage and future-outcome leakage in both supervised and RL experiments.
+**Affects:** Phase 0, Phase 1, Phase 2, Phase 4 and all evaluation modules.
+
+## D-006 - Genetic evidence and Atlas reference are separate - 2026-11-15
+**Decision:** GWAS/fine-mapping gene prioritization and Allen Atlas expression form a population-level regional prior. Participant genotype or PRS, if authorized and available, is a separate patient-level data branch.
+**Why:** Healthy post-mortem regional expression is not a participant's genotype and is not PD-specific expression.
+**Affects:** Phase 3, `src/genetics/`, model fusion and interpretation reports.
+
+## D-005 - RL scope is active ROI inspection - 2026-11-15
+**Decision:** the core RL task is sequential computational inspection of high-resolution MRI regions from an already acquired volume. The first policy selects an available, uninspected ROI or STOP. It does not choose treatment and does not claim physical scan-time reduction.
+**Why:** Retrospective PPMI imaging supports a more defensible ROI-selection simulator than assuming each participant has all candidate MRI sequences and that action selection can initiate an actual scan.
+**Affects:** Phase 4, RL environment, reward design and research claims.
+
+## D-004 - Dual prediction objectives - 2026-11-15
+**Decision:** maintain separate primary tasks: baseline PD-versus-healthy-control classification and longitudinal change in MDS-UPDRS Part III at 12 and 24 months where valid observations exist. Prodromal conversion is secondary and not part of the primary binary classifier.
+**Why:** The user selected both diagnosis and progression objectives; the outcome definitions and cohorts differ.
+**Affects:** PRD, TRD, data dictionary, model heads and research protocol.
+
+## D-003 - MRI modality is not assumed - 2026-11-15
+**Decision:** inspect PPMI participant-level imaging metadata before choosing the definitive modality set. T1-weighted MRI is the first baseline candidate only if sequence verification, coverage and QC support it. Advanced modalities remain conditional.
+**Why:** The available MRI modality and participant-level coverage were not known when the design was selected.
+**Affects:** Phase 0, Phase 1 and all model input definitions.
+
+## D-002 - PPMI as primary cohort - 2026-11-15
+**Decision:** PPMI is the primary data source for the initial research build. Use current official cohort definitions and document the downloaded release and data-use terms.
+**Why:** The user explicitly selected PPMI and requires longitudinal clinical/imaging data.
+**Affects:** all data and modelling phases.
+
+## D-001 - PANPM system scope - 2026-11-15
+**Decision:** use the project name Parkinson's Active Neuroimaging and Progression Model (PANPM). Build a multi-component research pipeline combining MRI, longitudinal clinical outcomes, genetic spatial priors and RL-based ROI inspection.
+**Why:** This captures the selected research objectives and retains the user's original GWAS/Allen Atlas idea while making MRI and RL central.
+**Affects:** all documents, phases and repository structure.
+
+---
+**Next:** Return to [`context.md`](../context.md) before starting a new task.

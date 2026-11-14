@@ -1,0 +1,43 @@
+# Sensitive and large research data
+/data/raw/
+/data/interim/
+/data/processed/
+*.dcm
+*.nii
+*.nii.gz
+*.mgz
+*.mgh
+*.bval
+*.bvec
+*.tsv.gz
+*.parquet
+*.feather
+*.pkl
+*.pickle
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+
+# Secure participant mappings and credentials
+*.env
+.env.*
+!.env.example
+*participant*crosswalk*
+*patno*map*
+*subject*key*
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Tools and generated local outputs
+.DS_Store
+Thumbs.db
+*.log
+reports/private/

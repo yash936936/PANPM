@@ -1,0 +1,12 @@
+{"ts":"2026-11-14T21:36:15.059Z","kind":"command","actor":"unknown","area":"DOCS","cmd":"node scripts/docs/gen-components.mjs --check","exit":0,"outcome":"success","durationMs":62}
+{"ts":"2026-11-14T21:36:15.158Z","kind":"command","actor":"unknown","area":"DOCS","cmd":"node scripts/docs/check-docs.mjs","exit":0,"outcome":"success","durationMs":50}
+{"ts":"2026-11-14T21:36:15.284Z","kind":"command","actor":"unknown","area":"DOCS","cmd":"node scripts/events/failure-report.mjs --check","exit":0,"outcome":"success","durationMs":62}
+{"ts":"2026-11-14T21:36:16.625Z","kind":"command","actor":"unknown","area":"DOCS","cmd":"node scripts/selftest.mjs","exit":0,"outcome":"success","durationMs":1299}
+{"ts":"2026-11-14T21:37:30.992Z","kind":"command","actor":"unknown","area":"SCAFFOLD","cmd":"python -m compileall -q src","exit":0,"outcome":"success","durationMs":1004}
+{"ts":"2026-11-14T21:37:43.715Z","kind":"command","actor":"unknown","area":"SCAFFOLD","cmd":"node scripts/selftest.mjs","exit":0,"outcome":"success","durationMs":1230}
+{"ts":"2026-11-14T21:38:23.385Z","kind":"command","actor":"unknown","area":"DOCS","cmd":"node scripts/docs/gen-components.mjs --check","exit":0,"outcome":"success","durationMs":83}
+{"ts":"2026-11-14T21:38:23.484Z","kind":"command","actor":"unknown","area":"DOCS","cmd":"node scripts/docs/check-docs.mjs","exit":0,"outcome":"success","durationMs":53}
+{"ts":"2026-11-14T21:38:23.575Z","kind":"command","actor":"unknown","area":"DOCS","cmd":"node scripts/events/failure-report.mjs --check","exit":0,"outcome":"success","durationMs":48}
+{"ts":"2026-11-14T21:38:24.957Z","kind":"command","actor":"unknown","area":"DOCS","cmd":"node scripts/selftest.mjs","exit":0,"outcome":"success","durationMs":1337}
+{"ts":"2026-11-14T21:38:26.413Z","kind":"command","actor":"unknown","area":"CI_CONFIG","cmd":"python -c import yaml; from pathlib import Path; w=yaml.safe_load(Path('.github/workflows/ci.yml').read_text()); assert {'verify','docs','security','not-run','ci-pass'} <= set(w['jobs']); assert 'requirements-dev.txt' in Path('.github/workflows/ci.yml').read_text(); print('CI YAML and dependency path verified')","exit":0,"outcome":"success","durationMs":1412}
+{"ts":"2026-11-14T21:38:27.696Z","kind":"command","actor":"unknown","area":"SCAFFOLD","cmd":"python -m compileall -q src","exit":0,"outcome":"success","durationMs":1225}

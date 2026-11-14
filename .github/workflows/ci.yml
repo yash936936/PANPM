@@ -1,0 +1,75 @@
+# Python variant. Copy to .github/workflows/ci.yml. Node is still installed, but only to run the
+# zero-dependency docs/event scripts in scripts/. Required check for branch protection: `ci-pass`.
+# Adjust: python-version, dependency file, and which of ruff / mypy / pytest the project really uses.
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  verify:
+    name: verify (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix: { os: [ubuntu-latest] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11", cache: pip }
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check .
+      - name: Compile Python sources
+        run: python -m compileall -q src
+      - name: Run tests when present
+        shell: bash
+        run: |
+          if find tests -type f -name "test_*.py" -print -quit | grep -q .; then
+            pytest -q
+          else
+            echo "No Python tests are present yet; test execution is not run."
+          fi
+  docs:
+    name: docs and component drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/docs/gen-components.mjs --check
+      - run: node scripts/docs/check-docs.mjs
+      - run: node scripts/events/failure-report.mjs --check
+        continue-on-error: true
+  security:
+    name: secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/ci/secret-scan.mjs
+      # Optional dependency audit: add pip-audit after a core requirements file is established.
+  not-run:
+    name: gates NOT run by CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print what CI does not cover
+        run: |
+          {
+            echo "### Not covered by CI (green here is not acceptance)"
+            if [ -f docs/NOT-COVERED-BY-CI.md ]; then cat docs/NOT-COVERED-BY-CI.md; else echo "- (docs/NOT-COVERED-BY-CI.md is missing: list the gates CI cannot run)"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+  ci-pass:
+    name: ci-pass
+    if: always()
+    needs: [verify, docs, security]
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo '${{ toJSON(needs) }}'
+          test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "false"
