@@ -15,8 +15,6 @@
 
 ---
 
-# Debug log - PANPM
-
 ## DBG-003 - Canonical schema contracts (2026-11-15)
 **Symptom / need:** PPMI access and data files are not available, so the data pipeline cannot yet validate real exports or cohort joins.
 
