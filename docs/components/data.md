@@ -1,6 +1,6 @@
 # Component: data
 
-> Location: `src/data/`. Generic Phase 0 inventory utilities and conservative PPMI source contracts are implemented; approved participant-level exports have not been inspected.
+> Location: `src/data/`. Generic Phase 0 inventory utilities, conservative PPMI source contracts and configurable progression-target safeguards are implemented; approved participant-level exports have not been inspected.
 
 ## Purpose
 
@@ -13,7 +13,8 @@ Import approved PPMI exports, normalize participant/visit/scan relationships, va
 - `scripts/inventory_exports.py`: command-line entry point for metadata-only inventory. Keep output outside Git.
 - `manifest.py`: creates keyed HMAC participant pseudonyms and aggregates series counts by supplied modality label. The HMAC secret remains outside Git.
 - `schema.py`: defines PANPM internal table contracts and validates declared keys and participant links.
-- `ppmi_contracts.py`: records selected source table fields from the supplied annotated PPMI dictionary and validates only documented linkage fields. It does not enforce ambiguous uniqueness declarations or infer data availability.
+- `ppmi_contracts.py`: records selected source table fields from the supplied annotated PPMI dictionary and validates only documented linkage fields.
+- `progression_targets.py`: selects a closest eligible motor assessment using an explicit target date, tolerance and exact normalized medication state; rejects ties and mixed-state score changes.
 
 ## PPMI source tables reviewed
 
@@ -37,7 +38,7 @@ See [`docs/ppmi-source-catalog.md`](../ppmi-source-catalog.md) for exact extract
 3. Review table grain and actual key cardinality before joining. Do not assume a one-row-per-participant/event rule solely from a field name.
 4. Create explicit mappings into PANPM normalized tables and record unmatched rows.
 5. Pseudonymize participant identifiers before ordinary analysis tables; keep the HMAC secret and crosswalk in restricted storage.
-6. Build participant-by-sequence coverage and outcome completeness manifests before choosing model inputs.
+6. Build participant-by-sequence and participant-by-outcome coverage manifests before choosing model inputs.
 
 ## Invariants
 
@@ -51,7 +52,7 @@ See [`docs/ppmi-source-catalog.md`](../ppmi-source-catalog.md) for exact extract
 
 ## Known limits
 
-No approved PPMI participant-level exports, LONI metadata or MRI files have been inspected. No cohort counts, sequence coverage, scanner/site distribution or endpoint completeness has been computed. The source contracts are based on reference-document definitions only. They do not parse DICOM/NIfTI, determine MRI sequence identity, align progression visits, define the final analytic cohort or run QC.
+No approved PPMI participant-level exports, LONI metadata or MRI files have been inspected. No cohort counts, sequence coverage, scanner/site distribution or endpoint completeness has been computed. The source contracts are based on reference-document definitions only. The progression helper does not map PPMI source codes, set clinical target windows, derive LEDD or define DBS eligibility. No DICOM/NIfTI parsing, MRI sequence classification, preprocessing or QC has been implemented.
 
 <!-- BEGIN GENERATED: do not edit between markers -->
 
@@ -62,10 +63,11 @@ No approved PPMI participant-level exports, LONI metadata or MRI files have been
 | `src/data/inventory.py` | CSV inventory helpers | Metadata-only export inventory |
 | `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Pseudonymous participant and modality coverage |
 | `src/data/ppmi_contracts.py` | `PPMI_SOURCE_TABLES`, `validate_ppmi_source_header` | Conservative source-table contracts |
+| `src/data/progression_targets.py` | `MotorAssessment`, `select_motor_assessment`, `motor_score_change` | Explicit-window, medication-state-aware target selection |
 | `src/data/schema.py` | `CONTRACTS`, `validate_table`, `validate_participant_links` | PANPM normalized schema contracts |
 | `src/data/source_mapping.py` | `MappingSpec` | Explicit source-column mappings |
 
-**Tests:** `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_schema.py`, `tests/test_data_source_mapping.py`, `tests/test_ppmi_contracts.py`
+**Tests:** `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_schema.py`, `tests/test_data_source_mapping.py`, `tests/test_ppmi_contracts.py`, `tests/test_progression_targets.py`
 
 <!-- END GENERATED -->
 
