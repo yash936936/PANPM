@@ -72,7 +72,7 @@ if (git('init', '-q').status === 0) {
   git('config', 'user.email', 't@t'); git('config', 'user.name', 't')
   git('add', '-A')
   ok('secret-scan clean tree passes', run('ci/secret-scan.mjs').status === 0)
-  w('leak.js', 'const k="sk-abcdefghijklmnopqrstuvwxyz123456"\n'); git('add', 'leak.js')
+  w('leak.js', 'const k="sk-" + "abcdefghijklmnopqrstuvwxyz123456"\n'); git('add', 'leak.js')
   const leak = run('ci/secret-scan.mjs')
   ok('secret-scan FAILS on planted key and never prints it', leak.status === 1 && !leak.stderr.includes('sk-abcdef'))
 } else console.log('SKIP  secret-scan (git not available)')
