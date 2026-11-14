@@ -10,7 +10,7 @@ The guide's introductory page still contains an older August 28, 2024 revision n
 
 ## Participant and cohort fields
 
-The guide identifies `PATNO` as the participant identifier used to link PPMI Clinical, Remote and Online records. It notes a special historical case in which one participant was enrolled under PATNOs `4067` and `244087`; whether to combine them depends on the analysis. This crosswalk must be handled explicitly and must not be silently merged.
+The guide identifies `PATNO` as the participant identifier used to link PPMI Clinical, Remote and Online records. It notes a special historical case in which one participant was enrolled under two different PATNOs; whether to combine those records depends on the analysis. This crosswalk must be handled explicitly and must not be silently merged.
 
 The annotated dictionary's `PATIENT_STATUS` table includes `PATNO`, `COHORT`, `COHORT_DEFINITION`, `ENROLL_STATUS`, `ENROLL_DATE`, `ENROLL_AGE`, `STATUS_DATE` and `REC_ID`. The annotated Code List defines cohort codes including 1 Parkinson's Disease, 2 Healthy Control, 3 SWEDD, 4 Prodromal, 7 Genetic Registry - PD and 8 Genetic Registry - Unaffected. Do not collapse these categories into a binary diagnosis label without a separately versioned cohort-selection rule. The 2026 guide describes five enrollment cohorts, while the 2025 dictionary/code list also contain genetic registry codes; this difference requires explicit study-population decisions and should be preserved in the audit log.
 
