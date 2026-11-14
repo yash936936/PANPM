@@ -74,6 +74,7 @@ The directory structure and generic Phase 0 metadata utilities are implemented. 
 | Understand PPMI source tables and MRI fields | `docs/ppmi-source-catalog.md` |
 | Understand progression endpoint safeguards | `docs/progression-targets.md` |
 | Understand the normalized PANPM tables | `docs/data-dictionary.md` |
+| Extract what is implemented and prepare data intake | `docs/repo-extraction.md` |
 | Understand experimental controls and endpoints | `docs/research-protocol.md` |
 | Understand RL state, actions, reward and episode flow | `docs/code_logic.md` |
 | Understand the researcher workflow | `docs/appflow.md` |
@@ -115,4 +116,4 @@ A passing unit test is not clinical validation. A model metric is not evidence o
 
 ## Current task
 
-Continue Phase 0. Official PPMI reference documents are extracted and catalogued. Generic inventory, source contracts and configurable progression target safeguards are implemented. Next, obtain approved PPMI access and actual Participant Status, MRI, MRI Acquisition, MRIQC, NUPDRS3TRT, LEDDLOG and LONI metadata exports. Inventory them outside Git, audit table grain and state/sequence coverage, then define release-specific mappings and freeze the clinical target rule. Do not train models or PPO until cohort feasibility and participant-level splits are established.
+Continue Phase 0. The repository implementation state is extracted in `docs/repo-extraction.md`. Obtain approved PPMI access and actual Participant Status, MRI, MRI Acquisition, MRIQC, NUPDRS3TRT, LEDDLOG and LONI metadata exports. Inventory them outside Git, audit table grain and state/sequence coverage, then define release-specific mappings and freeze the clinical target rule. Do not train models or PPO until cohort feasibility and participant-level splits are established.
