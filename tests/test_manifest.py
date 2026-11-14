@@ -35,3 +35,16 @@ def test_manifest_aggregates_series_and_never_exposes_source_id():
     assert first["T1_series_count"] == 2
     assert first["DTI_series_count"] == 1
     assert "001" not in str(manifest)
+
+
+def test_manifest_skips_missing_participant_or_modality():
+    rows = [
+        {"participant": None, "modality": "T1"},
+        {"participant": "001", "modality": None},
+        {"participant": "002", "modality": "T1"},
+    ]
+    manifest = build_coverage_manifest(
+        rows, participant_field="participant", modality_field="modality", secret=SECRET
+    )
+    assert len(manifest) == 1
+    assert manifest[0]["participant_key"] == pseudonymize("002", SECRET)
