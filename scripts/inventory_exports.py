@@ -53,7 +53,7 @@ def main() -> int:
         "file_count": len(inventory),
         "files": inventory,
     }
-    rendered = json.dumps(payload, indent=2, ensure_ascii=False) + "\\n"
+    rendered = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(rendered, encoding="utf-8")
