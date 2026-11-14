@@ -13,7 +13,7 @@ Import approved PPMI exports, normalize participant/visit/scan relationships, va
 - `scripts/inventory_exports.py`: command-line entry point for metadata-only inventory. Keep output outside Git.
 - `manifest.py`: creates keyed HMAC participant pseudonyms and aggregates series counts by supplied modality label. The HMAC secret remains outside Git.
 - `schema.py`: defines PANPM internal table contracts and validates declared keys and participant links.
-- `ppmi_contracts.py`: records selected source table fields from the supplied annotated PPMI dictionary and validates only documented participant/visit linkage fields. It does not enforce ambiguous uniqueness declarations or infer data availability.
+- `ppmi_contracts.py`: records selected source table fields from the supplied annotated PPMI dictionary and validates only documented linkage fields. It does not enforce ambiguous uniqueness declarations or infer data availability.
 
 ## PPMI source tables reviewed
 
@@ -27,8 +27,8 @@ See [`docs/ppmi-source-catalog.md`](../ppmi-source-catalog.md) for exact extract
 | `MRIQC` | T1-weighted MRIQC metrics | Image-level QC features, if present |
 | `GMVOLUME` | Extracted grey-matter volume | Derived imaging feature, if present |
 | `DTIROI` | DTI region-of-interest measurements | Derived diffusion feature, if present |
-
-The guide and code list contain differences in cohort descriptions. Preserve the original source values and define a versioned analytic cohort rule separately.
+| `NUPDRS3TRT` | MDS-UPDRS Part III examination and treatment state | Longitudinal motor outcome, state-stratified |
+| `LEDDLOG` | Levodopa-equivalent medication log | Time-aligned medication exposure |
 
 ## Route
 
