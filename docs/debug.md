@@ -1,5 +1,20 @@
 # Debug log - PANPM
 
+## DBG-007 - Add medication-aware progression source contracts (2026-11-15)
+**Sources inspected:** Annotated Data Dictionary and Annotated Code List, dated May 23, 2025.
+
+**Findings:** `NUPDRS3TRT` contains MDS-UPDRS Part III total score `NP3TOT`, ON/OFF state, order of OFF/ON examinations, medication-use/treatment flags, dose timing and DBS fields. The Code List identifies distinct `PAG_NAME` values for OFF-state, ON-state, treatment-determination and no-treatment forms. Individual motor item fields include 0–4 score codes and 101 for Unable to Rate. `LEDDLOG` contains medication and dose records with start/stop dates and levodopa-equivalent fields.
+
+**Change:** Added `NUPDRS3TRT` and `LEDDLOG` source contracts and synthetic header/state-field tests. Updated the source catalog and data-component guide. No progression outcome rule was finalized because actual state-specific coverage and visit completeness are unknown.
+
+**Tested:** Not run locally. GitHub Actions run 22 was queued at the last check; no passing CI result is claimed.
+
+**Not tested:** actual NUPDRS3TRT/LEDDLOG exports, medication state at each assessment, 12/24-month endpoint completeness, preprocessing, models or RL.
+
+**Next:** obtain approved participant-level exports and quantify valid ON/OFF state and medication exposure coverage before freezing progression targets.
+
+---
+
 ## DBG-006 - Extract official PPMI reference documents (2026-11-15)
 **Sources inspected:** PPMI Data User Guide (cover updated August 6, 2026), Annotated Data Dictionary (May 23, 2025), and Annotated Code List (May 23, 2025). Also inspected the uploaded screenshot of the PPMI Data Resources download page.
 
@@ -27,7 +42,6 @@
 **Not tested:** Real PPMI headers, source mappings, joins, data coverage, MRI metadata, clinical endpoint completeness, preprocessing, models or RL.
 
 
-
 ## DBG-004 - Public PPMI tooling review and recursive CSV discovery (2026-11-15)
 **Sources reviewed:** public repositories MJFF ResearchCommunity/PIE, MJFF ResearchCommunity/PIE-clean, NetNeuroLab/markello_ppmisnf, and the official PPMI Data Resources page. Findings and links are recorded in `docs/external-references.md`.
 
@@ -38,7 +52,6 @@
 **Tested:** Not run. No local checkout or CI result has been verified.
 
 **Not tested:** real PPMI exports, official dictionary extraction, source mapping, participant coverage, MRI sequence selection, image processing, model training or RL.
-
 
 ## DBG-005 - Schema validation privacy hardening (2026-11-15)
 **Change:** Duplicate unique-key validation messages no longer echo the duplicate key value. The issue retains the row index needed for debugging without exposing participant or scan identifiers in logs.
