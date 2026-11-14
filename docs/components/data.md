@@ -42,7 +42,7 @@ No PPMI export field names, release version, actual modality coverage or imaging
 
 **Imports other areas:** (none)
 
-**Tests:** (none matched by name)
+**Tests:** `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_source_mapping.py`
 
 <!-- END GENERATED -->
 
