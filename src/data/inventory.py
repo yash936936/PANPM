@@ -62,3 +62,37 @@ def summarize_values(values: Iterable[object]) -> dict[str, int]:
         key = "MISSING" if value is None or str(value).strip() == "" else str(value).strip()
         counts[key] = counts.get(key, 0) + 1
     return dict(sorted(counts.items()))
+
+
+def discover_csv_exports(root: str | Path) -> list[Path]:
+    """Discover CSV exports recursively without reading participant-level values.
+
+    Hidden directories are skipped to avoid indexing caches and repository
+    metadata. Returned paths are sorted and remain local to the supplied root.
+    """
+    base = Path(root)
+    if not base.is_dir():
+        raise NotADirectoryError(f"Export root is not a directory: {base}")
+    discovered = [
+        path
+        for path in base.rglob("*.csv")
+        if path.is_file()
+        and not any(part.startswith(".") for part in path.relative_to(base).parts)
+    ]
+    return sorted(discovered, key=lambda path: path.relative_to(base).as_posix())
+
+
+def inventory_csv_tree(
+    root: str | Path, *, release_id: str
+) -> list[dict[str, object]]:
+    """Inventory discovered CSV files using relative paths and metadata only."""
+    base = Path(root)
+    if not release_id.strip():
+        raise ValueError("release_id must be non-empty")
+    inventory: list[dict[str, object]] = []
+    for path in discover_csv_exports(base):
+        record = inspect_csv(path, release_id)
+        record["relative_path"] = path.relative_to(base).as_posix()
+        record["row_count"] = count_csv_rows(path)
+        inventory.append(record)
+    return inventory
