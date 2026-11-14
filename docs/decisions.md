@@ -44,3 +44,11 @@
 
 ---
 **Next:** Return to [`context.md`](../context.md) before starting a new task.
+
+
+## D-009 - Continue source-independent data validation while PPMI access is unavailable (2026-11-15)
+**Decision:** Implement PANPM internal schema contracts using synthetic in-memory records, without fabricating PPMI source headers, values, cohort sizes or MRI modalities.
+
+**Reason:** The user reports no PPMI access and no files. Software-level schema validation can be developed against the documented PANPM data dictionary, but feasibility and scientific modelling require approved source data.
+
+**Consequences:** Phase 0 remains incomplete. Do not select an MRI modality, define PPMI source mappings, train diagnostic/progression models or train PPO until approved metadata and a leakage-safe participant manifest exist.
