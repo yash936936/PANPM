@@ -1,5 +1,22 @@
 # Debug log - PANPM
 
+## DBG-008 - Add explicit medication-state progression target helpers (2026-11-15)
+**Need:** The PPMI reference documents identify ON/OFF state and medication context for `NP3TOT`, but actual visit coverage and the correct state/window rule are unknown.
+
+**Change:** Added `src/data/progression_targets.py` with `MotorAssessment`, `select_motor_assessment` and `motor_score_change`. Selection requires a caller-supplied target date, inclusive tolerance in days and exact normalized state. It chooses the closest eligible score, rejects tied closest records, and does not pool states. Score change requires same-state baseline/follow-up and chronological order.
+
+**Tests added:** Synthetic tests cover state filtering, inclusive date boundary, missing scores, tied records, invalid tolerance/state, mixed-state rejection, chronology and follow-up-minus-baseline direction.
+
+**Tested:** Not run locally. No local checkout is available in this session. No passing CI result is claimed for this branch.
+
+**Not tested:** PPMI code mapping, clinical appropriateness of the state rule, actual target window, LEDD derivation, DBS eligibility, endpoint completeness, image processing, supervised models or RL.
+
+**Next:** Validate source mapping and state-specific target availability using approved `NUPDRS3TRT` and `LEDDLOG` exports before freezing endpoint parameters.
+
+---
+
+# Debug log - PANPM
+
 ## DBG-007 - Add medication-aware progression source contracts (2026-11-15)
 **Sources inspected:** Annotated Data Dictionary and Annotated Code List, dated May 23, 2025.
 
@@ -59,3 +76,4 @@
 **Test added:** A synthetic regression test asserts that a deliberately sensitive-looking scan ID is absent from the validation message.
 
 **Tested:** Not run. GitHub workflow status and local pytest remain unverified.
+

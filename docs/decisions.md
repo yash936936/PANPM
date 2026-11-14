@@ -2,6 +2,17 @@
 
 > Append-only decision log. New decisions go at the top. Do not edit or delete older entries. Supersede a decision with a new ID and reference the old one.
 
+## D-013 - Keep progression window and state caller-configured - 2026-11-15
+**Decision:** progression assessment selection must require an explicit target date, tolerance and normalized medication-state label. Select the nearest eligible record; raise an ambiguity error when equally close records exist. Do not hard-code the 12/24-month window tolerance or primary ON/OFF/untreated state before the approved export is audited.
+
+**Reason:** the protocol leaves the follow-up window and medication-state rule to be prespecified, while the PPMI source documents identify multiple assessment forms and states. Actual state-specific coverage and medication exposure are not yet known.
+
+**Consequences:** the generic helper enforces deterministic, state-consistent selection but does not make the clinical protocol decision. A protocol amendment and coverage report are required before target extraction.
+
+# Decisions - PANPM
+
+> Append-only decision log. New decisions go at the top. Do not edit or delete older entries. Supersede a decision with a new ID and reference the old one.
+
 ## D-012 - Preserve MDS-UPDRS Part III medication and DBS state - 2026-11-15
 **Decision:** retain the assessment form/state, ON/OFF order, medication-use flags, dose timing and DBS status alongside each MDS-UPDRS Part III score. Do not pool ON-state and OFF-state examinations as interchangeable observations. Define the primary progression endpoint only after actual state-specific completeness and medication exposure can be audited.
 
@@ -75,3 +86,4 @@
 **Reason:** PIE and PIE-clean document useful cleaning and imaging workflows, but explicitly do not distribute PPMI participant data. PIE also documents potential LONI MRI weighting-label issues that require verification against actual acquisition metadata.
 
 **Consequences:** PANPM adds a public-source review document and generic CSV discovery. PPMI source mapping and MRI sequence selection remain blocked on official documentation and approved metadata.
+

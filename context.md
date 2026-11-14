@@ -47,7 +47,6 @@ PANPM/
     |-- phases.md
     |-- decisions.md
     |-- debug.md
-    |-- code_logic.md
     |-- appflow.md
     |-- workflow.md
     |-- readme.md
@@ -62,7 +61,7 @@ PANPM/
     `-- logs/events.jsonl
 ```
 
-The directory structure and generic Phase 0 metadata utilities are implemented. PPMI source table contracts now reflect the supplied annotated dictionary; approved-release ingestion, MRI preprocessing, models, genetics and RL remain unimplemented.
+The directory structure and generic Phase 0 metadata utilities are implemented. PPMI source table contracts now reflect the supplied annotated dictionary; medication-state-aware progression selection helpers are also implemented. Approved-release ingestion, MRI preprocessing, models, genetics and RL remain unimplemented.
 
 ## Where to look by task
 
@@ -73,6 +72,7 @@ The directory structure and generic Phase 0 metadata utilities are implemented. 
 | Understand the complete system design | `docs/architecture.md` |
 | Know what to build next | `docs/phases.md` and `docs/status.md` |
 | Understand PPMI source tables and MRI fields | `docs/ppmi-source-catalog.md` |
+| Understand progression endpoint safeguards | `docs/progression-targets.md` |
 | Understand the normalized PANPM tables | `docs/data-dictionary.md` |
 | Understand experimental controls and endpoints | `docs/research-protocol.md` |
 | Understand RL state, actions, reward and episode flow | `docs/code_logic.md` |
@@ -99,7 +99,7 @@ A passing unit test is not clinical validation. A model metric is not evidence o
 ## Logging rules
 
 - Every completed coding or data-pipeline task gets an entry in `docs/debug.md`, including what was tested and what was not tested.
-- Every material design choice gets a new entry in `docs/decisions.md`. Do not rewrite older entries; supersede them with a new ID.
+- Every material design choice gets a new entry in `docs/decisions.md`. Do not rewrite older decisions; supersede them with a new ID.
 - Every work session ends with a new entry at the top of `docs/status.md`.
 - Every command used for project implementation or data processing should be run through `scripts/events/run-logged.mjs` where practical. Do not put credentials, participant identifiers or private paths into event logs.
 - `docs/logs/events.jsonl` is append-only. `docs/FAILURE-LEDGER.md` is generated and must not be edited manually.
@@ -111,8 +111,8 @@ A passing unit test is not clinical validation. A model metric is not evidence o
 
 **Coding agent:** (open - choose the agent and its environment before the first implementation handoff). No coding-agent configuration or repository checkout was supplied with this documentation request, so no tool has been inferred.
 
-**Editor and terminal:** not confirmed for this repository. Use one shared project root across them. The user has previously worked with VS Code, but the PANPM-specific workspace has not yet been confirmed.
+**Editor and terminal:** not confirmed for this repository. Use one shared project root across them. Record the absolute project path in `docs/workflow.md` once confirmed.
 
 ## Current task
 
-Continue Phase 0. Official reference documents are extracted and catalogued in `docs/ppmi-source-catalog.md`. Next, obtain approved PPMI access and download the relevant participant, MRI, acquisition, MRIQC, clinical assessment and LONI imaging metadata. Run the metadata-only inventory outside Git, validate actual row grain and field values, then define release-specific mappings and compute participant-by-sequence and participant-by-outcome coverage. Do not train MRI or RL models until these feasibility checks and the participant-level split manifest exist.
+Continue Phase 0. Official PPMI reference documents are extracted and catalogued. Generic inventory, source contracts and configurable progression target safeguards are implemented. Next, obtain approved PPMI access and actual Participant Status, MRI, MRI Acquisition, MRIQC, NUPDRS3TRT, LEDDLOG and LONI metadata exports. Inventory them outside Git, audit table grain and state/sequence coverage, then define release-specific mappings and freeze the clinical target rule. Do not train models or PPO until cohort feasibility and participant-level splits are established.
