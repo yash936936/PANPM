@@ -2,17 +2,16 @@
 
 > Complete phases in order. A phase is done only when its files exist, its checks pass, its evidence is recorded in `debug.md`, and its real status is recorded here and in `status.md`.
 
-## Phase 0 - PPMI access and feasibility audit
+## ## Phase 0 - PPMI access and feasibility audit
 **Goal:** establish what can actually be studied before selecting MRI modalities or training models.
 
-**Files touched:** `src/data/source_mapping.py`, `src/data/inventory.py`, `src/data/manifest.py`, `src/data/load_ppmi.py` (planned), `src/data/schema.py` (planned), `configs/dataset.yaml` (after export audit), `docs/data-dictionary.md`, `docs/research-protocol.md`.
+**Files touched:** `src/data/source_mapping.py`, `src/data/inventory.py`, `src/data/manifest.py`, `src/data/schema.py`, `src/data/load_ppmi.py` (planned), `configs/dataset.yaml` (after export audit), `docs/data-dictionary.md`, `docs/research-protocol.md`.
 
 **Work:** obtain approved data access; record data release and terms; inspect official cohort, clinical, MRI and LONI metadata; build participant-by-modality and participant-by-endpoint overlap; validate participant/visit/scan joins; generate a feasibility report.
 
 **Done when:** cohort counts, modality coverage, scanner/site distribution, endpoint completeness and missingness are reproducible; all unknowns and exclusions are documented; no direct identifiers appear in outputs.
 
-**Status:** In progress. Generic inventory/mapping/coverage utilities are implemented on `research/phase0-repository-audit`; PPMI-specific feasibility audit is blocked until approved exports and imaging metadata are available.
-
+**Status:** In progress. Generic inventory, explicit mapping, pseudonymous coverage and internal schema-contract utilities are implemented on `research/phase0-repository-audit`. The user currently has no PPMI access or files. PPMI-specific feasibility audit is blocked until approved exports and imaging metadata are available. No PPMI fields or MRI sequences are assumed.
 ## Phase 1 - Cohort definition and MRI preprocessing
 **Goal:** create a leakage-safe PD/HC cohort and quality-controlled baseline MRI derivatives.
 
