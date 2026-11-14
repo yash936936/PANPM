@@ -80,3 +80,5 @@ The annotated dictionary defines a Levodopa Equivalent Daily Dose concomitant me
 ## Scope and limitations
 
 This catalog is based on the three reference documents named above, not on approved participant-level PPMI exports or downloaded MRI files. No participant counts, scan counts, missingness rates, MRI sequence coverage or endpoint availability have been measured. The code in `src/data/ppmi_contracts.py` validates only selected documented linkage fields; it does not claim to validate every PPMI table or the complete imaging archive.
+---
+**Next:** Return to [`context.md`](../context.md) before starting a new task.
