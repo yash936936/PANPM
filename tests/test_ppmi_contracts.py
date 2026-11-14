@@ -28,6 +28,20 @@ def test_mriqc_does_not_assume_undocumented_required_keys():
     assert validate_ppmi_source_header("MRIQC", ["PATNO", "EVENT_ID"]) == []
 
 
+def test_progression_and_medication_tables_share_documented_visit_links():
+    assert validate_ppmi_source_header(
+        "NUPDRS3TRT", ["PATNO", "EVENT_ID", "NP3TOT"]
+    ) == []
+    assert validate_ppmi_source_header(
+        "LEDDLOG", ["PATNO", "EVENT_ID", "LEDDSTRMG"]
+    ) == []
+
+
+def test_progression_contract_retains_medication_state_fields():
+    fields = PPMI_SOURCE_TABLES["NUPDRS3TRT"].documented_fields
+    assert {"NP3TOT", "PDSTATE", "ONOFFORDER", "HRPOSTMED"} <= set(fields)
+
+
 def test_unknown_source_table_is_rejected():
     with pytest.raises(ValueError, match="Unknown documented PPMI source table"):
         validate_ppmi_source_header("NOT_A_PPMI_TABLE", ["PATNO"])
