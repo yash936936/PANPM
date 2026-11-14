@@ -1,14 +1,20 @@
 # Component: data
 
-> Location: `src/data/`. Planned source area; implementation is not present yet.
+> Location: `src/data/`. Phase 0 metadata utilities are now present; PPMI-specific ingestion and cohort construction are not implemented.
 
 ## Purpose
 
 Import approved PPMI data exports, normalize participant/visit/scan relationships, validate source mappings and create versioned cohort, modality and split manifests. This area owns data lineage and schema validation, not image processing or model training.
 
+## Implemented utilities
+
+- `source_mapping.py`: validates explicit source-to-normalized column mappings and required target fields. It does not guess PPMI field names.
+- `inventory.py`: reads CSV headers, counts rows, summarizes missing values and records file size, release identifier and SHA-256 checksum.
+- `manifest.py`: creates keyed HMAC participant pseudonyms and aggregates series counts by supplied modality label. The HMAC secret is supplied at runtime and must remain outside Git.
+
 ## Route
 
-The pipeline entry point will call the inventory/import functions first. Validated normalized tables feed cohort construction; the cohort manifest then feeds preprocessing and model datasets. No runtime route exists yet because source modules have not been implemented.
+The planned pipeline inventories the approved exports first. A researcher reviews the actual headers and authors a mapping specification. Validated normalized tables then feed cohort construction; the cohort manifest feeds preprocessing and model datasets. No PPMI-specific mapping or MRI sequence classifier exists yet.
 
 ## Config surface and invariants
 
@@ -18,10 +24,11 @@ The pipeline entry point will call the inventory/import functions first. Validat
 - Joins must validate expected cardinality and record unmatched rows.
 - No source file is overwritten; raw data are immutable.
 - Missingness is retained and categorized rather than silently converted to zero.
+- HMAC secret material is not committed and pseudonyms are not treated as anonymization.
 
 ## Known limits
 
-PPMI export field names, release version and actual modality coverage have not been inspected. Internal schema fields are proposed and must be mapped to the current data dictionary.
+No PPMI export field names, release version, actual modality coverage or imaging metadata have been inspected. The current helpers are generic and have not been executed in a local repository checkout. They do not parse DICOM/NIfTI, align visits, select index dates, define outcomes or perform MRI quality control.
 
 <!-- BEGIN GENERATED: do not edit between markers -->
 
@@ -29,10 +36,13 @@ PPMI export field names, release version and actual modality coverage have not b
 
 | File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
+| `src/data/source_mapping.py` | `MappingSpec` | Validate explicit mappings from source export columns to PANPM fields. |
+| `src/data/inventory.py` | `sha256_file`, `read_csv_header`, `inspect_csv`, `count_csv_rows`, `summarize_values` | Inventory approved tabular exports and imaging metadata without loading images. |
+| `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Create pseudonymous participant coverage manifests from approved metadata. |
 
-**Imports other areas:** (none)
+**Imports other areas:** standard library only.
 
-**Tests:** (none matched by name)
+**Tests:** `tests/test_source_mapping.py`, `tests/test_inventory.py`, `tests/test_manifest.py`.
 
 <!-- END GENERATED -->
 
