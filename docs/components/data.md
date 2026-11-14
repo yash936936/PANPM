@@ -36,13 +36,13 @@ No PPMI export field names, release version, actual modality coverage or imaging
 
 | File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
-| `src/data/source_mapping.py` | `MappingSpec` | Validate explicit mappings from source export columns to PANPM fields. |
 | `src/data/inventory.py` | `sha256_file`, `read_csv_header`, `inspect_csv`, `count_csv_rows`, `summarize_values` | Inventory approved tabular exports and imaging metadata without loading images. |
 | `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Create pseudonymous participant coverage manifests from approved metadata. |
+| `src/data/source_mapping.py` | `MappingSpec` | Validate explicit mappings from source export columns to PANPM fields. |
 
-**Imports other areas:** standard library only.
+**Imports other areas:** (none)
 
-**Tests:** `tests/test_source_mapping.py`, `tests/test_inventory.py`, `tests/test_manifest.py`.
+**Tests:** (none matched by name)
 
 <!-- END GENERATED -->
 
