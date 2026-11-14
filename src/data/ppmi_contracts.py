@@ -82,6 +82,26 @@ PPMI_SOURCE_TABLES: dict[str, PPMISourceTable] = {
             "ROI5", "ROI6", "RUNDATE",
         ),
     ),
+    "NUPDRS3TRT": PPMISourceTable(
+        name="NUPDRS3TRT",
+        linkage_fields=("PATNO", "EVENT_ID"),
+        documented_fields=(
+            "PATNO", "EVENT_ID", "PAG_NAME", "EXAMDT", "EXAMTM",
+            "NP3TOT", "PDSTATE", "ONOFFORDER", "PDMEDYN", "PDTRTMNT",
+            "PDMEDDT", "PDMEDTM", "HRPOSTMED", "DBSYN", "REC_ID",
+        ),
+        declared_unique_fields=("REC_ID",),
+    ),
+    "LEDDLOG": PPMISourceTable(
+        name="LEDDLOG",
+        linkage_fields=("PATNO", "EVENT_ID"),
+        documented_fields=(
+            "PATNO", "EVENT_ID", "LEDTRT", "LEDD", "LEDDOSE",
+            "LEDDOSFRQ", "LEDDOSSTR", "LEDDSTRMG", "STARTDT",
+            "STOPDT", "TOTDDA", "REC_ID",
+        ),
+        declared_unique_fields=("REC_ID",),
+    ),
 }
 
 
