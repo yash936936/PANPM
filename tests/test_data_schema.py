@@ -51,3 +51,28 @@ def test_participant_links_detect_orphans_without_source_ids():
     )
     assert [issue.row_index for issue in issues] == [1, 2]
     assert all(issue.code == "orphan_participant" for issue in issues)
+
+
+def test_split_manifest_allows_same_participant_in_different_versions():
+    rows = [
+        {"participant_id": "p1", "split": "train", "split_version": "v1"},
+        {"participant_id": "p1", "split": "test", "split_version": "v2"},
+    ]
+    assert validate_table(
+        "split_manifest",
+        ["participant_id", "split", "split_version"],
+        rows,
+    ) == []
+
+
+def test_split_manifest_rejects_duplicate_participant_within_version():
+    rows = [
+        {"participant_id": "p1", "split": "train", "split_version": "v1"},
+        {"participant_id": "p1", "split": "test", "split_version": "v1"},
+    ]
+    issues = validate_table(
+        "split_manifest",
+        ["participant_id", "split", "split_version"],
+        rows,
+    )
+    assert issues[0].code == "duplicate_unique_key"
