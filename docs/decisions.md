@@ -2,6 +2,20 @@
 
 > Append-only decision log. New decisions go at the top. Do not edit or delete older entries. Supersede a decision with a new ID and reference the old one.
 
+## D-012 - Preserve MDS-UPDRS Part III medication and DBS state - 2026-11-15
+**Decision:** retain the assessment form/state, ON/OFF order, medication-use flags, dose timing and DBS status alongside each MDS-UPDRS Part III score. Do not pool ON-state and OFF-state examinations as interchangeable observations. Define the primary progression endpoint only after actual state-specific completeness and medication exposure can be audited.
+
+**Reason:** the annotated PPMI dictionary places `NP3TOT` in `NUPDRS3TRT` alongside `PDSTATE`, `ONOFFORDER`, `PDMEDYN`, `PDTRTMNT`, medication dose timing and DBS fields. The Code List identifies distinct OFF-state, ON-state and no-treatment form names.
+
+**Consequences:** progression dataset construction must preserve treatment context and use a predeclared state-selection rule. The 12- and 24-month horizons remain conditional on valid repeated observations and medication-aware alignment.
+
+## D-011 - Preserve PPMI cohort codes and documentation differences - 2026-11-15
+**Decision:** retain raw PPMI cohort values and descriptions in the source layer. Define any binary PD-versus-healthy-control cohort with a separate, versioned inclusion rule. Do not merge genetic registry codes 7/8 into the legacy cohort groups or infer that the guide's five-cohort summary fully supersedes the annotated dictionary.
+
+**Reason:** the supplied 2026 Data User Guide describes five enrollment cohorts, while the May 2025 annotated Code List includes cohort codes 1, 2, 3, 4, 7 and 8. The participant dictionary and code list are source-specific and may reflect additional groups.
+
+**Consequences:** source values remain unchanged; all cohort mappings and exclusions must be logged. Prodromal, SWEDD and genetic registry groups stay distinct from the primary PD-versus-healthy-control task unless a separate experiment defines otherwise.
+
 ## D-008 - Research-only claims and data handling - 2026-11-15
 **Decision:** PANPM is a research prototype, not a diagnostic or treatment system. Raw PPMI data, direct identifiers, participant-level genetic data, credentials and private paths must not be committed or copied into ordinary logs.
 **Why:** The project uses sensitive participant-level research data and has no clinical validation or authorization for clinical use.
@@ -43,6 +57,7 @@
 **Affects:** all documents, phases and repository structure.
 
 ---
+
 **Next:** Return to [`context.md`](../context.md) before starting a new task.
 
 

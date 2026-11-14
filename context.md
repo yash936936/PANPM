@@ -4,7 +4,7 @@
 
 ## What this project is
 
-**PANPM (Parkinson's Active Neuroimaging and Progression Model)** is a research system using PPMI longitudinal data to study Parkinson's disease through MRI-based classification, motor-progression forecasting, genetically informed regional interpretation, and a reinforcement-learning agent that sequentially selects MRI brain regions for computational inspection. The RL agent's first task is active ROI inspection, not treatment selection and not physical MRI sequence ordering. The project is currently at the documentation and design-scaffold stage. No PPMI data have been imported, no MRI modality inventory has been verified, and no model has been trained.
+**PANPM (Parkinson's Active Neuroimaging and Progression Model)** is a research system using PPMI longitudinal data to study Parkinson's disease through MRI-based classification, motor-progression forecasting, genetically informed regional interpretation, and a reinforcement-learning agent that sequentially selects MRI brain regions for computational inspection. The RL agent's first task is active ROI inspection, not treatment selection and not physical MRI sequence ordering. The project is in Phase 0. Official PPMI reference documents have been inspected, but no approved participant-level exports or MRI images have been processed and no model has been trained.
 
 ## Project location
 
@@ -62,7 +62,7 @@ PANPM/
     `-- logs/events.jsonl
 ```
 
-The directory structure and documentation scripts are scaffolded. Generic Phase 0 metadata utilities now exist under `src/data/`; PPMI-specific ingestion, MRI preprocessing, models, genetics and RL implementation remain planned.
+The directory structure and generic Phase 0 metadata utilities are implemented. PPMI source table contracts now reflect the supplied annotated dictionary; approved-release ingestion, MRI preprocessing, models, genetics and RL remain unimplemented.
 
 ## Where to look by task
 
@@ -72,7 +72,8 @@ The directory structure and documentation scripts are scaffolded. Generic Phase 
 | Understand technical requirements and model constraints | `docs/trd.md` |
 | Understand the complete system design | `docs/architecture.md` |
 | Know what to build next | `docs/phases.md` and `docs/status.md` |
-| Understand the data tables | `docs/data-dictionary.md` |
+| Understand PPMI source tables and MRI fields | `docs/ppmi-source-catalog.md` |
+| Understand the normalized PANPM tables | `docs/data-dictionary.md` |
 | Understand experimental controls and endpoints | `docs/research-protocol.md` |
 | Understand RL state, actions, reward and episode flow | `docs/code_logic.md` |
 | Understand the researcher workflow | `docs/appflow.md` |
@@ -98,7 +99,7 @@ A passing unit test is not clinical validation. A model metric is not evidence o
 ## Logging rules
 
 - Every completed coding or data-pipeline task gets an entry in `docs/debug.md`, including what was tested and what was not tested.
-- Every material design choice gets a new entry in `docs/decisions.md`. Do not rewrite older decisions; supersede them with a new ID.
+- Every material design choice gets a new entry in `docs/decisions.md`. Do not rewrite older entries; supersede them with a new ID.
 - Every work session ends with a new entry at the top of `docs/status.md`.
 - Every command used for project implementation or data processing should be run through `scripts/events/run-logged.mjs` where practical. Do not put credentials, participant identifiers or private paths into event logs.
 - `docs/logs/events.jsonl` is append-only. `docs/FAILURE-LEDGER.md` is generated and must not be edited manually.
@@ -114,4 +115,4 @@ A passing unit test is not clinical validation. A model metric is not evidence o
 
 ## Current task
 
-Continue Phase 0 without PPMI participant data. Public implementation references have been reviewed and recorded in `docs/external-references.md`. Generic CSV export discovery and metadata-only inventory now exist in `src/data/inventory.py`. Official PPMI Data Dictionary, Code List and Data User Guide have not yet been downloaded into this repository. Next, obtain those official documents from the PPMI Data Resources page and extract their exact definitions; keep public repository heuristics separate from official PPMI definitions. Do not create source mappings or MRI sequence rules until they are verified against the official documentation and approved release metadata.
+Continue Phase 0. Official reference documents are extracted and catalogued in `docs/ppmi-source-catalog.md`. Next, obtain approved PPMI access and download the relevant participant, MRI, acquisition, MRIQC, clinical assessment and LONI imaging metadata. Run the metadata-only inventory outside Git, validate actual row grain and field values, then define release-specific mappings and compute participant-by-sequence and participant-by-outcome coverage. Do not train MRI or RL models until these feasibility checks and the participant-level split manifest exist.
