@@ -6,13 +6,13 @@
 
 **Goal:** establish what can actually be studied before selecting MRI modalities or training models.
 
-**Files touched:** `src/data/source_mapping.py`, `src/data/inventory.py`, `src/data/manifest.py`, `src/data/schema.py`, `src/data/ppmi_contracts.py`, `docs/ppmi-source-catalog.md`, `src/data/load_ppmi.py` (planned), `configs/dataset.yaml` (after export audit).
+**Files touched:** `src/data/source_mapping.py`, `src/data/inventory.py`, `src/data/manifest.py`, `src/data/schema.py`, `src/data/ppmi_contracts.py`, `src/data/progression_targets.py`, `docs/ppmi-source-catalog.md`, `docs/progression-targets.md`, `src/data/load_ppmi.py` (planned), `configs/dataset.yaml` (after export audit).
 
 **Work:** official reference-document review is complete for the supplied guide, annotated dictionary and code list. Obtain approved data access; record download date and terms; inventory actual participant, clinical, MRI and LONI exports; validate table grains and joins; compute participant-by-sequence and participant-by-endpoint overlap; generate a feasibility report.
 
 **Done when:** cohort counts, modality coverage, scanner/site distribution, endpoint completeness and missingness are reproducible; unknowns and exclusions are documented; no direct identifiers appear in outputs.
 
-**Status:** In progress. Generic inventory and conservative PPMI source contracts exist. The reference documents identify MRI, MRI_ACQUISITION, MRIQC, GMVOLUME and DTIROI tables and sequence flags. Approved participant-level exports and image metadata are still required to establish actual coverage, row grain and feasibility. No preprocessing or model training has started.
+**Status:** In progress. Generic inventory, conservative PPMI source contracts and medication-state-aware progression target selection safeguards exist. Approved participant-level exports and image metadata are still required to establish actual coverage, row grain, endpoint completeness and the final clinical target parameters. No MRI preprocessing or model training has started.
 
 ## Phase 1 - Cohort definition and MRI preprocessing
 
@@ -75,4 +75,4 @@
 **Status:** Not started.
 
 ---
-**Next:** Return to [`context.md`](../context.md) before starting a new task.
+**Next:** Return to `context.md` before starting a new task.
