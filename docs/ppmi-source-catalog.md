@@ -49,15 +49,34 @@ The dictionary marks both `PATNO` and `EVENT_ID` as unique for this table. Becau
 - `GMVOLUME`: `PATNO`, `EVENT_ID`, `IMAGEID`, `MRIDATE`, `GM_VOLUME` (extracted grey-matter volume in mm³). The dictionary does not declare a unique key.
 - `DTIROI`: `PATNO`, `IMAGE_ID` (LONI image UID), `INFODT`, `Measure`, `Tissue`, `REF1`, `REF2`, `ROI1`–`ROI6`, `RUNDATE`. The dictionary does not declare a unique key.
 
+## Progression and medication tables
+
+### `NUPDRS3TRT`
+
+The annotated dictionary defines this table as “MDS-UPDRS Part III Treatment Determination and Part III: Motor Examination”. Fields relevant to longitudinal motor progression include:
+
+- Outcome: `NP3TOT` (MDS-UPDRS Part III Total Score), with individual motor examination items `NP3SPCH`, `NP3FACXP`, `NP3RIGN`, `NP3FTAPR`, `NP3FTAPL`, and other Part III item fields.
+- State: `PDSTATE` (ON/OFF functional state), `ONOFFORDER` (whether the first Part III exam was OFF or ON), `OFFEXAM`, `ONEXAM`.
+- Treatment: `PDMEDYN`, `PDTRTMNT`, `PDMEDDT`, `PDMEDTM`, `HRPOSTMED`, and DBS-related fields including `DBSYN`, `HRDBSOFF`, and `HRDBSON`.
+- Timing/linkage: `PATNO`, `EVENT_ID`, `EXAMDT`, `EXAMTM`, `INFODT`, `PAG_NAME`, and `REC_ID`.
+
+The Code List identifies different `PAG_NAME` values for OFF-state, ON-state, treatment-determination and no-treatment Part III records. It also defines `PDSTATE` values OFF and ON, `ONOFFORDER` values 1 OFF and 2 ON, and medication/treatment flags. Individual motor item fields include score codes 0–4 and an Unable to Rate code 101 in the supplied Code List. Do not treat 101 as an ordinary numeric severity score. The `NP3TOT` total score must be validated from actual exports and source scoring rules.
+
+**Progression rule:** preserve state and treatment context at the row level. Do not average or pool ON-state and OFF-state examinations as if they were interchangeable. Before locking the 12- and 24-month progression endpoint, compare completeness by `PAG_NAME`/`PDSTATE`, define a consistent state-selection rule, and account for medication timing and DBS.
+
+### `LEDDLOG`
+
+The annotated dictionary defines a Levodopa Equivalent Daily Dose concomitant medication log. Relevant fields include `PATNO`, `EVENT_ID`, `LEDTRT`, `LEDD`, `LEDDOSE`, `LEDDOSFRQ`, `LEDDOSSTR`, `LEDDSTRMG`, `STARTDT`, `STOPDT`, `TOTDDA`, and `REC_ID`. Use medication start/stop dates and dose fields to construct time-aligned treatment exposure; do not assume a single visit-level LEDD value without validating the source rows.
+
 ## Cohort and prediction implications
 
 1. Keep diagnosis, prodromal status, SWEDD and genetic registry categories separate in the source layer.
 2. Create a binary PD-versus-healthy-control label only from an explicit, frozen cohort rule. Exclude prodromal, SWEDD and genetic registry participants from that primary binary task unless a separately registered experiment says otherwise.
-3. Keep progression labels separate from diagnosis. The 12- and 24-month MDS-UPDRS Part III targets remain conditional on valid repeated assessments and a predeclared visit-window rule.
+3. Keep progression labels separate from diagnosis. The 12- and 24-month MDS-UPDRS Part III targets remain conditional on valid repeated observations and a predeclared visit-window and medication-state rule.
 4. Preserve `PATNO` only in the restricted linkage layer. Convert it to a keyed pseudonym before creating ordinary analysis tables; HMAC pseudonyms are not anonymization.
 5. Do not treat MRI assessment flags as proof that an image file exists. Join acquisition records to LONI image metadata and downloaded image manifests, then audit participant/visit/sequence coverage.
 6. Do not choose T1 or advanced sequences based on cohort-wide assumptions. Use `MRI_ACQUISITION`, image metadata and DICOM headers for the actual release.
 
 ## Scope and limitations
 
-This catalog is based on the three reference documents named above, not on approved participant-level PPMI exports or downloaded MRI files. No participant counts, scan counts, missingness rates, MRI sequence coverage or endpoint availability have been measured. The code in `src/data/ppmi_contracts.py` validates only the documented participant/visit linkage fields for selected source tables; it does not claim to validate every PPMI table or the complete imaging archive.
+This catalog is based on the three reference documents named above, not on approved participant-level PPMI exports or downloaded MRI files. No participant counts, scan counts, missingness rates, MRI sequence coverage or endpoint availability have been measured. The code in `src/data/ppmi_contracts.py` validates only selected documented linkage fields; it does not claim to validate every PPMI table or the complete imaging archive.
