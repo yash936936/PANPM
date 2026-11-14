@@ -18,3 +18,9 @@
 
 ---
 **Next:** Return to [`context.md`](../context.md) before starting a new task.
+
+
+## 2026-11-15 - Schema validation privacy hardening
+Updated `src/data/schema.py` so duplicate-key validation errors no longer print the duplicate key itself. Added a synthetic regression test. This is a privacy hardening change only; no PPMI fields or records were processed.
+
+**Verification:** Tests have been authored but not executed. No local checkout or verified CI run is available.
