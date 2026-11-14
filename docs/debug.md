@@ -23,3 +23,11 @@
 **Tested:** Not run. No local checkout or CI result has been verified.
 
 **Not tested:** real PPMI exports, official dictionary extraction, source mapping, participant coverage, MRI sequence selection, image processing, model training or RL.
+
+
+## DBG-005 - Schema validation privacy hardening (2026-11-15)
+**Change:** Duplicate unique-key validation messages no longer echo the duplicate key value. The issue retains the row index needed for debugging without exposing participant or scan identifiers in logs.
+
+**Test added:** A synthetic regression test asserts that a deliberately sensitive-looking scan ID is absent from the validation message.
+
+**Tested:** Not run. GitHub workflow status and local pytest remain unverified.
