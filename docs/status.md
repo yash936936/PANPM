@@ -2,19 +2,19 @@
 
 > Running project log. Newest entry goes at the top. Update this file at the end of every work session.
 
-## 2026-11-15 - Phase 0 metadata utilities added
-**Current phase:** Phase 0 - PPMI access and feasibility audit (implementation started; no PPMI data audited).
+## 2026-11-15 - Source-independent schema contracts added
+**Current phase:** Phase 0 - PPMI access and feasibility audit (software scaffold in progress; no PPMI data available).
 **Branch:** `research/phase0-repository-audit`.
-**Last debug:** `DBG-002` - metadata inventory utilities; repository checkout and execution blocked in this environment.
-**Last decisions:** `D-008` through `D-001`.
+**Last debug:** `DBG-003` - canonical schema contracts; tests authored but not executed.
+**Last decisions:** `D-009` - proceed with source-independent validation while data access is unavailable.
 
-**Created on the research branch:** explicit source-column mapping validation; CSV header, row-count, file-size and SHA-256 inventory helpers; keyed HMAC participant pseudonymization; participant-by-modality series-count aggregation; synthetic pytest coverage for these functions.
+**Created:** `src/data/schema.py` defines minimum internal table contracts for participants, clinical visits, imaging scans, progression targets and split manifests. It validates required columns, declared unique keys and participant foreign-key links. `tests/test_data_schema.py` uses small synthetic rows to exercise these checks.
 
-**Verified from source inspection:** files were committed to the research branch and are fetchable through the GitHub connector. The code avoids assuming PPMI source column names and keeps source participant IDs out of the generated coverage rows.
+**Input status:** PPMI access status is none; no PPMI files or data dictionary exports are available in this workspace. Therefore no PPMI field mapping, cohort count, modality coverage, endpoint feasibility or MRI sequence decision can be made.
 
-**Not verified:** local pytest, Ruff, CI, PPMI export mappings, PPMI cohort counts, MRI sequence coverage, visit alignment, endpoint availability, image QC, preprocessing, model training, RL behaviour, scientific performance or external validation. A local Git clone could not be completed because the environment could not resolve github.com; therefore no test result is claimed for these new modules.
+**Not verified:** local pytest, Ruff, CI, PPMI export mappings, PPMI cohort counts, MRI sequence coverage, visit alignment, endpoint availability, image QC, preprocessing, model training, RL behaviour, scientific performance or external validation.
 
-**Next up:** run pytest and Ruff in a network-enabled checkout; inspect the actual approved PPMI CSV headers and MRI metadata; create versioned mapping files only after header review; then generate release-level and participant-by-modality coverage reports. Keep raw files and HMAC secrets outside Git.
+**Next up:** run tests and Ruff in a local checkout; obtain PPMI approval and download the official data dictionary plus approved de-identified export headers; map source fields only after inspection.
 
 ---
 **Next:** Return to [`context.md`](../context.md) before starting a new task.
