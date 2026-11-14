@@ -37,3 +37,31 @@ def test_missingness_is_counted_separately():
     assert summarize_values(["T1", "", None, "T2", "T1"]) == {
         "MISSING": 2, "T1": 2, "T2": 1
     }
+
+
+def test_inventory_csv_tree_discovers_nested_exports_and_skips_hidden_dirs(tmp_path):
+    from src.data.inventory import inventory_csv_tree
+
+    nested = tmp_path / "Motor___MDS-UPDRS"
+    nested.mkdir()
+    (nested / "assessment.csv").write_text(
+        "PATNO,EVENT_ID\\n001,BL\\n", encoding="utf-8"
+    )
+    hidden = tmp_path / ".cache"
+    hidden.mkdir()
+    (hidden / "ignored.csv").write_text("A\\n1\\n", encoding="utf-8")
+
+    inventory = inventory_csv_tree(tmp_path, release_id="synthetic-release")
+
+    assert len(inventory) == 1
+    assert inventory[0]["relative_path"] == "Motor___MDS-UPDRS/assessment.csv"
+    assert inventory[0]["columns"] == ["PATNO", "EVENT_ID"]
+    assert inventory[0]["row_count"] == 1
+    assert inventory[0]["release_id"] == "synthetic-release"
+
+
+def test_discover_csv_exports_requires_directory(tmp_path):
+    from src.data.inventory import discover_csv_exports
+
+    with pytest.raises(NotADirectoryError):
+        discover_csv_exports(tmp_path / "missing")
