@@ -24,3 +24,7 @@
 Updated `src/data/schema.py` so duplicate-key validation errors no longer print the duplicate key itself. Added a synthetic regression test. This is a privacy hardening change only; no PPMI fields or records were processed.
 
 **Verification:** Tests have been authored but not executed. No local checkout or verified CI run is available.
+
+
+## 2026-11-15 - Added local inventory command
+Added `scripts/inventory_exports.py`, a standard-library CLI that calls the metadata-only CSV inventory and writes JSON to stdout or a user-selected path. Documented invocation and the requirement to keep both raw exports and generated inventory outside Git. The command has not been executed in a local checkout; tests and lint remain unverified.
