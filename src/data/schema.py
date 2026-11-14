@@ -102,7 +102,7 @@ def validate_table(
                 ValidationIssue(
                     table_name,
                     "duplicate_unique_key",
-                    f"Unique key {key!r} duplicates row {seen[key]}",
+                    f"Unique key duplicates row {seen[key]}",
                     index,
                 )
             )
