@@ -39,7 +39,7 @@ CONTRACTS: dict[str, TableContract] = {
     "split_manifest": TableContract(
         "split_manifest",
         frozenset({"participant_id", "split", "split_version"}),
-        ("participant_id",),
+        ("participant_id", "split_version"),
     ),
 }
 
