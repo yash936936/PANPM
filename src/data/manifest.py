@@ -33,9 +33,13 @@ def build_coverage_manifest(
     for row in rows:
         if participant_field not in row or modality_field not in row:
             raise ValueError("Configured participant/modality field is missing")
-        source_id = str(row[participant_field]).strip()
-        modality = str(row[modality_field]).strip()
-        if not source_id or not modality:
+        raw_source_id = row[participant_field]
+        raw_modality = row[modality_field]
+        if raw_source_id is None or raw_modality is None:
+            continue
+        source_id = str(raw_source_id).strip()
+        modality = str(raw_modality).strip()
+        if not source_id or not modality or source_id.lower() == "nan" or modality.lower() == "nan":
             continue
         participant_key = pseudonymize(source_id, secret)
         counts[participant_key][modality] += 1
