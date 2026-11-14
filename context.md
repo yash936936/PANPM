@@ -114,4 +114,4 @@ A passing unit test is not clinical validation. A model metric is not evidence o
 
 ## Current task
 
-Start Phase 0 in `docs/phases.md`: obtain approved PPMI access, collect the relevant data dictionary and imaging metadata, and build the participant-by-modality feasibility inventory. Do not start neural-network or PPO training until this inventory and the cohort split manifest exist.
+Continue Phase 0 without PPMI data. Source-independent PANPM table contracts and synthetic unit tests are now present under `src/data/schema.py` and `tests/test_data_schema.py`. Do not create PPMI-specific mappings, cohort estimates, modality claims or model-training code until approved PPMI metadata and export headers are supplied. Next engineering task: execute the full test suite and Ruff in a local checkout, then add a loader that applies researcher-authored mappings to approved exports.
