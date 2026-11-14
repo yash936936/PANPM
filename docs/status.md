@@ -2,6 +2,23 @@
 
 > Running project log. Newest entry goes at the top. Update this file at the end of every work session.
 
+## 2026-11-15 - Added medication-aware progression source contracts
+**Current phase:** Phase 0 - reference-document review complete; actual-data feasibility audit still requires approved PPMI exports.
+**Branch:** `research/phase0-ppmi-dictionary`.
+**PR:** [#2](https://github.com/yash936936/PANPM/pull/2), open draft.
+**Last debug:** `DBG-007` - progression and medication fields extracted.
+**Last decision:** `D-012` - preserve MDS-UPDRS Part III medication and DBS state.
+
+**Added:** `NUPDRS3TRT` and `LEDDLOG` to `src/data/ppmi_contracts.py`, with synthetic tests. Updated `docs/ppmi-source-catalog.md` and the data component guide.
+
+**Progression finding:** `NUPDRS3TRT` contains `NP3TOT`, `PDSTATE`, `ONOFFORDER`, `PDMEDYN`, `PDTRTMNT`, medication dose date/time and DBS fields. Its `PAG_NAME` values distinguish OFF-state, ON-state, treatment-determination and no-treatment forms. `LEDDLOG` contains medication, dose, start/stop date and levodopa-equivalent dose fields. These must be aligned before defining progression labels.
+
+**Not verified:** actual table exports, visit-level state completeness, valid 12/24-month outcome coverage, medication exposure at assessment time, MRI/image availability, local tests, Ruff or CI completion. The latest GitHub Actions run was queued at the last check; no passing result is claimed.
+
+**Next:** approved PPMI access and actual Participant Status, MRI, MRI Acquisition, MRIQC, NUPDRS3TRT, LEDDLOG and LONI image metadata exports are needed to measure real coverage and validate row grains.
+
+---
+
 ## 2026-11-15 - Official PPMI reference documents extracted; MRI source catalog added
 **Current phase:** Phase 0 - PPMI access and feasibility audit. Reference-document review is complete for the supplied files; participant-level feasibility audit remains blocked on approved exports.
 **Branch:** `research/phase0-ppmi-dictionary`.
