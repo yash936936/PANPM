@@ -62,7 +62,7 @@ PANPM/
     `-- logs/events.jsonl
 ```
 
-The directories and documentation scripts are scaffolded. The research implementation modules listed in `docs/architecture.md` are planned and do not exist yet.
+The directory structure and documentation scripts are scaffolded. Generic Phase 0 metadata utilities now exist under `src/data/`; PPMI-specific ingestion, MRI preprocessing, models, genetics and RL implementation remain planned.
 
 ## Where to look by task
 
@@ -114,4 +114,4 @@ A passing unit test is not clinical validation. A model metric is not evidence o
 
 ## Current task
 
-Start Phase 0 in `docs/phases.md`: obtain approved PPMI access, collect the relevant data dictionary and imaging metadata, and build the participant-by-modality feasibility inventory. Do not start neural-network or PPO training until this inventory and the cohort split manifest exist.
+Continue Phase 0 without PPMI participant data. Public implementation references have been reviewed and recorded in `docs/external-references.md`. Generic CSV export discovery and metadata-only inventory now exist in `src/data/inventory.py`. Official PPMI Data Dictionary, Code List and Data User Guide have not yet been downloaded into this repository. Next, obtain those official documents from the PPMI Data Resources page and extract their exact definitions; keep public repository heuristics separate from official PPMI definitions. Do not create source mappings or MRI sequence rules until they are verified against the official documentation and approved release metadata.
