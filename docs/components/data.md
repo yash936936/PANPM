@@ -58,16 +58,18 @@ No approved PPMI participant-level exports, LONI metadata or MRI files have been
 
 ### Files and exports
 
-| File | Exports | Responsibility |
+| File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
-| `src/data/inventory.py` | CSV inventory helpers | Metadata-only export inventory |
-| `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Pseudonymous participant and modality coverage |
-| `src/data/ppmi_contracts.py` | `PPMI_SOURCE_TABLES`, `validate_ppmi_source_header` | Conservative source-table contracts |
-| `src/data/progression_targets.py` | `MotorAssessment`, `select_motor_assessment`, `motor_score_change` | Explicit-window, medication-state-aware target selection |
-| `src/data/schema.py` | `CONTRACTS`, `validate_table`, `validate_participant_links` | PANPM normalized schema contracts |
-| `src/data/source_mapping.py` | `MappingSpec` | Explicit source-column mappings |
+| `src/data/inventory.py` | `sha256_file`, `read_csv_header`, `inspect_csv`, `count_csv_rows`, `summarize_values`, `discover_csv_exports`, `inventory_csv_tree` | Inventory approved tabular exports and imaging metadata without loading images. |
+| `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Create pseudonymous participant coverage manifests from approved metadata. |
+| `src/data/ppmi_contracts.py` | `PPMISourceTable`, `validate_ppmi_source_header` | Source-level contracts transcribed from the supplied PPMI reference files. |
+| `src/data/progression_targets.py` | `MotorAssessment`, `AmbiguousAssessmentError`, `select_motor_assessment`, `motor_score_change` | Medication-state-aware selection helpers for longitudinal motor outcomes. |
+| `src/data/schema.py` | `TableContract`, `ValidationIssue`, `validate_table`, `validate_participant_links` | Canonical PANPM table contracts and relational checks. |
+| `src/data/source_mapping.py` | `MappingSpec` | Validate explicit mappings from source export columns to PANPM fields. |
 
-**Tests:** `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_schema.py`, `tests/test_data_source_mapping.py`, `tests/test_ppmi_contracts.py`, `tests/test_progression_targets.py`
+**Imports other areas:** (none)
+
+**Tests:** `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_schema.py`, `tests/test_data_source_mapping.py`
 
 <!-- END GENERATED -->
 

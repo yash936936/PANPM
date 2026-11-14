@@ -76,4 +76,5 @@
 **Test added:** A synthetic regression test asserts that a deliberately sensitive-looking scan ID is absent from the validation message.
 
 **Tested:** Not run. GitHub workflow status and local pytest remain unverified.
-
+---
+**Next:** Return to [`context.md`](../context.md) before starting a new task.

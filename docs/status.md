@@ -2,6 +2,20 @@
 
 > Running project log. Newest entry goes at the top. Update this file at the end of every work session.
 
+## 2026-11-15 - Extract repository implementation state and prepare PPMI intake
+**Current phase:** Phase 0 - repository extraction and CI repair; participant-level feasibility audit still requires approved PPMI exports.
+**Branch:** `research/phase0-repo-extraction-ci`.
+**Previous PRs:** #1, #2 and #3 are merged into `main`.
+**Repository extraction:** `docs/repo-extraction.md` records implemented source-independent utilities, documented PPMI source tables, normalized target schemas, unimplemented research components and the first-week intake sequence.
+
+**CI findings from main merge commit:** Python setup failed because pip caching had no `requirements.txt` or `pyproject.toml` to hash; the docs job found a stale generated block in `docs/components/data.md`; the secret scanner found the self-test's fake key literal. This PR supplies the explicit cache dependency path, regenerates the data component inventory and constructs the synthetic key at runtime to keep the fixture from matching the scanner. These changes require CI verification.
+
+**Not verified:** local Ruff/pytest, approved PPMI export contents, actual cohort/sequence/endpoint coverage, MRI image availability, row grain or model/RL feasibility. No model or PPO training has begun.
+
+**Next:** obtain the approved PPMI export package, run metadata inventory outside Git, audit table grains and compute modality/endpoint overlap before freezing the MRI sequence and progression target.
+
+---
+
 ## 2026-11-15 - Add explicit medication-state progression target helpers
 **Current phase:** Phase 0 - source-document review and generic safeguards implemented; participant-level feasibility audit still requires approved PPMI exports.
 **Branch:** `research/phase0-progression-targets`.

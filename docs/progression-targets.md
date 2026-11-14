@@ -40,3 +40,5 @@ Those decisions require the approved export, state-specific follow-up coverage a
 ## Verification boundary
 
 Synthetic unit tests cover state matching, inclusive window boundaries, missing scores, tied assessments, chronological ordering and score-difference direction. They do not validate PPMI source mappings, clinical appropriateness of a state rule, medication exposure, DBS handling or endpoint availability.
+---
+**Next:** Return to [`context.md`](../context.md) before starting a new task.
