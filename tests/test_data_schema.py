@@ -76,3 +76,15 @@ def test_split_manifest_rejects_duplicate_participant_within_version():
         rows,
     )
     assert issues[0].code == "duplicate_unique_key"
+
+
+def test_duplicate_key_issue_does_not_echo_identifier_values():
+    rows = [
+        {"scan_id": "restricted-source-id", "participant_id": "p1", "modality": "MRI"},
+        {"scan_id": "restricted-source-id", "participant_id": "p2", "modality": "MRI"},
+    ]
+    issues = validate_table(
+        "imaging_scans", ["scan_id", "participant_id", "modality"], rows
+    )
+    assert issues[0].code == "duplicate_unique_key"
+    assert "restricted-source-id" not in issues[0].message
