@@ -2,17 +2,20 @@
 
 > Complete phases in order. A phase is done only when its files exist, its checks pass, its evidence is recorded in `debug.md`, and its real status is recorded here and in `status.md`.
 
-## ## Phase 0 - PPMI access and feasibility audit
+## Phase 0 - PPMI access and feasibility audit
+
 **Goal:** establish what can actually be studied before selecting MRI modalities or training models.
 
-**Files touched:** `src/data/source_mapping.py`, `src/data/inventory.py`, `src/data/manifest.py`, `src/data/schema.py`, `src/data/load_ppmi.py` (planned), `configs/dataset.yaml` (after export audit), `docs/data-dictionary.md`, `docs/research-protocol.md`.
+**Files touched:** `src/data/source_mapping.py`, `src/data/inventory.py`, `src/data/manifest.py`, `src/data/schema.py`, `src/data/ppmi_contracts.py`, `docs/ppmi-source-catalog.md`, `src/data/load_ppmi.py` (planned), `configs/dataset.yaml` (after export audit).
 
-**Work:** obtain approved data access; record data release and terms; inspect official cohort, clinical, MRI and LONI metadata; build participant-by-modality and participant-by-endpoint overlap; validate participant/visit/scan joins; generate a feasibility report.
+**Work:** official reference-document review is complete for the supplied guide, annotated dictionary and code list. Obtain approved data access; record download date and terms; inventory actual participant, clinical, MRI and LONI exports; validate table grains and joins; compute participant-by-sequence and participant-by-endpoint overlap; generate a feasibility report.
 
-**Done when:** cohort counts, modality coverage, scanner/site distribution, endpoint completeness and missingness are reproducible; all unknowns and exclusions are documented; no direct identifiers appear in outputs.
+**Done when:** cohort counts, modality coverage, scanner/site distribution, endpoint completeness and missingness are reproducible; unknowns and exclusions are documented; no direct identifiers appear in outputs.
 
-**Status:** In progress. Generic inventory, explicit mapping, pseudonymous coverage and internal schema-contract utilities are implemented on `research/phase0-repository-audit`. The user currently has no PPMI access or files. PPMI-specific feasibility audit is blocked until approved exports and imaging metadata are available. No PPMI fields or MRI sequences are assumed.
+**Status:** In progress. Generic inventory and conservative PPMI source contracts exist. The reference documents identify MRI, MRI_ACQUISITION, MRIQC, GMVOLUME and DTIROI tables and sequence flags. Approved participant-level exports and image metadata are still required to establish actual coverage, row grain and feasibility. No preprocessing or model training has started.
+
 ## Phase 1 - Cohort definition and MRI preprocessing
+
 **Goal:** create a leakage-safe PD/HC cohort and quality-controlled baseline MRI derivatives.
 
 **Files touched:** `src/data/cohort.py`, `src/preprocessing/dicom.py`, `src/preprocessing/sequence_classifier.py`, `src/preprocessing/qc.py`, `src/preprocessing/t1_pipeline.py`, `src/preprocessing/registration.py`, `src/preprocessing/segmentation.py`, `configs/preprocessing.yaml`.
@@ -22,6 +25,7 @@
 **Status:** Not started.
 
 ## Phase 2 - Supervised MRI and clinical baselines
+
 **Goal:** establish trusted diagnosis and progression reference models before RL training.
 
 **Files touched:** `src/models/cnn3d.py`, `src/models/roi_encoder.py`, `src/models/diagnosis.py`, `src/models/progression.py`, `src/evaluation/splits.py`, `src/evaluation/classification.py`, `src/evaluation/progression.py`, `configs/model.yaml`.
@@ -31,6 +35,7 @@
 **Status:** Not started.
 
 ## Phase 3 - Genetic and transcriptomic regional priors
+
 **Goal:** reproduce and strengthen the GWAS-to-Allen-Atlas spatial enrichment analysis.
 
 **Files touched:** `src/genetics/gwas.py`, `src/genetics/gene_prioritization.py`, `src/genetics/allen_atlas.py`, `src/genetics/regional_scores.py`, `src/genetics/null_models.py`, `src/models/fusion.py`.
@@ -40,6 +45,7 @@
 **Status:** Not started.
 
 ## Phase 4 - RL environment and PPO agent
+
 **Goal:** train and evaluate sequential ROI-inspection policies.
 
 **Files touched:** `src/rl/state.py`, `src/rl/action_space.py`, `src/rl/environment.py`, `src/rl/reward.py`, `src/rl/policy.py`, `src/rl/rollout.py`, `src/rl/train_agent.py`, `src/evaluation/rl_evaluation.py`, `configs/rl.yaml`.
@@ -49,6 +55,7 @@
 **Status:** Not started.
 
 ## Phase 5 - Multimodal extension
+
 **Goal:** add additional MRI modalities and patient-specific genetic data only where coverage and permissions support valid paired analysis.
 
 **Files touched:** modality-specific modules under `src/preprocessing/`, `src/models/fusion.py`, `src/data/` and associated evaluation modules.
@@ -58,6 +65,7 @@
 **Status:** Not started.
 
 ## Phase 6 - Generalization, reporting and research release
+
 **Goal:** complete ablations, independent validation and reproducible research outputs.
 
 **Files touched:** `src/evaluation/site_validation.py`, `src/evaluation/ablation.py`, `src/visualization/`, `reports/`, `docs/readme.md`, `docs/research-protocol.md`.
