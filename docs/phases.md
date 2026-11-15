@@ -14,7 +14,7 @@
 
 **Done when:** dataset/version/license provenance, participant counts by group, participant-to-modality matching, BIDS metadata completeness, acquisition/geometry summaries, QC exclusions and missingness are reproducible; unknowns and exclusions are documented; no participant-level files are committed. PPMI-specific feasibility remains explicitly pending until approved PPMI access is obtained.
 
-**Status:** In progress, with the initial local dataset inventory executed. OpenNeuro ds005892 v1.0.0 is the active public development source (55 participants: 22 Control, 18 PD-NC, 15 PD-MCI; T1w and resting-state BOLD; declared CC0 1.0). The user's local aggregate inventory reports 55/55 participants covered for each modality, zero missing files, zero invalid NIfTI headers and zero missing/empty sidecars. T1w spacing is 1 mm isotropic; BOLD dimensions are 64 x 64 x 32 x 200 with spatial spacing 3.125 x 3.125 x 3.5 mm and sidecar TR 2 seconds. The initial inventory incorrectly included the fourth BOLD pixdim in a field labelled millimetres; the active PR separates spatial spacing from temporal spacing and adds NIfTI affine/orientation summaries. That change still requires CI and a rerun on the local snapshot. Full BIDS validation, image QC, participant-level split feasibility, progression endpoint coverage and PPMI-specific feasibility remain incomplete. No model training has started.
+**Status:** Implementation and synthetic verification are complete for the metadata inventory and NIfTI-1 geometry audit. PR #14 was merged into `main` after all PR checks passed (run #43725333584); the merge-commit CI also passed (run #43725395612). The researcher's earlier local aggregate inventory reports 55 participants (22 Control, 18 PD-NC, 15 PD-MCI), 55 T1w and 55 BOLD files, complete participant coverage, zero missing/empty sidecars and zero invalid NIfTI headers. T1w spacing is 1 mm isotropic; BOLD is 64 x 64 x 32 x 200 with spatial spacing 3.125 x 3.125 x 3.5 mm and sidecar TR 2 seconds. The earlier report predates the new affine fields, so Phase 0 remains open until the corrected inventory is rerun on the local snapshot and aggregate affine/orientation results are reviewed. Full BIDS validation, image-level QC, participant-level split feasibility and progression endpoint coverage are not established. PPMI-specific feasibility remains blocked on approved PPMI access. No model training has started.
 
 ## Phase 1 - Cohort definition and MRI preprocessing
 
@@ -24,7 +24,7 @@
 
 **Done when:** each included scan is linked to one participant and visit; sequence identity is verified from metadata; preprocessing outputs pass documented QC; a participant-level split manifest is frozen; raw data remain unchanged.
 
-**Status:** Started at the metadata-validation stage. Local DICOM header intake code exists for a future approved DICOM source. The active OpenNeuro BIDS path now has an affine/axis-orientation audit in progress; actual QC, visual review, preprocessing, cohort freeze and participant-level split generation have not started.
+**Status:** Metadata-validation code is merged and CI-tested. Local DICOM header intake code exists for a future approved DICOM source. Actual T1w image QC, separate BOLD motion/temporal QC, visual anatomical review, preprocessing, cohort freeze and participant-level split generation have not started. Phase 1 remains open.
 
 ## Phase 2 - Supervised MRI and clinical baselines
 
