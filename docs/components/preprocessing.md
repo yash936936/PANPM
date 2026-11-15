@@ -15,7 +15,9 @@ The initial route reads DICOM headers from a local ZIP without extracting pixel 
 - Never modify raw DICOM/NIfTI inputs.
 - Record software versions, parameters, checksums and output paths.
 - Reject or quarantine ambiguous series instead of guessing their modality.
-- Apply brain extraction, registration and segmentation QC before ROI features are used.\n- A nonzero foreground proxy is not a brain mask or brain-volume estimate.\n- QC thresholds are caller-supplied; flags request human review and never automatically exclude a scan.
+- Apply brain extraction, registration and segmentation QC before ROI features are used.
+- A nonzero foreground proxy is not a brain mask or brain-volume estimate.
+- QC thresholds are caller-supplied; flags request human review and never automatically exclude a scan.
 - T1, DTI, neuromelanin, QSM and fMRI are conditional on verified data availability.
 - A conventional T1 image must not be treated as a neuromelanin-sensitive image.
 
@@ -29,7 +31,9 @@ No PPMI series inventory, MRI files or segmentation QC data have been provided. 
 
 | File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
-| `src/preprocessing/mri_manifest.py` | `aggregate_header_rows`, `index_dicom_zip` | Local-only DICOM header indexing for PANPM MRI intake. |\n| `src/preprocessing/qc.py` | `inspect_t1w`, `render_t1w_montage`, `aggregate_t1w_qc` | Voxel-level structural MRI QC metrics and private visual montages. |\n| `scripts/qc_t1w.py` | `main` | Run private, non-destructive voxel-level QC on verified T1w scans. |
+| `src/preprocessing/mri_manifest.py` | `aggregate_header_rows`, `index_dicom_zip` | Local-only DICOM header indexing for PANPM MRI intake. |
+| `src/preprocessing/qc.py` | `inspect_t1w`, `render_t1w_montage`, `aggregate_t1w_qc` | Voxel-level structural MRI QC metrics and private visual montages. |
+| `scripts/qc_t1w.py` | `main` | Run private, non-destructive voxel-level QC on verified T1w scans. |
 
 **Imports other areas:** (none)
 
