@@ -1,3 +1,16 @@
+## 2026-11-15 - Repair BIDS inventory CI findings
+**Current phase:** Phase 0 - source-independent BIDS inventory implementation; local dataset execution pending.
+
+**CI findings from PR #13:** Python verification found import ordering and two exception-type lint findings in `src/data/bids_inventory.py`. The docs/component job found the generated `docs/components/data.md` block was stale. The secret scan and gates-not-run job passed.
+
+**Repairs:** Reordered imports, changed invalid JSON object-type errors to `TypeError`, renamed the new test to `test_data_bids_inventory.py` so the component generator discovers it, and updated the generated data component inventory and hand-written capability notes.
+
+**Not verified:** CI after these repairs, local dataset download, BIDS inventory execution, full BIDS validation, affine orientation, image QC or progression-label coverage.
+
+**Next:** Verify all PR #13 checks. Then run the inventory on the local versioned ds005892 snapshot and review aggregate outputs before declaring the dataset-specific Phase 0 complete.
+
+---
+
 ## 2026-11-15 - Add metadata-only BIDS inventory for OpenNeuro
 **Current phase:** Phase 0 - BIDS inventory implementation added; real local execution pending.
 
