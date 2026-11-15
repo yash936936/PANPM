@@ -1,4 +1,5 @@
 """Synthetic tests for local-only DICOM header indexing."""
+
 import pytest
 
 from src.preprocessing.mri_manifest import aggregate_header_rows
