@@ -37,7 +37,7 @@ No PPMI series inventory, MRI files or segmentation QC data have been provided. 
 
 **Imports other areas:** (none)
 
-**Tests:** `tests/test_preprocessing_qc.py`, `tests/test_preprocessing_bold_qc.py`
+**Tests:** `tests/test_preprocessing_bold_qc.py`, `tests/test_preprocessing_qc.py`
 
 <!-- END GENERATED -->
 
