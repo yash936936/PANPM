@@ -1,3 +1,16 @@
+## DBG-011 - Local DICOM header indexing and series manifest (2026-11-15)
+**Need:** MRI modality and sequence coverage remain unknown. A first-stage index is needed to inspect actual DICOM acquisition headers without assuming T1 from labels or descriptions.
+
+**Change:** Added `src/preprocessing/mri_manifest.py` to read DICOM headers from ZIP members with `stop_before_pixels=True`, aggregate by series, HMAC patient/study/series identifiers and report metadata consistency/QC checks. Added `scripts/index_mri_archive.py`, which requires a private HMAC key and rejects manifest output paths inside the Git worktree. Added synthetic tests and `docs/mri-metadata-intake.md`.
+
+**Design safeguards:** The indexer does not infer sequence family, use LONI Weighting, choose a T1 series, extract pixels, or perform image preprocessing. HMAC pseudonyms are not anonymization; participant-level manifests remain restricted and must stay in an approved local environment.
+
+**Tested:** Synthetic unit tests have been added but have not yet been executed in this session. Latest GitHub Actions run is pending at the time of this log update.
+
+**Not tested:** No PPMI DICOM archive, LONI manifest, IDA metadata or participant-level PPMI table has been processed. No sequence mapping, conversion, image QC, FastSurfer, model training or RL training has occurred.
+
+**Next:** Validate synthetic CI, then run only in the approved local environment and review the resulting private aggregate metadata before any sequence-selection code is written.
+
 # Debug log - PANPM
 
 ## DBG-010 - Aggregate Phase 0 feasibility coverage pipeline (2026-11-15)
