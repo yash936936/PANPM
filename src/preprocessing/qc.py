@@ -77,9 +77,14 @@ def inspect_t1w(
         ]
 
     affine = np.asarray(image.affine, dtype=np.float64)
-    determinant = float(np.linalg.det(affine[:3, :3]))
-    axcodes = nib.aff2axcodes(affine)
-    voxel_sizes = nib.affines.voxel_sizes(affine)
+    affine_finite = bool(np.isfinite(affine).all())
+    determinant = float(np.linalg.det(affine[:3, :3])) if affine_finite else float("nan")
+    if affine_finite:
+        axcodes = nib.aff2axcodes(affine)
+        voxel_sizes = nib.affines.voxel_sizes(affine)
+    else:
+        axcodes = (None, None, None)
+        voxel_sizes = (float("nan"),) * 3
     flags: list[str] = []
     if nonfinite_fraction > limits.get("max_nonfinite_fraction", 0.0):
         flags.append("nonfinite_voxels")
@@ -139,7 +144,8 @@ def render_t1w_montage(
         high = low + 1.0
 
     x, y, z = (dimension // 2 for dimension in data.shape)
-    axcodes = "".join(str(code) for code in nib.aff2axcodes(image.affine))
+    codes = nib.aff2axcodes(image.affine)
+    axcodes = "".join(str(code) for code in codes if code) or "unknown"
     figure, axes = plt.subplots(2, 2, figsize=(10, 8))
     figure.suptitle(f"T1w native voxel orientation: {axcodes} | {pseudonym}")
     panels = (
@@ -169,7 +175,9 @@ def aggregate_t1w_qc(records: list[Mapping[str, Any]]) -> dict[str, Any]:
     invalid = 0
     for record in records:
         flag_counts.update(record.get("review_flags", []))
-        orientation_counts.update(["".join(record.get("orientation_codes", []))])
+        codes = record.get("orientation_codes") or []
+        orientation = "".join(str(code) for code in codes if code)
+        orientation_counts.update([orientation or "unknown"])
         invalid += bool(record.get("automatic_exclusion", False))
     return {
         "scan_count": len(records),
