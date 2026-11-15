@@ -4,7 +4,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 from collections import defaultdict
-from typing import Iterable, Mapping
+from collections.abc import Iterable, Mapping
 
 
 def pseudonymize(source_id: str, secret: bytes, namespace: str = "panpm-v1") -> str:
@@ -13,7 +13,7 @@ def pseudonymize(source_id: str, secret: bytes, namespace: str = "panpm-v1") -> 
         raise ValueError("source_id must be non-empty")
     if len(secret) < 32:
         raise ValueError("secret must contain at least 32 bytes")
-    message = f"{namespace}:{source_id.strip()}".encode("utf-8")
+    message = f"{namespace}:{source_id.strip()}".encode()
     return hmac.new(secret, message, hashlib.sha256).hexdigest()
 
 
