@@ -223,6 +223,8 @@ def progression_endpoint_coverage(
     assessment_date_field: str,
     score_field: str,
     state_field: str,
+    assessment_form_field: str,
+    allowed_assessment_forms: Sequence[str],
     state_map: Mapping[str, str],
     target_states: Sequence[str],
     horizons_months: Sequence[int],
@@ -246,7 +248,7 @@ def progression_endpoint_coverage(
     _require_fields(baselines, [participant_field, index_date_field])
     _require_fields(
         assessments,
-        [participant_field, assessment_date_field, score_field, state_field],
+        [participant_field, assessment_date_field, score_field, state_field, assessment_form_field],
     )
 
     baseline_candidates: dict[str, list[date]] = defaultdict(list)
@@ -268,10 +270,17 @@ def progression_endpoint_coverage(
     by_participant_state: dict[tuple[str, str], list[tuple[date, float]]] = defaultdict(list)
     unknown_states = 0
     missing_score_or_date = 0
+    excluded_form_rows = 0
+    allowed_forms = set(allowed_assessment_forms)
+    if not allowed_forms:
+        raise ValueError("At least one explicitly approved assessment form is required")
     for row in assessments:
         pid = row.get(participant_field, "")
         raw_state = row.get(state_field, "")
         normalized_state = state_map.get(raw_state)
+        if row.get(assessment_form_field, "") not in allowed_forms:
+            excluded_form_rows += 1
+            continue
         assessment_date = _date(row.get(assessment_date_field, ""))
         try:
             score = float(row.get(score_field, ""))
@@ -288,17 +297,24 @@ def progression_endpoint_coverage(
             by_participant_state[(digest, normalized_state)].append((assessment_date, score))
 
     def closest(
-        candidates: Sequence[tuple[date, float]], target: date
-    ) -> tuple[str, float | None]:
-        eligible = [(abs((when - target).days), score) for when, score in candidates
-                    if abs((when - target).days) <= tolerance_days]
+        candidates: Sequence[tuple[date, float]],
+        target: date,
+        *,
+        after: date | None = None,
+    ) -> tuple[str, date | None, float | None]:
+        eligible = [
+            (abs((when - target).days), when, score)
+            for when, score in candidates
+            if abs((when - target).days) <= tolerance_days
+            and (after is None or when > after)
+        ]
         if not eligible:
-            return "missing", None
-        minimum = min(days for days, _ in eligible)
-        nearest = [score for days, score in eligible if days == minimum]
+            return "missing", None, None
+        minimum = min(days for days, _, _ in eligible)
+        nearest = [(when, score) for days, when, score in eligible if days == minimum]
         if len(nearest) != 1:
-            return "ambiguous", None
-        return "valid", nearest[0]
+            return "ambiguous", None, None
+        return "valid", nearest[0][0], nearest[0][1]
 
     results = []
     for state in target_states:
@@ -307,7 +323,7 @@ def progression_endpoint_coverage(
         baseline_ambiguous_count = 0
         per_horizon = []
         for participant_key, index_date in baseline_by_id.items():
-            status, _ = closest(by_participant_state.get((participant_key, state), []), index_date)
+            status, _, _ = closest(by_participant_state.get((participant_key, state), []), index_date)
             if status == "valid":
                 baseline_valid += 1
             elif status == "ambiguous":
@@ -318,8 +334,8 @@ def progression_endpoint_coverage(
             valid = missing = ambiguous = 0
             for participant_key, index_date in baseline_by_id.items():
                 candidates = by_participant_state.get((participant_key, state), [])
-                base_status, _ = closest(candidates, index_date)
-                if base_status != "valid":
+                base_status, baseline_assessment_date, _ = closest(candidates, index_date)
+                if base_status != "valid" or baseline_assessment_date is None:
                     if base_status == "ambiguous":
                         ambiguous += 1
                     else:
@@ -331,7 +347,7 @@ def progression_endpoint_coverage(
                 month = month_index % 12 + 1
                 target_day = min(index_date.day, calendar.monthrange(year, month)[1])
                 target_date = date(year, month, target_day)
-                follow_status, _ = closest(candidates, target_date)
+                follow_status, _, _ = closest(candidates, target_date, after=baseline_assessment_date)
                 if follow_status == "valid":
                     valid += 1
                 elif follow_status == "ambiguous":
@@ -373,12 +389,14 @@ def progression_endpoint_coverage(
         "duplicate_or_ambiguous_baseline_rows": baseline_ambiguous,
         "assessment_rows": len(assessments),
         "assessment_rows_with_unknown_state": unknown_states,
+        "assessment_rows_excluded_by_form": excluded_form_rows,
         "assessment_rows_missing_score_or_date": missing_score_or_date,
         "state_coverage": results,
         "ledd_coverage": ledd_summary,
         "rule": {
             "date_tolerance_days": tolerance_days,
             "target_states": list(target_states),
+            "allowed_assessment_forms": sorted(allowed_forms),
             "horizons_months": list(horizons_months),
             "same_state_required": True,
             "tie_policy": "exclude_as_ambiguous",
