@@ -5,7 +5,7 @@
 ## 2026-11-15 - Add configured Phase 0 feasibility coverage pipeline
 **Current phase:** Phase 0 - source-independent ingestion and feasibility tooling. No approved participant-level PPMI exports have been audited.
 
-**Added:** `src/data/feasibility.py` supports release-specific JSON mapping validation, explicit record normalization, participant cohort counts, MRI acquisition-to-image-manifest matching, same-medication-state progression coverage and aggregate report assembly. Added `configs/ppmi_mapping.example.json` and synthetic tests in `tests/test_data_feasibility.py`. Documentation is in `docs/phase0-feasibility-pipeline.md`.
+**Added:** `src/data/feasibility.py` supports release-specific JSON mapping validation, explicit record normalization, participant cohort counts, MRI acquisition-to-image-manifest matching, same-medication-state progression coverage and aggregate report assembly. Added `configs/ppmi_mapping.example.json`, `scripts/build_phase0_report.py` and synthetic tests in `tests/test_data_feasibility.py`. Documentation is in `docs/phase0-feasibility-pipeline.md`.
 
 **Safety and research limits:** All participant join keys are ephemeral HMAC digests; outputs contain aggregate counts only. Source state mapping, LONI join keys, sequence flag interpretation, target states and tolerance must be explicitly reviewed. Duplicate baseline participants and tied nearest assessments are excluded as ambiguous. The example config is not validated against a real PPMI release.
 
