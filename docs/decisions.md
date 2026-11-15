@@ -1,3 +1,11 @@
+## D-017 - Include BOLD acquisition metadata in QC outputs (2026-11-15)
+**Decision:** Before running the BOLD QC CLI on the local cohort, extend each private per-scan QC record to preserve the sidecar's `PhaseEncodingDirection`, `EffectiveEchoSpacing`, `TotalReadoutTime`, `ReconMatrixPE`, `EchoTime`, `TaskName`, `MRAcquisitionType`, `ScanningSequence`, and slice-timing summary. Include an affine-derived normalized phase-encoding vector in RAS coordinates when the direction is valid. Add aggregate phase-encoding-direction counts without participant identifiers. Validate BIDS direction syntax and numeric metadata; when both echo spacing and readout time are present, check their consistency with `ReconMatrixPE - 1` using a documented tolerance.
+
+**Reason:** D-016 establishes a genuine phase-encoding difference in one scan. The current `inspect_bold` report includes TR and geometry but does not serialize the phase-encoding and readout metadata, so the current QC JSON would lose a key acquisition distinction.
+
+**Consequences:** Update `src/preprocessing/bold_qc.py`, aggregate output and synthetic tests in PR #20 before local execution. Do not rewrite source sidecars or force a cohort-wide phase-encoding direction. Local QC remains blocked on this small implementation gap and explicit sequence verification.
+
+---
 ## D-016 - Preserve per-scan BOLD phase-encoding metadata (2026-11-15)
 **Decision:** Keep each BOLD scan's BIDS `PhaseEncodingDirection` and NIfTI affine together as scan-level acquisition metadata. Do not force one phase-encoding label across the cohort, infer equivalence from voxel orientation labels alone, or automatically exclude a scan because its direction differs. The observed direction difference must remain visible in QC reports and downstream preprocessing configuration.
 
