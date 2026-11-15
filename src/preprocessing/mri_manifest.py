@@ -4,6 +4,7 @@ This module reads metadata only. It never extracts pixel data or writes raw
 participant identifiers. Run it only in an institution-approved environment
 for datasets whose terms permit this processing.
 """
+# ruff: noqa: I001
 from __future__ import annotations
 
 import hashlib
