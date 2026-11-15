@@ -22,7 +22,7 @@ def _write_nifti(path, shape=(64, 64, 48), spacing=(1.0, 1.0, 1.5)):
     path.parent.mkdir(parents=True, exist_ok=True)
     with gzip.open(path, "wb") as stream:
         stream.write(header)
-        stream.write(b"\\0" * 16)
+        stream.write(b"\0" * 16)
     sidecar = path.with_suffix("").with_suffix(".json")
     sidecar.write_text(json.dumps({"RepetitionTime": 2.0, "Manufacturer": "Siemens"}))
 
@@ -38,7 +38,7 @@ def test_read_nifti_header_reads_geometry_without_voxels(tmp_path):
 
 def test_inventory_reports_aggregate_group_and_modality_coverage(tmp_path):
     (tmp_path / "participants.tsv").write_text(
-        "participant_id\\tgroup\\nsub-001\\tControl\\nsub-002\\tPD-NC\\n",
+        "participant_id\tgroup\nsub-001\tControl\nsub-002\tPD-NC\n",
         encoding="utf-8",
     )
     _write_nifti(tmp_path / "sub-001" / "anat" / "sub-001_T1w.nii.gz")
@@ -56,7 +56,7 @@ def test_inventory_reports_aggregate_group_and_modality_coverage(tmp_path):
 
 def test_duplicate_participant_ids_are_rejected(tmp_path):
     (tmp_path / "participants.tsv").write_text(
-        "participant_id\\tgroup\\nsub-001\\tControl\\nsub-001\\tPD-NC\\n",
+        "participant_id\tgroup\nsub-001\tControl\nsub-001\tPD-NC\n",
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="duplicate"):
