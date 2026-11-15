@@ -63,7 +63,7 @@ No approved PPMI participant-level exports, LONI metadata or MRI files have been
 | File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
 | `src/data/audit.py` | `audit_csv_keys`, `audit_csv_relationship` | Aggregate CSV key-grain and relationship audits without exposing identifiers. |
-| `src/data/feasibility.py` | `load_mapping_config`, `normalize_configured_rows`, `cohort_coverage`, `mri_manifest_matching`, `progression_endpoint_coverage`, `build_phase0_report` | Build aggregate, provenance-backed Phase 0 coverage reports from explicitly configured CSVs. |
+| `src/data/feasibility.py` | `load_mapping_config`, `validate_configured_header`, `normalize_configured_rows`, `cohort_coverage`, `mri_manifest_matching`, `progression_endpoint_coverage`, `build_phase0_report` | Build aggregate, provenance-backed Phase 0 coverage reports from explicitly configured CSVs. |
 | `src/data/inventory.py` | `sha256_file`, `read_csv_header`, `inspect_csv`, `count_csv_rows`, `summarize_values`, `discover_csv_exports`, `inventory_csv_tree` | Inventory approved tabular exports and imaging metadata without loading images. |
 | `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Create pseudonymous participant coverage manifests from approved metadata. |
 | `src/data/ppmi_contracts.py` | `PPMISourceTable`, `validate_ppmi_source_header` | Source-level contracts transcribed from the supplied PPMI reference files. |
