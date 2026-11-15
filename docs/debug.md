@@ -1,3 +1,13 @@
+## DBG-020 - Audit local BOLD sidecars and phase-encoding directions (2026-11-15)
+**Input:** Researcher-supplied local audit output for all 55 BOLD NIfTI files and their matching JSON sidecars. Participant-level identifiers and local paths are not recorded here.
+
+**Findings:** All 55 scans have matching JSON sidecars. The inspected acquisition metadata is consistent: `TaskName=rest`, `RepetitionTime=2` s, `EchoTime=0.029` s, `MRAcquisitionType=2D`, `ScanningSequence=EP`, `SequenceName=*epfid2d1_64`, Siemens TrioTim, 3 T and flip angle 90 degrees. All images have shape 64 x 64 x 32 x 200 and LAS orientation. `EffectiveEchoSpacing=0.000590001` s, `TotalReadoutTime=0.0371701` s and `ReconMatrixPE=64` are consistent across the cohort. `PhaseEncodingDirection` is `j-` for 54 scans and `i` for one scan. The affine-derived physical vector for the exceptional scan is predominantly negative RAS X; the `j-` scans are predominantly negative RAS Y. SliceTiming is present in the inspected sidecars; SliceEncodingDirection, MultibandAccelerationFactor, ProtocolName and SeriesDescription are not populated in the inspected metadata.
+
+**Interpretation:** The single `i` scan is a real phase-encoding direction difference in physical coordinates, not a harmless alternate label for `j-`. It is not by itself evidence of corruption or a reason for automatic exclusion. Keep phase-encoding direction paired with each scan's affine and JSON sidecar. Do not rewrite metadata or configure all scans using one direction.
+
+**Not tested:** The BOLD QC CLI has not yet run on the 55 local arrays. No motion estimation, reverse-PE/field-map availability audit, susceptibility correction, montage review, brain extraction, registration, segmentation, preprocessing, cohort freeze, split generation or model training has been completed. The metadata audit is not sequence-level expert approval.
+
+**Next:** Run the BOLD QC CLI with a private manifest only after the researcher completes sequence verification. Keep per-scan acquisition metadata in the private manifest; report only aggregate counts in Git. Review all 55 BOLD montages and investigate field-map/reverse-PE availability before selecting distortion correction.
 ## DBG-019 - Add first-pass BOLD temporal QC (2026-11-15)
 **Need:** The local ds005892 inventory contains 55 four-dimensional resting-state BOLD scans, but T1w QC cannot assess functional time-series stability. A separate BOLD path is required.
 
