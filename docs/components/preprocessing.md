@@ -1,6 +1,6 @@
 # Component: preprocessing
 
-> Location: `src/preprocessing/`. Planned source area; implementation is not present yet.
+> Location: `src/preprocessing/`. Initial local-only DICOM header indexing is implemented in `mri_manifest.py`; sequence classification, conversion and image preprocessing remain unimplemented.
 
 ## Purpose
 
@@ -8,7 +8,7 @@ Convert and validate MRI series, identify sequence families from multiple metada
 
 ## Route
 
-The data inventory supplies scan records and restricted source paths. Sequence classification and DICOM validation precede modality-specific preprocessing. QC-approved derivatives and masks are passed to feature extraction under `src/models/`. No runtime route exists yet.
+The initial route reads DICOM headers from a local ZIP without extracting pixel data, HMACs patient/study/series identifiers, and writes a private series-level manifest. It does not infer sequence family or select a scan. A reviewed release-specific mapping and image QC must precede conversion and feature extraction.
 
 ## Config surface and invariants
 
@@ -29,6 +29,7 @@ No PPMI series inventory, MRI files or segmentation QC data have been provided. 
 
 | File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
+| `src/preprocessing/mri_manifest.py` | `aggregate_header_rows`, `index_dicom_zip` | Local-only DICOM header indexing for PANPM MRI intake. |
 
 **Imports other areas:** (none)
 

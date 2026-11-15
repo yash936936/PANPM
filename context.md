@@ -61,7 +61,7 @@ PANPM/
     `-- logs/events.jsonl
 ```
 
-The directory structure, metadata inventory, PPMI source contracts, aggregate table-grain audits, explicit mapping configuration and aggregate Phase 0 coverage-report functions are implemented. These utilities are source-independent and have not yet been run on approved participant-level PPMI exports. Approved-release ingestion, MRI preprocessing, models, genetics and RL remain unimplemented.
+The directory structure, metadata inventory, PPMI source contracts, aggregate table-grain audits, explicit mapping configuration and aggregate Phase 0 coverage-report functions are implemented. A local-only DICOM header indexer and private series-manifest CLI are now implemented and have synthetic metadata tests. No approved participant-level PPMI exports or MRI archives have been processed. Sequence classification, image conversion, MRI preprocessing, models, genetics and RL remain unimplemented.
 
 ## Where to look by task
 
@@ -71,7 +71,7 @@ The directory structure, metadata inventory, PPMI source contracts, aggregate ta
 | Understand technical requirements and model constraints | `docs/trd.md` |
 | Understand the complete system design | `docs/architecture.md` |
 | Know what to build next | `docs/phases.md` and `docs/status.md` |
-| Understand PPMI source tables and MRI fields | `docs/ppmi-source-catalog.md` |
+| Understand PPMI source tables and MRI fields | `docs/ppmi-source-catalog.md` and `docs/mri-metadata-intake.md` |
 | Understand progression endpoint safeguards | `docs/progression-targets.md` |
 | Understand the normalized PANPM tables | `docs/data-dictionary.md` |
 | Extract what is implemented and prepare data intake | `docs/repo-extraction.md` |
