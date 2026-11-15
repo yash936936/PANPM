@@ -10,10 +10,12 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+import matplotlib
 import matplotlib.pyplot as plt
 import nibabel as nib
 import numpy as np
 
+matplotlib.use("Agg")
 
 _ALLOWED_THRESHOLDS = {
     "max_nonfinite_fraction",
