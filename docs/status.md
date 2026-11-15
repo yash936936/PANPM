@@ -1,3 +1,18 @@
+## 2026-11-15 - Merge NIfTI geometry audit and repair PR #14 CI
+**Current phase:** Phase 0 metadata gate merged; local geometry rerun is still required before Phase 0 closure. Phase 1 image QC and preprocessing remain open.
+
+**PR #14:** [Merged](https://github.com/yash936936/PANPM/pull/14) into `main` after marking it ready for review. CI run #43725333584 passed all jobs. The squash merge commit is `d18458345b653ce79a0ce6a84baf3798f4d540ba`; its CI run #43725395612 also passed all jobs.
+
+**CI repairs:** Corrected the synthetic BOLD fixture to write spatial spacing `(3.125, 3.125, 3.5)` and temporal spacing `2.0`; regenerated the `docs/components/data.md` generated block to match the updated BIDS inventory module description. Ruff, compilation, all pytest tests, component-doc generation, documentation checks and secret scan passed on the PR head.
+
+**Phase 0 boundary:** The new NIfTI affine/orientation fields have not yet been run against the local ds005892 snapshot. The earlier 55-participant aggregate inventory does not contain these fields. Keep the corrected report local and review only permitted aggregate counts. Full BIDS validation, image QC and progression-label feasibility remain separate gates.
+
+**Phase 1 boundary:** No voxel-level T1w QC, BOLD motion/temporal QC, visual review, preprocessing or participant-level split manifest has been implemented or validated. Keep the two modality QC paths separate.
+
+**Next:** Update local `main`, rerun `scripts/inventory_bids.py` to `D:\\PANPM-data\\ds005892-inventory-geometry.json`, and review the aggregate affine/orientation fields. Then implement T1w QC as its own pipeline and BOLD motion/temporal QC separately.
+
+---
+
 ## 2026-11-15 - Add NIfTI affine and spatial-temporal metadata audit
 **Current phase:** Phase 1 metadata validation; Phase 0 OpenNeuro aggregate inventory executed locally.
 
