@@ -103,6 +103,37 @@
       ]
     }
   },
+  "report_fields": {
+    "cohort": {
+      "participant_field": "PATNO",
+      "cohort_field": "COHORT",
+      "enrollment_field": "ENROLL_STATUS"
+    },
+    "imaging": {
+      "acquisition_key": ["PATNO", "EVENT_ID"],
+      "manifest_key": [
+        "REPLACE_WITH_VALIDATED_IMAGE_MANIFEST_PARTICIPANT_KEY",
+        "REPLACE_WITH_VALIDATED_IMAGE_MANIFEST_EVENT_KEY"
+      ],
+      "sequence_flags": {
+        "T1": "MRI_SEQ_T1_WEIGHTED",
+        "T2_FLAIR": "MRI_SEQ_T2_WEIGHTED",
+        "DTI": "MRI_SEQ_DTI",
+        "RESTING_STATE": "MRI_SEQ_RS",
+        "NEUROMELANIN_MT": "MRI_SEQ_NM_MT"
+      }
+    },
+    "progression": {
+      "participant_field": "PATNO",
+      "index_date_field": "REPLACE_WITH_VALIDATED_BASELINE_DATE_FIELD",
+      "assessment_date_field": "EXAMDT",
+      "score_field": "NP3TOT",
+      "state_field": "PDSTATE",
+      "assessment_form_field": "PAG_NAME",
+      "allowed_assessment_forms": [],
+      "ledd_participant_field": "PATNO"
+    }
+  },
   "progression_rules": {
     "source_state_map": {},
     "target_states": [],
