@@ -7,6 +7,7 @@ Whole-volume DVARS is a coarse temporal-change metric, not standardized DVARS.
 from __future__ import annotations
 
 import csv
+import json
 from collections import Counter
 from collections.abc import Mapping
 from pathlib import Path
@@ -107,8 +108,6 @@ def inspect_bold(
     limits = dict(thresholds or {})
     _validate_thresholds(limits)
 
-    import json
-
     metadata = json.loads(sidecar.read_text(encoding="utf-8"))
     if not isinstance(metadata, dict):
         raise TypeError("BOLD sidecar must contain a JSON object")
@@ -127,10 +126,17 @@ def inspect_bold(
         raise ValueError("BOLD image must contain at least two time points")
     zooms = image.header.get_zooms()
     spatial_zooms = np.asarray(zooms[:3], dtype=np.float64)
-    header_tr = float(zooms[3])
+    header_tr_raw = float(zooms[3])
+    _, temporal_unit = image.header.get_xyzt_units()
+    temporal_factors = {"sec": 1.0, "msec": 1e-3, "usec": 1e-6}
+    header_tr = (
+        header_tr_raw * temporal_factors[temporal_unit]
+        if temporal_unit in temporal_factors
+        else None
+    )
     if not np.isfinite(spatial_zooms).all() or np.any(spatial_zooms <= 0):
         raise ValueError("BOLD spatial voxel sizes must be finite and positive")
-    if not np.isfinite(header_tr) or header_tr <= 0:
+    if header_tr is not None and (not np.isfinite(header_tr) or header_tr <= 0):
         raise ValueError("BOLD NIfTI temporal spacing must be finite and positive")
 
     data = image.get_fdata(dtype=np.float32)
@@ -206,7 +212,9 @@ def inspect_bold(
         flags.append("nonfinite_voxels")
     if abs(determinant) <= 1e-8 or not np.isfinite(determinant):
         flags.append("invalid_affine_determinant")
-    if tr_difference > 0.001:
+    if header_tr is None:
+        flags.append("unknown_nifti_temporal_unit")
+    elif tr_difference > 0.001:
         flags.append("header_sidecar_repetition_time_mismatch")
     if "max_zero_fraction" in limits and zero_fraction > limits["max_zero_fraction"]:
         flags.append("high_zero_fraction")
@@ -237,9 +245,12 @@ def inspect_bold(
         "orientation_codes": list(orientation),
         "affine_determinant": round(determinant, 8) if np.isfinite(determinant) else None,
         "header_repetition_time_seconds": header_tr,
+        "nifti_temporal_unit": temporal_unit,
         "sidecar_repetition_time_seconds": sidecar_tr,
         "repetition_time_absolute_difference_seconds": tr_difference,
-        "repetition_time_matches": tr_difference <= 0.001,
+        "repetition_time_matches": (
+            tr_difference <= 0.001 if tr_difference is not None else None
+        ),
         "volume_count": n_volumes,
         "duration_seconds": float(n_volumes * sidecar_tr),
         "nonfinite_voxel_count": int(total_voxels - np.count_nonzero(finite)),
