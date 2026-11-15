@@ -90,3 +90,12 @@ def test_aggregate_qc_contains_counts_not_participant_ids():
     }
     assert "private-key" not in rendered
     assert result["automatic_exclusion_count"] == 0
+
+
+def test_inspect_t1w_flags_singular_affine_without_crashing(tmp_path):
+    path = tmp_path / "singular_T1w.nii.gz"
+    data = np.ones((8, 8, 8), dtype=np.float32)
+    affine = np.diag([1.0, 1.0, 0.0, 1.0])
+    nib.save(nib.Nifti1Image(data, affine), path)
+    result = inspect_t1w(path)
+    assert "invalid_affine_determinant" in result["review_flags"]
