@@ -11,9 +11,9 @@ import json
 import struct
 from collections import Counter, defaultdict
 from pathlib import Path
+from typing import BinaryIO
 
 from src.data.inventory import sha256_file
-from typing import BinaryIO
 
 MODALITY_PATTERNS = {
     "T1w": "*_T1w.nii*",
@@ -97,7 +97,7 @@ def _sidecar(path: Path) -> dict[str, object]:
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise ValueError(f"Invalid BIDS JSON sidecar: {sidecar.name}") from exc
     if not isinstance(payload, dict):
-        raise ValueError(f"BIDS JSON sidecar must contain an object: {sidecar.name}")
+        raise TypeError(f"BIDS JSON sidecar must contain an object: {sidecar.name}")
     return {key: payload[key] for key in SIDECAR_KEYS if key in payload}
 
 
@@ -114,7 +114,7 @@ def inventory_bids_dataset(root: str | Path) -> dict[str, object]:
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise ValueError("Invalid BIDS dataset_description.json") from exc
     if not isinstance(description, dict):
-        raise ValueError("dataset_description.json must contain an object")
+        raise TypeError("dataset_description.json must contain an object")
     participants_path = base / "participants.tsv"
     participants = _read_participants(participants_path)
     groups = Counter(participants.values())
