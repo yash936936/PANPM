@@ -12,7 +12,7 @@ from src.preprocessing.bold_qc import (
 )
 
 
-def _write_bold(tmp_path, *, tr=2.0, mismatch=False):
+def _write_bold(tmp_path, *, tr=2.0, mismatch=False, metadata=None, affine=None):
     path = tmp_path / "sub-test_task-rest_bold.nii.gz"
     sidecar = tmp_path / "sub-test_task-rest_bold.json"
     rng = np.random.default_rng(17)
@@ -21,15 +21,15 @@ def _write_bold(tmp_path, *, tr=2.0, mismatch=False):
         [base + np.sin(index / 3.0) for index in range(12)],
         axis=3,
     ).astype(np.float32)
-    affine = np.diag([3.125, 3.125, 3.5, 1.0])
+    affine = affine if affine is not None else np.diag([3.125, 3.125, 3.5, 1.0])
     image = nib.Nifti1Image(series, affine)
     image.header.set_zooms((3.125, 3.125, 3.5, tr))
     image.header.set_xyzt_units("mm", "sec")
     nib.save(image, path)
-    sidecar.write_text(
-        json.dumps({"RepetitionTime": tr + (0.2 if mismatch else 0.0)}),
-        encoding="utf-8",
-    )
+    sidecar_metadata = {"RepetitionTime": tr + (0.2 if mismatch else 0.0)}
+    if metadata:
+        sidecar_metadata.update(metadata)
+    sidecar.write_text(json.dumps(sidecar_metadata), encoding="utf-8")
     return path, sidecar
 
 
@@ -114,3 +114,125 @@ def test_aggregate_bold_qc_contains_counts_not_participant_keys():
     assert result["motion_parameter_scan_count"] == 1
     assert "private-key" not in str(result)
     assert result["automatic_exclusion_count"] == 0
+
+
+
+def test_inspect_bold_preserves_acquisition_metadata_and_slice_timing(tmp_path):
+    path, sidecar = _write_bold(
+        tmp_path,
+        metadata={
+            "PhaseEncodingDirection": "j-",
+            "EffectiveEchoSpacing": 0.0005,
+            "TotalReadoutTime": 0.0315,
+            "ReconMatrixPE": 64,
+            "EchoTime": 0.029,
+            "TaskName": "rest",
+            "MRAcquisitionType": "2D",
+            "ScanningSequence": "EP",
+            "SequenceName": "*epfid2d1_64",
+            "SliceEncodingDirection": "k",
+            "SliceTiming": [0.0, 0.5, 1.0, 1.5],
+        },
+    )
+    result = inspect_bold(path, sidecar)
+    assert result["PhaseEncodingDirection"] == "j-"
+    assert result["EffectiveEchoSpacing"] == pytest.approx(0.0005)
+    assert result["TotalReadoutTime"] == pytest.approx(0.0315)
+    assert result["ReconMatrixPE"] == 64
+    assert result["EchoTime"] == pytest.approx(0.029)
+    assert result["TaskName"] == "rest"
+    assert result["MRAcquisitionType"] == "2D"
+    assert result["ScanningSequence"] == "EP"
+    assert result["SequenceName"] == "*epfid2d1_64"
+    assert result["SliceEncodingDirection"] == "k"
+    assert result["SliceTimingSummary"] == {
+        "count": 4,
+        "min_seconds": 0.0,
+        "median_seconds": 0.75,
+        "max_seconds": 1.5,
+    }
+    assert result["ReadoutTimeConsistency"]["matches"] is True
+
+
+@pytest.mark.parametrize(
+    ("direction", "expected"),
+    [
+        ("j-", [0.0, -1.0, 0.0]),
+        ("i", [1.0, 0.0, 0.0]),
+    ],
+)
+def test_phase_encoding_direction_maps_to_normalized_ras_vector(
+    tmp_path,
+    direction,
+    expected,
+):
+    path, sidecar = _write_bold(
+        tmp_path,
+        metadata={"PhaseEncodingDirection": direction},
+    )
+    result = inspect_bold(path, sidecar)
+    assert result["PhaseEncodingVectorRAS"] == pytest.approx(expected)
+
+
+def test_inspect_bold_rejects_invalid_phase_encoding_direction(tmp_path):
+    path, sidecar = _write_bold(
+        tmp_path,
+        metadata={"PhaseEncodingDirection": "x-"},
+    )
+    with pytest.raises(ValueError, match="PhaseEncodingDirection"):
+        inspect_bold(path, sidecar)
+
+
+def test_readout_time_consistency_uses_documented_absolute_tolerance(tmp_path):
+    path, sidecar = _write_bold(
+        tmp_path,
+        metadata={
+            "EffectiveEchoSpacing": 0.001,
+            "TotalReadoutTime": 0.063005,
+            "ReconMatrixPE": 64,
+        },
+    )
+    result = inspect_bold(path, sidecar)
+    assert result["ReadoutTimeConsistency"]["matches"] is True
+    assert result["ReadoutTimeConsistency"]["absolute_tolerance_seconds"] == pytest.approx(
+        1e-5
+    )
+
+    path, sidecar = _write_bold(
+        tmp_path / "mismatch",
+        metadata={
+            "EffectiveEchoSpacing": 0.001,
+            "TotalReadoutTime": 0.064,
+            "ReconMatrixPE": 64,
+        },
+    )
+    result = inspect_bold(path, sidecar)
+    assert result["ReadoutTimeConsistency"]["matches"] is False
+
+
+def test_inspect_bold_allows_missing_optional_acquisition_metadata(tmp_path):
+    path, sidecar = _write_bold(tmp_path)
+    result = inspect_bold(path, sidecar)
+    assert result["PhaseEncodingDirection"] is None
+    assert result["PhaseEncodingVectorRAS"] is None
+    assert result["EffectiveEchoSpacing"] is None
+    assert result["TotalReadoutTime"] is None
+    assert result["ReconMatrixPE"] is None
+    assert result["SliceTimingSummary"] is None
+    assert result["ReadoutTimeConsistency"]["matches"] is None
+
+
+def test_aggregate_bold_qc_reports_phase_encoding_counts_without_identifiers():
+    records = [
+        {"PhaseEncodingDirection": "j-", "participant_key": "private-a"},
+        {"PhaseEncodingDirection": "j-", "participant_key": "private-b"},
+        {"PhaseEncodingDirection": "i", "participant_key": "private-c"},
+        {"PhaseEncodingDirection": None, "participant_key": "private-d"},
+    ]
+    result = aggregate_bold_qc(records)
+    assert result["phase_encoding_direction_counts"] == {
+        "i": 1,
+        "j-": 2,
+        "missing": 1,
+    }
+    assert "private-" not in str(result)
