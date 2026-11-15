@@ -60,4 +60,4 @@ Use `ds005892` as PANPM's immediate public development dataset. Retain PPMI cont
 
 ---
 
-**Next:** Build a BIDS metadata inventory and validation adapter for this dataset, then generate only local aggregate feasibility outputs.
+**Next:** Return to [`context.md`](../context.md) before starting a new task.
