@@ -77,3 +77,6 @@ closed when state codes, allowed assessment forms, baseline date fields or
 image-manifest join keys remain unset. Use the actual download date and keep
 the generated report outside Git if its aggregate counts are subject to the
 data-use agreement.
+
+---
+**Next:** Return to [`context.md`](../context.md) before starting a new task.
