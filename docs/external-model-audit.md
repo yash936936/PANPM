@@ -182,5 +182,28 @@ This is a source-level audit, not a runtime reproduction. GitHub tree inspection
 
 The review found documented external checkpoint links, but did not download, hash, inspect tensor contents or execute any weights. A model card or README is evidence of a claimed release, not proof of scientific suitability for PANPM.
 
+## Critical PPMI pretraining overlap finding
 
-Next: update `context.md` with the selected checkpoint candidate and its unresolved license gates.
+A separate 2026 structural-MRI foundation-model evaluation explicitly states that **BrainIAC and 3D-Neuro-SimCLR were excluded from its PPMI evaluation because both had been pretrained on PPMI**. The same repository reports a PPMI cohort of 894 participants for its evaluation. Source: https://github.com/epics-lab/additional-evaluation-brainfm
+
+This changes PANPM's decision:
+
+- **Do not use BrainIAC for the primary PPMI held-out evaluation or report PPMI test metrics as independent generalization.** The public evidence establishes dataset-level overlap, but does not specify the exact participant IDs, scans, visits or pretraining split. Until that overlap is resolved by the BrainIAC authors, assume potential participant-level contamination.
+- BrainIAC may be studied for pipeline engineering or exploratory representation analysis, but results on PPMI must be labelled as potentially contaminated and must not be presented as unbiased held-out performance.
+- A participant-disjoint split inside PANPM cannot repair contamination if the same participant or scan was already used in BrainIAC pretraining.
+- BrainIAC becomes eligible for an independent PPMI test only if the authors provide an auditable pretraining exclusion list or a separately trained checkpoint whose pretraining data demonstrably excludes all PANPM evaluation participants.
+- The same check must be performed for every candidate foundation model. Dataset names and aggregate subject counts are not enough; request participant-level overlap attestations through appropriate institutional channels. Do not exchange PPMI identifiers through public tools.
+
+### Updated model priority
+
+1. **Randomly initialized 3D baseline:** required uncontaminated reference.
+2. **Triad:** candidate for the first pretrained comparison, subject to a complete pretraining-dataset overlap audit and confirmed checkpoint license. Triad reports broad MRI pretraining across brain, breast and prostate and modalities including T1, T2, FLAIR, DWI, fMRI and DCE. Its public dataset list must be checked specifically for PPMI before any PPMI test use.
+3. **BrainIAC:** not eligible for primary PPMI test evaluation under the currently available evidence.
+4. **Other foundation models:** apply the same training-data overlap and license gates before considering them.
+
+### Evidence limitation
+
+The BrainIAC overlap statement comes from a separate comparative evaluation repository and is not a participant-level overlap report from BrainIAC's authors. It establishes a serious contamination risk, not the exact extent of overlap. The BrainIAC paper reports pretraining on 32,015 scans from 16 datasets; the reviewed public paper summary does not provide enough information here to identify all PPMI participants or scans.
+
+Next: update `context.md` with the BrainIAC PPMI-overlap exclusion and the requirement for a pretraining overlap audit before selecting any pretrained encoder.
+
