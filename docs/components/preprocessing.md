@@ -33,7 +33,6 @@ No PPMI series inventory, MRI files or segmentation QC data have been provided. 
 |---|---|---|
 | `src/preprocessing/mri_manifest.py` | `aggregate_header_rows`, `index_dicom_zip` | Local-only DICOM header indexing for PANPM MRI intake. |
 | `src/preprocessing/qc.py` | `inspect_t1w`, `render_t1w_montage`, `aggregate_t1w_qc` | Voxel-level structural MRI QC metrics and private visual montages. |
-| `scripts/qc_t1w.py` | `main` | Run private, non-destructive voxel-level QC on verified T1w scans. |
 
 **Imports other areas:** (none)
 
