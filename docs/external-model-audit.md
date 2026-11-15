@@ -131,3 +131,56 @@ Before importing any external model or code into PANPM, record:
 ## Audit limitations
 
 This is a source-level audit, not a runtime reproduction. GitHub tree inspection cannot prove that no release attachment, external storage link or private author artifact exists. Checkpoint absence means no checkpoint was found in the inspected Git tree, not that no weights exist anywhere.
+
+## Pretrained checkpoint ecosystem review
+
+**Review date:** 2026-11-15  
+**Scope:** Public model cards, papers, repository metadata and documented checkpoint links. No external weights were downloaded or executed.
+
+### Candidate ranking
+
+| Candidate | Verified artifact evidence | Modality / task fit | License and access | PANPM decision |
+|---|---|---|---|---|
+| BrainIAC | Hugging Face model card lists `backbone.safetensors`; upstream GitHub README states pretrained and downstream checkpoints are hosted by the BrainIAC platform/repository | 3D structural brain MRI; 96×96×96 single-channel input; 768-dimensional feature output. Strong encoder candidate, but not PD-specific | BrainIAC Research-Only License: non-commercial academic research and education only. Clinical workflow use and commercial use are expressly excluded | Highest-priority encoder to evaluate after checking input preprocessing and research-use compatibility |
+| Triad | Upstream README provides four Google Drive checkpoint links: PlainConvUNet-MAE, PlainConvUNet-SimMIM, SwinB-MAE and SwinB-SimMIM | 3D MRI foundation model for segmentation, classification and registration; potentially useful for frozen-feature and fine-tuning comparisons | README displays an MIT badge, but the inspected upstream repository did not expose a LICENSE file. Weight-specific terms remain unverified | Strong candidate technically; do not download for integration or redistribute until authors confirm the effective license |
+| BrainSegFounder | Hugging Face model card lists UKB, BraTS and ATLAS pretrained/fine-tuned checkpoint files | 3D brain MRI, mainly segmentation pretraining and fine-tuning. Possible encoder initialization | Hugging Face license tag is `uk-biobank-mta`; the data-use restrictions need review before any derivative fine-tuning or redistribution | Hold pending written confirmation that the applicable MTA permits PANPM's intended research use |
+| NeuroVFM | Hugging Face diagnosis model card is public but gated; separate backbone is linked from the model card | Broad neuroimaging MRI feature backbone and a separate 74-diagnosis MRI model trained on 218,882 studies. Not established as a PD-specific classifier | Weights CC-BY-NC-SA 4.0; access requires accepting contact-information sharing conditions | Secondary feature-extractor candidate, subject to access and license review; do not treat the diagnosis head as a PD model |
+| Brain2Vec | Hugging Face model card describes a 3D structural T1 brain-MRI checkpoint pretrained on 74,425 iSTAGING scans | Potential structural T1 encoder | CC-BY-NC-ND 4.0 tag. No-derivatives restriction makes fine-tuning/adaptation unsuitable unless the rights holder clarifies otherwise | Exclude from fine-tuning shortlist |
+| RAVEN | Zenodo record lists a 2.1 GB `checkpoints.zip` model artifact | Structural MRI upsampling/super-resolution, not a PD diagnosis encoder | Zenodo record does not clearly expose a license in the inspected metadata | Not a classifier candidate; possible preprocessing research only after license and task-specific value are established |
+| Vbai-DPA 2.4 | Hugging Face model card describes a Parkinson's/Alzheimer's/dementia MRI model | The model card claims disease classification, but does not establish cohort provenance, external validation, or a reproducible independent PD evaluation | License/provenance and access terms were not adequately verified in this review | Do not use as a scientific baseline until authors provide full methods, dataset provenance, weights terms and independent validation |
+
+### Key sources
+
+- BrainIAC model card: https://huggingface.co/eugenehp/brainiac
+- BrainIAC paper: https://doi.org/10.1038/s41593-026-02202-6
+- BrainIAC upstream code and license: https://github.com/AIM-KannLab/BrainIAC
+- Triad upstream code and checkpoint links: https://github.com/wangshansong1/Triad
+- BrainSegFounder model card: https://huggingface.co/smilelab/BrainSegFounder
+- NeuroVFM MRI diagnosis model card: https://huggingface.co/mlinslab/neurovfm-dx-mri
+- Brain2Vec model card: https://huggingface.co/cbica/Brain2Vec
+- RAVEN Zenodo record: https://zenodo.org/records/21999063
+- Vbai-DPA model card: https://huggingface.co/Neurazum/Vbai-DPA-2.4
+
+### Interpretation for PANPM
+
+1. No reviewed artifact is a verified, PPMI-trained Parkinson's MRI checkpoint with independently reproducible performance.
+2. BrainIAC is the most defensible first encoder candidate because its architecture, input shape, feature output and research-only license are documented. It is not PD-specific, and its license excludes clinical workflows.
+3. Triad may be a useful second encoder comparison, but its effective checkpoint license must be resolved first.
+4. The PPMI MRI modality and acquisition distribution remain unknown. Do not build a BrainIAC/Triad adapter or preprocessing path until the local metadata audit establishes the actual sequence family, geometry, orientation, spacing and quality.
+5. Evaluate pretrained encoders against a randomly initialized model and a conventional 3D CNN using participant-grouped splits. Report frozen linear-probe performance first, then fine-tuning. Include site/scanner and acquisition-protocol sensitivity analyses.
+6. Keep all PPMI participant-level data and derived features inside the approved PPMI environment. Do not upload them to public model services or public-facing AI tools.
+
+### Next verification tasks
+
+1. Ask BrainIAC maintainers to confirm whether the research-only license permits the intended non-commercial academic adaptation and checkpoint use in PANPM.
+2. Ask Triad maintainers to confirm the license applying to the four externally hosted checkpoints and provide immutable checkpoint hashes.
+3. Review the UK Biobank MTA attached to BrainSegFounder before considering those weights.
+4. Inspect BrainIAC and Triad preprocessing implementations only after the MRI modality audit has selected a compatible sequence.
+5. Add a checkpoint registry only for candidates that pass provenance, license, hash, architecture and input-contract checks.
+
+## Audit limitation update
+
+The review found documented external checkpoint links, but did not download, hash, inspect tensor contents or execute any weights. A model card or README is evidence of a claimed release, not proof of scientific suitability for PANPM.
+
+
+Next: update `context.md` with the selected checkpoint candidate and its unresolved license gates.
