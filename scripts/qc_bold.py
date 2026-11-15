@@ -17,7 +17,11 @@ if str(ROOT) not in sys.path:
 os.environ.setdefault("MPLBACKEND", "Agg")
 
 from src.data.inventory import sha256_file
-from src.preprocessing.bold_qc import aggregate_bold_qc, inspect_bold, render_bold_montage
+from src.preprocessing.bold_qc import (
+    aggregate_bold_qc,
+    inspect_bold,
+    render_bold_montage,
+)
 
 
 def _inside(path: Path, parent: Path) -> bool:
