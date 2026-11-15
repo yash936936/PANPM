@@ -1,3 +1,18 @@
+## 2026-11-15 - Merge and verify first-pass T1w voxel QC
+**Current phase:** Phase 1 T1w QC implementation is merged and CI-tested; local image execution and visual review remain pending.
+
+**PR #17:** Merged into `main` as `f085c49c9d562c84461156f8b3b74b6b7725d3ad`. CI run #43729401420 passed all jobs: Ruff, Python compilation, the full pytest suite, documentation/component checks and secret scan.
+
+**Implemented:** `src/preprocessing/qc.py` calculates first-pass 3-D T1w voxel and geometry metrics; `scripts/qc_t1w.py` reads an explicitly sequence-verified private manifest and writes pseudonymous private per-scan reports, aggregate JSON and native-orientation montages. Optional imaging dependencies are in `requirements-imaging.txt`. Source images are never modified; no automatic exclusions are made. Nonzero foreground bounds are not a brain mask.
+
+**CI repairs:** The first CI attempt found a stale generated component block and a singular-affine synthetic fixture that NiBabel would not serialize through the image constructor. The generated block was corrected, the fixture was changed to write a singular sform on a valid base image, and imaging dependencies were added to the main verification environment. Final CI passed.
+
+**Not verified:** No local ds005892 image has been processed by this code. No montage has been reviewed. No T1w scan has been included/excluded based on voxel QC. BOLD motion/temporal QC, brain extraction, registration, segmentation, preprocessing derivatives, cohort freeze and participant-level split generation remain outstanding. PR #16 remains draft/held under D-014. Phase 1 remains open and model training is not authorized.
+
+**Next:** Run the merged T1w QC CLI locally with a private, manually verified manifest and protocol-approved thresholds, then inspect all 55 montages.
+
+---
+
 ## 2026-11-15 - Implement first-pass T1w voxel QC
 **Current phase:** Phase 1 T1w QC implementation; local image execution and visual review remain pending.
 
