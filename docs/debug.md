@@ -1,3 +1,16 @@
+## DBG-017 - Verify and merge T1w voxel QC (2026-11-15)
+**CI evidence:** PR #17 initially failed documentation drift because the generated preprocessing component table incorrectly included the CLI script. It also failed the imaging tests because the singular-affine fixture attempted to construct a NIfTI image directly with a singular affine, which NiBabel rejects. The main verification job initially lacked the optional imaging dependencies.
+
+**Repairs:** Removed the CLI script from the generated component table. The singular-affine test now constructs a valid NIfTI image, writes a singular sform explicitly and disables qform. The main CI verification environment installs both development and optional imaging dependencies so the full pytest suite can collect and run all tests.
+
+**Tested:** CI run #43729401420 passed all jobs: Ruff, compileall, full pytest, docs/component drift, secret scan and `ci-pass`. PR #17 merged into `main` as `f085c49c9d562c84461156f8b3b74b6b7725d3ad`.
+
+**Not tested:** No actual ds005892 T1w voxel data, no private manifest execution, no visual montage review, no BOLD motion QC, no brain extraction, registration, segmentation or preprocessing. Synthetic CI success does not establish image quality or Phase 1 completion.
+
+**Next:** Run the T1w QC CLI against the local dataset and manually review the private montages before deciding scan inclusion.
+
+---
+
 ## DBG-016 - Add first-pass T1w voxel QC and private montages (2026-11-15)
 **Need:** Header-only BIDS inventory cannot detect intensity corruption, non-finite voxels or gross coverage problems. A local-only voxel QC step is required before preprocessing.
 
