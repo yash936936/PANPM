@@ -1,3 +1,20 @@
+## 2026-11-15 - Select public OpenNeuro development dataset
+**Current phase:** Phase 0 - public development dataset selected; BIDS inventory and local feasibility execution pending.
+
+**Decision:** Use OpenNeuro `ds005892`, version `1.0.0`, DOI `10.18112/openneuro.ds005892.v1.0.0`, declared CC0 1.0, as the immediate development dataset. Keep PPMI contracts and its approved-data pathway as a separate future adapter/validation target.
+
+**Public metadata audit:** The versioned `participants.tsv` contains 55 rows: 22 Control, 18 PD-NC and 15 PD-MCI. The BIDS repository contains T1w anatomical and resting-state BOLD files; the dataset README describes Siemens TrioTim 3T EPI with TR 2000 ms, TE 29 ms and 3.5 mm slice thickness/spacing. These acquisition values must be verified from all per-run JSON sidecars and NIfTI headers before preprocessing. The dataset description says imaging was collected during Year 1 from participants who opted into neuroimaging.
+
+**Task scope:** Primary development endpoint is participant-level PD (PD-NC + PD-MCI) versus Control classification using T1w. Preserve the three source groups for exploratory secondary analysis. Resting-state BOLD is a separate secondary branch. No 12/24-month MDS-UPDRS progression endpoint, medication-state alignment or LEDD coverage is established by the inspected release.
+
+**Added:** `docs/openneuro-ds005892.md` records dataset provenance, limits, tasks and handling rules. `configs/openneuro_ds005892.example.json` records the versioned source contract and cohort mapping. Updated `docs/phases.md` to make OpenNeuro the active development source without deleting the PPMI adapter work.
+
+**Not done:** No image data were downloaded or inspected. No BIDS validator, NIfTI header inventory, file/participant matching, QC, preprocessing, model training or RL training has run. The 55-person sample is for pipeline validation and exploratory baselines, not a strong standalone deep-learning or PPO benchmark.
+
+**Next:** Implement a BIDS metadata-only inventory and aggregate feasibility report, then run it locally on the downloaded OpenNeuro snapshot. Keep all participant-level files outside Git and ChatGPT.
+
+---
+
 ## 2026-11-15 - Add local-only DICOM header index and MRI series manifest
 **Current phase:** Phase 0 - MRI metadata intake; no approved PPMI participant-level data or MRI archive has been processed.
 

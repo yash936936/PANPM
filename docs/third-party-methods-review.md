@@ -79,4 +79,4 @@ The reviewed repositories provide conventional preprocessing, feature extraction
 
 The public repositories are actively changing. The review records the repository names and inspected paths, but does not pin a third-party commit as a validated PANPM dependency. Before any code reuse, record the exact commit SHA, license text, copied-file provenance and local test evidence in a separate dependency review.
 
-Next: update `context.md` with any third-party method selected for controlled local reproduction.
+**Next:** update `context.md` with any third-party method selected for controlled local reproduction.

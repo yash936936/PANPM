@@ -205,5 +205,5 @@ This changes PANPM's decision:
 
 The BrainIAC overlap statement comes from a separate comparative evaluation repository and is not a participant-level overlap report from BrainIAC's authors. It establishes a serious contamination risk, not the exact extent of overlap. The BrainIAC paper reports pretraining on 32,015 scans from 16 datasets; the reviewed public paper summary does not provide enough information here to identify all PPMI participants or scans.
 
-Next: update `context.md` with the BrainIAC PPMI-overlap exclusion and the requirement for a pretraining overlap audit before selecting any pretrained encoder.
+**Next:** update `context.md` with the BrainIAC PPMI-overlap exclusion and the requirement for a pretraining overlap audit before selecting any pretrained encoder.
 

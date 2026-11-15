@@ -1,0 +1,53 @@
+{
+  "config_schema_version": "1.0",
+  "dataset_id": "openneuro_ds005892",
+  "dataset_version": "1.0.0",
+  "dataset_doi": "10.18112/openneuro.ds005892.v1.0.0",
+  "source_url": "https://openneuro.org/datasets/ds005892/versions/1.0.0",
+  "repository_snapshot": "https://github.com/OpenNeuroDatasets/ds005892/tree/main",
+  "license": "CC0-1.0",
+  "bids_version": "1.8.0",
+  "modality_targets": {
+    "primary": ["anat/T1w"],
+    "secondary": ["func/task-rest_bold"],
+    "fieldmaps": ["fmap"]
+  },
+  "participants_file": "participants.tsv",
+  "participant_id_field": "participant_id",
+  "group_field": "group",
+  "age_field": "age",
+  "sex_field": "sex",
+  "source_groups": {
+    "Control": "healthy_control",
+    "PD-NC": "parkinsons_normal_cognition",
+    "PD-MCI": "parkinsons_mild_cognitive_impairment"
+  },
+  "cohort_rules": {
+    "binary_pd_vs_control": {
+      "positive_groups": ["PD-NC", "PD-MCI"],
+      "negative_groups": ["Control"],
+      "status": "predeclared_development_task"
+    },
+    "three_class": {
+      "groups": ["Control", "PD-NC", "PD-MCI"],
+      "status": "exploratory_only_small_sample"
+    }
+  },
+  "provenance": {
+    "download_date": "FILL_LOCALLY",
+    "snapshot_commit": "FILL_LOCALLY",
+    "source_checksums_file": "FILL_LOCALLY"
+  },
+  "restrictions": {
+    "participant_level_files_in_git": false,
+    "participant_level_outputs_in_chatgpt": false,
+    "split_unit": "participant",
+    "fit_transforms_on_training_only": true
+  },
+  "limitations": [
+    "55 participants only",
+    "Year 1 optional neuroimaging cohort",
+    "longitudinal motor endpoint availability not established",
+    "no PPMI-specific feasibility inference"
+  ]
+}
