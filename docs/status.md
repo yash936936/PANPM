@@ -1,3 +1,16 @@
+## 2026-11-15 - Repair Phase 0 documentation integrity check
+**Current phase:** Phase 0 - source-independent tooling is implemented; the approved PPMI data feasibility audit is still pending.
+
+**Finding:** The latest main CI run on commit `4c5dca3` passed Python verification (Ruff, compilation and tests), secret scanning and the explicit "gates not run by CI" job. The overall `ci-pass` failed because `docs/external-model-audit.md` and `docs/third-party-methods-review.md` ended with plain `Next:` lines while the documentation checker requires a bold `**Next:**` line.
+
+**Change:** This branch normalizes those two final lines and updates the Phase 0 status wording. No data-processing code or participant data were changed.
+
+**Not verified:** CI on this repair branch, PPMI access, actual export inventory, source-table grain, MRI modality/sequence coverage, progression endpoint completeness or MRI archive intake.
+
+**Next:** Verify this branch's complete CI. Then Phase 0 still requires the researcher to run inventory and feasibility checks locally against approved PPMI exports and inspect only permitted aggregate outputs under the applicable data agreement.
+
+---
+
 ## 2026-11-15 - Add local-only DICOM header index and MRI series manifest
 **Current phase:** Phase 0 - MRI metadata intake; no approved PPMI participant-level data or MRI archive has been processed.
 
