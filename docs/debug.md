@@ -1,3 +1,18 @@
+## DBG-014 - Add cohort and split contracts (2026-11-15)
+**Need:** Phase 1 requires a diagnosis cohort with explicit source-group preservation and a participant-level split that cannot leak repeated scans across partitions.
+
+**Change:** Added `src/data/cohort.py`. Cohort construction requires explicit participant and scan metadata, a verified sequence flag, exactly one requested-modality scan per participant, and an explicit source-group mapping. It preserves the source group and separate binary diagnosis label, and reports aggregate exclusion counts. The split helper requires explicit train/validation/test fractions, seed and split version, stratifies on a caller-selected field and emits one assignment per participant. Added synthetic tests in `tests/test_data_cohort.py`.
+
+**Design safeguards:** No default split ratio is prescribed because the research protocol does not specify one. Multiple scans are treated as ambiguous rather than resolved by filename ordering. This code does not load voxels, perform image QC or write a private manifest. It does not authorize model training.
+
+**Tested:** Not yet run. CI is pending after PR creation.
+
+**Not tested:** Local dataset execution, visual QC, T1w/BOLD voxel QC, preprocessing, registration, segmentation, actual cohort freeze or participant split selection.
+
+**Next:** Run CI, then implement local T1w voxel QC as a separate preprocessing task.
+
+---
+
 ## DBG-013 - Review local NIfTI affine diagnostics (2026-11-15)
 **Input:** Researcher-supplied aggregate counters from the corrected local ds005892 geometry inventory. No participant IDs or file paths were shared.
 
