@@ -1,3 +1,16 @@
+## DBG-015 - Hold cohort/split implementation after repeated Ruff import-order failure (2026-11-15)
+**Failure evidence:** PR #16 CI runs #43728681409, #43728751962 and #43728828396 all failed during `ruff check .` at `src/data/cohort.py` with `I001 Import block is un-sorted or un-formatted`. The first run had one lint finding. The second import change still produced I001. The third change removed the random-module import and used seeded SHA-256 ordering, but I001 persisted; that run also reported UP012 for `.encode("utf-8")`. Compilation and pytest were skipped because lint failed. Documentation/component drift and secret-scan jobs passed.
+
+**Hypothesis history:** First attempt used `import random`; second used `from random import Random`; third removed random imports and used `hashlib`. These attempts did not resolve I001. Stop further retries under AGENTS.md's repeated-failure rule.
+
+**Disposition:** D-014 places the cohort/split PR on hold in draft state until a local checkout is available to run Ruff's exact autofix and inspect the resulting diff. No more import-order edits are authorized in this work session.
+
+**Not tested:** Cohort tests, compileall, local dataset execution, actual split generation, MRI voxel QC, BOLD motion QC, visual review, preprocessing, registration or segmentation.
+
+**Next:** Continue with an independent preprocessing component only after the current hold is recorded; resume this module from a local checkout.
+
+---
+
 ## DBG-014 - Add cohort and split contracts (2026-11-15)
 **Need:** Phase 1 requires a diagnosis cohort with explicit source-group preservation and a participant-level split that cannot leak repeated scans across partitions.
 
