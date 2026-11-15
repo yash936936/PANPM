@@ -155,7 +155,9 @@
     "Never use participant-level PPMI data outside the PPMI Data Use Agreement and approved environment.",
     "Never combine visits from one participant across train, validation and test partitions.",
     "Do not compare metrics across studies unless modality, cohort definition, split unit, preprocessing and evaluation protocol match.",
-    "Treat synthetic demonstrations and author-reported results as distinct from independently reproduced PANPM results."
+    "Treat synthetic demonstrations and author-reported results as distinct from independently reproduced PANPM results.",
+    "Audit pretraining-data overlap, not only downstream split leakage. A pretrained encoder that has seen PPMI participants or scans cannot support an unbiased PPMI held-out evaluation.",
+    "For every foundation model, document upstream dataset names, participant/scan overlap evidence, checkpoint hash, license and preprocessing contract before evaluation."
   ],
   "pretrained_checkpoint_ecosystem": [
     {
@@ -166,8 +168,8 @@
       "input": "3D single-channel structural brain MRI, 96x96x96",
       "output": "768-dimensional feature vector",
       "license": "BrainIAC Research-Only License; non-commercial academic research and education only; clinical workflow use and commercial use excluded",
-      "status": "highest-priority encoder candidate; not downloaded or independently validated for PD",
-      "decision": "evaluate only after local MRI sequence and preprocessing audit"
+      "status": "PPMI contamination risk: an independent 2026 structural-MRI evaluation explicitly excludes BrainIAC from PPMI evaluation because it was pretrained on PPMI. Exact participant/scan overlap is not publicly specified.",
+      "decision": "exclude from primary PPMI held-out evaluation unless authors provide auditable participant-disjoint pretraining evidence; exploratory only otherwise"
     },
     {
       "id": "triad",
@@ -175,8 +177,8 @@
       "artifact": "Triad-PlainConvUNet-MAE.pth; Triad-PlainConvUNet-SimMIM.pth; Triad-SwinB-MAE.pth; Triad-SwinB-SimMIM.pth",
       "input": "3D MRI; exact PANPM input compatibility pending",
       "license": "README displays MIT badge but upstream LICENSE file was not found in inspected tree; checkpoint-specific terms unverified",
-      "status": "checkpoint links documented; not downloaded",
-      "decision": "hold until authors confirm license and provide hashes"
+      "status": "checkpoint links documented; not downloaded Training dataset includes 129K MRI volumes across brain, breast and prostate and multiple modalities; exact PPMI overlap still requires dataset-list audit.",
+      "decision": "first pretrained candidate to investigate after full pretraining cohort overlap and checkpoint-license review; no PPMI test use until overlap is resolved"
     },
     {
       "id": "brainsegfounder",
