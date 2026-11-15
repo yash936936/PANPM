@@ -24,6 +24,7 @@ def _write_bold(tmp_path, *, tr=2.0, mismatch=False):
     affine = np.diag([3.125, 3.125, 3.5, 1.0])
     image = nib.Nifti1Image(series, affine)
     image.header.set_zooms((3.125, 3.125, 3.5, tr))
+    image.header.set_xyzt_units("mm", "sec")
     nib.save(image, path)
     sidecar.write_text(
         json.dumps({"RepetitionTime": tr + (0.2 if mismatch else 0.0)}),
