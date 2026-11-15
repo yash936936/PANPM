@@ -87,18 +87,19 @@ def test_progression_coverage_requires_same_state_and_excludes_ties(tmp_path):
         encoding="utf-8",
     )
     assessments.write_text(
-        "PATNO,EXAMDT,NP3TOT,PDSTATE\n"
-        "001,2020-01-01,20,OFF\n"
-        "001,2021-01-01,25,OFF\n"
-        "002,2020-01-01,30,OFF\n"
-        "002,2021-01-01,35,OFF\n"
-        "002,2021-01-01,36,OFF\n"
-        "001,2021-01-01,10,ON\n",
+        "PATNO,EXAMDT,NP3TOT,PDSTATE,PAG_NAME\n"
+        "001,2020-01-01,20,OFF,OFF_FORM\n"
+        "001,2021-01-01,25,OFF,OFF_FORM\n"
+        "002,2020-01-01,30,OFF,OFF_FORM\n"
+        "002,2021-01-01,35,OFF,OFF_FORM\n"
+        "002,2021-01-01,36,OFF,OFF_FORM\n"
+        "001,2021-01-01,10,ON,ON_FORM\n",
         encoding="utf-8",
     )
     result = progression_endpoint_coverage(
         baseline, assessments, participant_field="PATNO", index_date_field="INDEX_DATE",
         assessment_date_field="EXAMDT", score_field="NP3TOT", state_field="PDSTATE",
+        assessment_form_field="PAG_NAME", allowed_assessment_forms=["OFF_FORM"],
         state_map={"OFF": "OFF", "ON": "ON"}, target_states=["OFF"],
         horizons_months=[12], tolerance_days=30, secret=SECRET,
     )
@@ -128,12 +129,13 @@ def test_duplicate_baseline_participant_is_excluded(tmp_path):
         encoding="utf-8",
     )
     assessments.write_text(
-        "PATNO,EXAMDT,NP3TOT,PDSTATE\n001,2020-01-01,20,OFF\n",
+        "PATNO,EXAMDT,NP3TOT,PDSTATE,PAG_NAME\n001,2020-01-01,20,OFF,OFF_FORM\n",
         encoding="utf-8",
     )
     result = progression_endpoint_coverage(
         baseline, assessments, participant_field="PATNO", index_date_field="INDEX_DATE",
         assessment_date_field="EXAMDT", score_field="NP3TOT", state_field="PDSTATE",
+        assessment_form_field="PAG_NAME", allowed_assessment_forms=["OFF_FORM"],
         state_map={"OFF": "OFF"}, target_states=["OFF"],
         horizons_months=[12], tolerance_days=30, secret=SECRET,
     )
