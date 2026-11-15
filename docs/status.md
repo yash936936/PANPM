@@ -1,3 +1,16 @@
+## 2026-11-15 - Hold Phase 1 cohort/split PR after CI lint failures
+**Current phase:** Phase 1; cohort/split implementation is held in draft PR #16. MRI QC and preprocessing remain unimplemented.
+
+**CI evidence:** PR #16 runs #43728681409, #43728751962 and #43728828396 failed at Ruff import sorting in `src/data/cohort.py`. The third run also found UP012. Documentation/component drift and secret scanning passed. Compilation and pytest did not run because Ruff failed first.
+
+**Disposition:** D-014 places this code area on hold. PR #16 is draft and unmerged. Do not use its cohort or split functions. Resume only from a local checkout where Ruff's autofix output can be inspected, or replace the import approach in a separately reviewed change.
+
+**Not verified:** No cohort helper tests, local dataset execution, split generation, T1w voxel QC, BOLD motion QC, visual review, preprocessing, registration or segmentation. Phase 1 remains open. No model training is authorized.
+
+**Next:** Continue independent preprocessing implementation without modifying the held cohort module. A local checkout is required to resolve the lint issue safely.
+
+---
+
 ## 2026-11-15 - Add source-independent cohort and participant split contracts
 **Current phase:** Phase 1 cohort contract implementation; local MRI QC and preprocessing remain pending.
 
