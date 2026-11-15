@@ -18,7 +18,13 @@ def _write_nifti(path, shape=(64, 64, 48), spacing=(1.0, 1.0, 1.5)):
     struct.pack_into("<8f", header, 76, *pixdim)
     struct.pack_into("<h", header, 70, 16)
     struct.pack_into("<h", header, 72, 32)
-    struct.pack_into("<2h", header, 252, 1, 1)
+    struct.pack_into("<2h", header, 252, 0, 1)
+    struct.pack_into(
+        "<12f", header, 280,
+        spacing[0], 0.0, 0.0, 10.0,
+        0.0, spacing[1], 0.0, 20.0,
+        0.0, 0.0, spacing[2], 30.0,
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     with gzip.open(path, "wb") as stream:
         stream.write(header)
@@ -27,13 +33,30 @@ def _write_nifti(path, shape=(64, 64, 48), spacing=(1.0, 1.0, 1.5)):
     sidecar.write_text(json.dumps({"RepetitionTime": 2.0, "Manufacturer": "Siemens"}))
 
 
-def test_read_nifti_header_reads_geometry_without_voxels(tmp_path):
-    image = tmp_path / "sub-001" / "anat" / "sub-001_T1w.nii.gz"
-    _write_nifti(image)
+def test_read_nifti_header_separates_spatial_and_temporal_spacing(tmp_path):
+    image = tmp_path / "sub-001" / "func" / "sub-001_task-rest_bold.nii.gz"
+    _write_nifti(image, shape=(64, 64, 32, 200), spacing=(3.125, 3.125, 3.5, 2.0))
     header = read_nifti_header(image)
-    assert header["shape"] == [64, 64, 48]
-    assert header["voxel_sizes_mm"] == [1.0, 1.0, 1.5]
-    assert header["datatype"] == 16
+    assert header["shape"] == [64, 64, 32, 200]
+    assert header["spatial_voxel_sizes_mm"] == [3.125, 3.125, 3.5]
+    assert header["header_time_spacing_seconds"] == 2.0
+    assert header["affine_source"] == "sform"
+    assert header["affine_valid"] is True
+    assert header["orientation_codes"] == ["R", "A", "S"]
+
+
+def test_read_nifti_header_rejects_singular_affine(tmp_path):
+    image = tmp_path / "bad_affine.nii.gz"
+    _write_nifti(image)
+    raw = gzip.decompress(image.read_bytes())
+    header = bytearray(raw[:348])
+    struct.pack_into("<12f", header, 280, *([0.0] * 12))
+    with gzip.open(image, "wb") as stream:
+        stream.write(header)
+        stream.write(raw[348:])
+    result = read_nifti_header(image)
+    assert result["affine_valid"] is False
+    assert result["orientation_codes"] is None
 
 
 def test_inventory_reports_aggregate_group_and_modality_coverage(tmp_path):
@@ -55,6 +78,9 @@ def test_inventory_reports_aggregate_group_and_modality_coverage(tmp_path):
     assert report["modalities"]["T1w"]["participant_count"] == 2
     assert report["modalities"]["bold"]["participant_count"] == 1
     assert report["modalities"]["bold"]["participants_without_file_count"] == 1
+    assert report["modalities"]["bold"]["spatial_voxel_spacing_mm_counts"] == {"(3.125, 3.125, 3.5)": 1}
+    assert report["modalities"]["bold"]["header_time_spacing_seconds_counts"] == {"2.0": 1}
+    assert report["modalities"]["bold"]["sidecar_repetition_time_seconds_counts"] == {"2.0": 1}
     assert report["participant_level_identifiers_emitted"] is False
     assert report["voxel_data_loaded"] is False
 
