@@ -1,13 +1,45 @@
-## 2026-11-15 - Repair Phase 0 documentation integrity check
-**Current phase:** Phase 0 - source-independent tooling is implemented; the approved PPMI data feasibility audit is still pending.
+## 2026-11-15 - Repair BIDS inventory CI findings
+**Current phase:** Phase 0 - source-independent BIDS inventory implementation; local dataset execution pending.
 
-**Finding:** The latest main CI run on commit `4c5dca3` passed Python verification (Ruff, compilation and tests), secret scanning and the explicit "gates not run by CI" job. The overall `ci-pass` failed because `docs/external-model-audit.md` and `docs/third-party-methods-review.md` ended with plain `Next:` lines while the documentation checker requires a bold `**Next:**` line.
+**CI findings from PR #13:** Python verification found import ordering and two exception-type lint findings in `src/data/bids_inventory.py`. The docs/component job found the generated `docs/components/data.md` block was stale. The secret scan and gates-not-run job passed.
 
-**Change:** This branch normalizes those two final lines and updates the Phase 0 status wording. No data-processing code or participant data were changed.
+**Repairs:** Reordered imports, changed invalid JSON object-type errors to `TypeError`, renamed the new test to `test_data_bids_inventory.py` so the component generator discovers it, and updated the generated data component inventory and hand-written capability notes.
 
-**Not verified:** CI on this repair branch, PPMI access, actual export inventory, source-table grain, MRI modality/sequence coverage, progression endpoint completeness or MRI archive intake.
+**Not verified:** CI after these repairs, local dataset download, BIDS inventory execution, full BIDS validation, affine orientation, image QC or progression-label coverage.
 
-**Next:** Verify this branch's complete CI. Then Phase 0 still requires the researcher to run inventory and feasibility checks locally against approved PPMI exports and inspect only permitted aggregate outputs under the applicable data agreement.
+**Next:** Verify all PR #13 checks. Then run the inventory on the local versioned ds005892 snapshot and review aggregate outputs before declaring the dataset-specific Phase 0 complete.
+
+---
+
+## 2026-11-15 - Add metadata-only BIDS inventory for OpenNeuro
+**Current phase:** Phase 0 - BIDS inventory implementation added; real local execution pending.
+
+**Added:** `src/data/bids_inventory.py` reads `dataset_description.json`, `participants.tsv`, BIDS JSON sidecars and NIfTI-1 headers without loading voxel arrays. It reports aggregate group counts, T1w/BOLD file and participant coverage, unknown/missing subject counts, NIfTI shape/spacing distributions, selected sidecar-field presence and SHA-256 checksums for the dataset description and participant table. `scripts/inventory_bids.py` provides the local CLI and rejects output paths inside the PANPM worktree. Synthetic tests cover NIfTI geometry, aggregate coverage, duplicate participant IDs and invalid headers.
+
+**Scope limits:** This is not a full BIDS validator. It does not parse NIfTI-2, validate affine orientation, inspect all BIDS entities, run image QC, load voxels, create participant-level splits or establish progression endpoints. No OpenNeuro image files have been downloaded or processed in this work session.
+
+**Documentation:** `docs/bids-metadata-inventory.md` describes the CLI and acceptance checks. `docs/openneuro-ds005892.md` records the run command. Phase 0 status updated.
+
+**CI:** Pending for the latest branch head. The previous PR #12 CI failed only in the docs check because the new dataset document lacked the required `Next: ... context.md` navigation footer. The footer was corrected. Python verification, secret scan and gates-not-run jobs had passed on that earlier PR run.
+
+**Next:** Wait for the updated PR #12 checks. After merge, download OpenNeuro ds005892 v1.0.0 locally and run the metadata-only inventory; review aggregate output for modality coverage, geometry and metadata completeness before calling Phase 0 complete.
+
+---
+
+## 2026-11-15 - Select public OpenNeuro development dataset
+**Current phase:** Phase 0 - public development dataset selected; BIDS inventory and local feasibility execution pending.
+
+**Decision:** Use OpenNeuro `ds005892`, version `1.0.0`, DOI `10.18112/openneuro.ds005892.v1.0.0`, declared CC0 1.0, as the immediate development dataset. Keep PPMI contracts and its approved-data pathway as a separate future adapter/validation target.
+
+**Public metadata audit:** The versioned `participants.tsv` contains 55 rows: 22 Control, 18 PD-NC and 15 PD-MCI. The BIDS repository contains T1w anatomical and resting-state BOLD files; the dataset README describes Siemens TrioTim 3T EPI with TR 2000 ms, TE 29 ms and 3.5 mm slice thickness/spacing. These acquisition values must be verified from all per-run JSON sidecars and NIfTI headers before preprocessing. The dataset description says imaging was collected during Year 1 from participants who opted into neuroimaging.
+
+**Task scope:** Primary development endpoint is participant-level PD (PD-NC + PD-MCI) versus Control classification using T1w. Preserve the three source groups for exploratory secondary analysis. Resting-state BOLD is a separate secondary branch. No 12/24-month MDS-UPDRS progression endpoint, medication-state alignment or LEDD coverage is established by the inspected release.
+
+**Added:** `docs/openneuro-ds005892.md` records dataset provenance, limits, tasks and handling rules. `configs/openneuro_ds005892.example.json` records the versioned source contract and cohort mapping. Updated `docs/phases.md` to make OpenNeuro the active development source without deleting the PPMI adapter work.
+
+**Not done:** No image data were downloaded or inspected. No BIDS validator, NIfTI header inventory, file/participant matching, QC, preprocessing, model training or RL training has run. The 55-person sample is for pipeline validation and exploratory baselines, not a strong standalone deep-learning or PPO benchmark.
+
+**Next:** Implement a BIDS metadata-only inventory and aggregate feasibility report, then run it locally on the downloaded OpenNeuro snapshot. Keep all participant-level files outside Git and ChatGPT.
 
 ---
 

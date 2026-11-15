@@ -1,18 +1,20 @@
 # Phases - PANPM
 
+**Active development dataset:** OpenNeuro `ds005892` v1.0.0 (CC0 1.0). PPMI remains a future dataset adapter and validation target; no PPMI access is currently available.
+
 > Complete phases in order. A phase is done only when its files exist, its checks pass, its evidence is recorded in `debug.md`, and its real status is recorded here and in `status.md`.
 
-## Phase 0 - PPMI access and feasibility audit
+## Phase 0 - dataset access and feasibility audit
 
-**Goal:** establish what can actually be studied before selecting MRI modalities or training models.
+**Goal:** establish what can actually be studied from the active dataset before selecting MRI modalities or training models.
 
 **Files touched:** `src/data/source_mapping.py`, `src/data/inventory.py`, `src/data/manifest.py`, `src/data/schema.py`, `src/data/ppmi_contracts.py`, `src/data/progression_targets.py`, `docs/ppmi-source-catalog.md`, `docs/progression-targets.md`, `src/data/load_ppmi.py` (planned), `configs/dataset.yaml` (after export audit).
 
-**Work:** official reference-document review is complete for the supplied guide, annotated dictionary and code list. Obtain approved data access; record download date and terms; inventory actual participant, clinical, MRI and LONI exports; validate table grains and joins; compute participant-by-sequence and participant-by-endpoint overlap; generate a feasibility report.
+**Work:** PPMI reference-document review is complete, but PPMI access is unavailable. Use the versioned public OpenNeuro ds005892 release for immediate development: record its version, license, download date and checksums; inventory BIDS participants, T1w, BOLD and fieldmap files; validate BIDS metadata, participant-to-file matching, group counts and image geometry; report missingness and cohort balance. Keep PPMI source contracts as a separate future adapter. Do not claim progression endpoint coverage from ds005892 unless longitudinal clinical labels are actually present.
 
-**Done when:** cohort counts, modality coverage, scanner/site distribution, endpoint completeness and missingness are reproducible; unknowns and exclusions are documented; no direct identifiers appear in outputs.
+**Done when:** dataset/version/license provenance, participant counts by group, participant-to-modality matching, BIDS metadata completeness, acquisition/geometry summaries, QC exclusions and missingness are reproducible; unknowns and exclusions are documented; no participant-level files are committed. PPMI-specific feasibility remains explicitly pending until approved PPMI access is obtained.
 
-**Status:** Source-independent Phase 0 tooling is implemented. The latest main CI passed Python verification (Ruff, compilation and tests) and secret scanning, but the overall check is red because the documentation integrity check rejects two unbolded `Next:` lines; a documentation-only repair is in progress. The real PPMI access and feasibility audit remains incomplete: approved exports, LONI metadata and a local MRI archive are required to establish cohort counts, table grain, modality coverage, scanner/site distribution, endpoint completeness and final target parameters. No participant-level PPMI data have been processed.
+**Status:** In progress. OpenNeuro ds005892 v1.0.0 is selected as the active public development source (55 participants: 22 Control, 18 PD-NC, 15 PD-MCI; T1w and resting-state BOLD; declared CC0 1.0). A metadata-only BIDS inventory module and CLI now read participant groups, T1w/BOLD file coverage, NIfTI-1 header shape/spacing, selected sidecar-field presence, dataset provenance and source-table SHA-256 checksums. Synthetic tests cover geometry, group/modality coverage, duplicate IDs and malformed headers. GitHub CI is the pending verification gate. The inventory has not been run on the downloaded dataset because no local data snapshot is available to this session. The release describes Year 1 optional neuroimaging; 12/24-month motor progression labels are not established. PPMI-specific coverage remains pending. No model training has started.
 
 ## Phase 1 - Cohort definition and MRI preprocessing
 
