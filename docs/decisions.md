@@ -1,3 +1,12 @@
+## D-014 - Hold cohort/split PR after repeated Ruff import-order failure - 2026-11-15
+**Decision:** Keep the Phase 1 cohort/split implementation in draft PR #16. Do not merge or use it until the Ruff import-order failure is resolved from a local checkout where the autofix diff can be inspected and tested.
+
+**Reason:** Three consecutive CI attempts for PR #16 failed at `ruff check .` on `src/data/cohort.py` with `I001 Import block is un-sorted or un-formatted`. Two import-style changes did not resolve it. The third run also reported `UP012` for an explicit UTF-8 encoding argument. CI skipped compilation and pytest after lint failed.
+
+**Consequences:** PR #16 remains draft and unmerged. Its cohort/split helpers are not part of `main`, have no passing test evidence, and must not be used to create the final cohort or split manifest. This hold does not block separate preprocessing work. Do not train models.
+
+---
+
 # Decisions - PANPM
 
 > Append-only decision log. New decisions go at the top. Do not edit or delete older entries. Supersede a decision with a new ID and reference the old one.
