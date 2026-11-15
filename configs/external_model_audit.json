@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "audit_date": "2026-11-15",
-  "scope": "Public repository metadata and source inspection only. No external code was executed, no checkpoints were downloaded, and no participant-level data were accessed.",
+  "scope": "Public repository metadata and source inspection only. No external code was executed, no checkpoints were downloaded, and no participant-level data were accessed. External checkpoint ecosystem review added on 2026-11-15; no external weights downloaded or executed.",
   "projects": [
     {
       "id": "kan-mri",
@@ -156,5 +156,72 @@
     "Never combine visits from one participant across train, validation and test partitions.",
     "Do not compare metrics across studies unless modality, cohort definition, split unit, preprocessing and evaluation protocol match.",
     "Treat synthetic demonstrations and author-reported results as distinct from independently reproduced PANPM results."
+  ],
+  "pretrained_checkpoint_ecosystem": [
+    {
+      "id": "brainiac",
+      "source": "https://huggingface.co/eugenehp/brainiac",
+      "paper": "https://doi.org/10.1038/s41593-026-02202-6",
+      "artifact": "backbone.safetensors",
+      "input": "3D single-channel structural brain MRI, 96x96x96",
+      "output": "768-dimensional feature vector",
+      "license": "BrainIAC Research-Only License; non-commercial academic research and education only; clinical workflow use and commercial use excluded",
+      "status": "highest-priority encoder candidate; not downloaded or independently validated for PD",
+      "decision": "evaluate only after local MRI sequence and preprocessing audit"
+    },
+    {
+      "id": "triad",
+      "source": "https://github.com/wangshansong1/Triad",
+      "artifact": "Triad-PlainConvUNet-MAE.pth; Triad-PlainConvUNet-SimMIM.pth; Triad-SwinB-MAE.pth; Triad-SwinB-SimMIM.pth",
+      "input": "3D MRI; exact PANPM input compatibility pending",
+      "license": "README displays MIT badge but upstream LICENSE file was not found in inspected tree; checkpoint-specific terms unverified",
+      "status": "checkpoint links documented; not downloaded",
+      "decision": "hold until authors confirm license and provide hashes"
+    },
+    {
+      "id": "brainsegfounder",
+      "source": "https://huggingface.co/smilelab/BrainSegFounder",
+      "artifact": "model_weights_UKB-pretrain.pt and related BraTS/ATLAS weights",
+      "input": "3D brain MRI; segmentation-oriented",
+      "license": "uk-biobank-mta",
+      "status": "weights listed; MTA compatibility unresolved",
+      "decision": "hold pending license review"
+    },
+    {
+      "id": "neurovfm",
+      "source": "https://huggingface.co/mlinslab/neurovfm-dx-mri",
+      "artifact": "gated MRI diagnosis weights; linked feature backbone",
+      "input": "MRI neuroimaging; diagnosis head over 74-label ontology",
+      "license": "CC-BY-NC-SA-4.0; access gated with contact information condition",
+      "status": "not verified as PD-specific",
+      "decision": "secondary feature extractor only after access and license review"
+    },
+    {
+      "id": "brain2vec",
+      "source": "https://huggingface.co/cbica/Brain2Vec",
+      "artifact": "3D structural T1 brain MRI pretrained model",
+      "input": "3D T1 structural brain MRI",
+      "license": "CC-BY-NC-ND-4.0",
+      "status": "license restricts derivative adaptation",
+      "decision": "exclude from fine-tuning shortlist"
+    },
+    {
+      "id": "raven",
+      "source": "https://zenodo.org/records/21999063",
+      "artifact": "checkpoints.zip, 2.1 GB",
+      "input": "structural MRI upsampling",
+      "license": "not clearly exposed in inspected Zenodo metadata",
+      "status": "not a PD diagnosis model",
+      "decision": "not a classifier candidate"
+    },
+    {
+      "id": "vbai-dpa-2-4",
+      "source": "https://huggingface.co/Neurazum/Vbai-DPA-2.4",
+      "artifact": "model card describes MRI/fMRI Parkinson's, dementia and Alzheimer's classes",
+      "input": "MRI/fMRI; details not sufficiently established",
+      "license": "not adequately verified",
+      "status": "claims lack verified cohort provenance and independent validation",
+      "decision": "exclude pending full methods and independent evidence"
+    }
   ]
 }
