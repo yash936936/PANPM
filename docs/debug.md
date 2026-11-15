@@ -7,7 +7,7 @@
 
 **Synthetic tests:** Added config validation/normalization, cohort deduplication, MRI join matching, exact-state progression coverage, tie exclusion, duplicate-baseline exclusion and report-provenance cases.
 
-**Not tested:** No approved PPMI data, LONI manifest or MRI files were processed. Example field mappings and all clinical/sequence rules remain unvalidated against a real release. Progression coverage requires an explicit `PAG_NAME` allowlist as well as state mapping; it excludes other forms and requires follow-up dates to be later than the selected baseline assessment. CI has not yet run on this branch.
+**Not tested:** No approved PPMI data, LONI manifest or MRI files were processed. Example field mappings and all clinical/sequence rules remain unvalidated against a real release. Progression coverage requires an explicit `PAG_NAME` allowlist as well as state mapping; it excludes other forms and requires follow-up dates to be later than the selected baseline assessment. CI passed on 2026-11-15: [run #43710799588](https://github.com/yash936936/PANPM/actions/runs/43710799588), including 50 synthetic pytest cases, Ruff, compileall, docs and secret scan.
 
 ## DBG-009 - Aggregate source table grain and relationship audit (2026-11-15)
 **Change:** Added `src/data/audit.py` with candidate-key completeness/uniqueness summaries and child-to-parent relationship coverage. Results contain field names and aggregate counts only. Composite keys are stored as ephemeral HMAC digests in an in-memory SQLite database; no key values are returned.
