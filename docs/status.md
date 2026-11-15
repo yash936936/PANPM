@@ -3,7 +3,7 @@
 
 **Local T1w evidence supplied by the researcher:** The CLI inspected 55 scans, reported zero configured review flags, recorded orientations RAS 54/LPS 1, made zero automatic exclusions and did not modify source images. The aggregate report emitted no participant-level identifiers. This is evidence of the configured automated checks only, not expert anatomical acceptance. All 55 private montages still require manual review.
 
-**Implemented on branch** `phase1/bold-temporal-qc`:
+**Implemented on branch** `phase1/bold-temporal-qc` (draft PR #20). CI run #43731175121 passed Ruff, compilation, all 73 pytest tests, documentation/component checks, secret scan and `ci-pass`.
 - Added `src/preprocessing/bold_qc.py` for 4-D BOLD geometry, NIfTI temporal-unit-aware header TR versus sidecar `RepetitionTime`, finite/zero fractions, temporal-SNR summaries, whole-volume RMS temporal differences and global-mean signal variation.
 - Added private montage generation showing temporal mean, a temporal-SNR proxy and the global mean signal trace.
 - Added optional Power framewise displacement from a supplied TSV with named translation-in-mm and rotation-in-radians columns. The module does not estimate or correct motion.
@@ -12,7 +12,7 @@
 
 **Scientific limits:** The whole-volume RMS temporal-difference metric is not standardized, brain-masked DVARS. Nonzero foreground is not a brain mask. No motion metric is produced unless motion parameters are supplied. No thresholds are set from this small cohort; optional thresholds are caller-supplied and only create review flags. No automatic exclusions are made.
 
-**Not verified:** BOLD branch CI is pending; the code has not run on local ds005892 BOLD scans. T1w montage review is not yet reported. BOLD visual review, motion-estimation workflow, brain extraction, registration, segmentation, preprocessing derivatives, cohort freeze and participant-level split remain outstanding. PR #16 remains draft/held under D-014. No model training is authorized.
+**Not verified:** The code has not run on local ds005892 BOLD scans. T1w montage review is not yet reported. BOLD visual review, motion-estimation workflow, brain extraction, registration, segmentation, preprocessing derivatives, cohort freeze and participant-level split remain outstanding. PR #16 remains draft/held under D-014. No model training is authorized.
 
 **Next:** Verify the BOLD branch CI, then create a private BOLD manifest after checking the 55 matching sidecars and sequence metadata. Run BOLD QC locally and review all montages. Keep motion-estimation outputs separate and document their software/configuration before supplying them.
 
