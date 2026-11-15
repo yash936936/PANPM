@@ -32,10 +32,10 @@ def main() -> int:
     output = args.output.expanduser().resolve()
     if output == REPOSITORY_ROOT or REPOSITORY_ROOT in output.parents:
         parser.error("--output must be outside the PANPM Git worktree")
-    if output == secret_path or secret_path == archive:
+    if output in (archive, secret_path) or archive == secret_path:
         parser.error("Archive, secret and output must be separate files")
 
-    secret = secret_path.read_bytes().rstrip(b"\\r\\n")
+    secret = secret_path.read_bytes().strip()
     if len(secret) < 32:
         parser.error("--secret-file must contain at least 32 random bytes")
 
@@ -46,7 +46,7 @@ def main() -> int:
         "manifest_schema_version": report["schema_version"],
     }
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, sort_keys=True) + chr(10), encoding="utf-8")
     print(json.dumps({
         "output": str(output),
         "archive_sha256": report["provenance"]["archive_sha256"],
