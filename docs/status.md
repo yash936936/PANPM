@@ -2,6 +2,21 @@
 
 > Running project log. Newest entry goes at the top. Update this file at the end of every work session.
 
+## 2026-11-15 - Add metadata-only table-grain and relationship audit
+**Current phase:** Phase 0 - source-independent audit tooling; actual PPMI feasibility still awaits approved exports.
+**Branch:** `research/phase0-table-grain-audit`.
+**Previous PR:** [#4](https://github.com/yash936936/PANPM/pull/4) merged into `main`.
+
+**Added:** `src/data/audit.py` reports candidate-key completeness, distinct-key counts, duplicate groups/rows, child-to-parent matches and unmatched rows. Composite key values are HMACed with a per-run random secret before temporary in-memory SQLite storage. Outputs contain no participant or image identifiers. Synthetic tests are in `tests/test_data_audit.py`.
+
+**CI follow-up:** PR #4's docs and secret-scan jobs passed. Python setup and dependency installation passed, but Ruff failed on import modernization and import formatting in existing modules/tests. This branch applies those lint fixes; its CI result is pending. No tests are claimed as passed yet.
+
+**Not verified:** actual PPMI row grain, key cardinality, table relationships, participant counts, image coverage or clinical endpoint coverage. No participant-level data were used.
+
+**Next:** run the audit against approved CSV exports using candidate keys justified by the source dictionary and observed row grain, then review ambiguous relationships before joins.
+
+---
+
 ## 2026-11-15 - Extract repository implementation state and prepare PPMI intake
 **Current phase:** Phase 0 - repository extraction and CI repair; participant-level feasibility audit still requires approved PPMI exports.
 **Branch:** `research/phase0-repo-extraction-ci`.
