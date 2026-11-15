@@ -9,6 +9,7 @@ from src.data.feasibility import (
     mri_manifest_matching,
     normalize_configured_rows,
     progression_endpoint_coverage,
+    validate_configured_header,
 )
 
 SECRET = b"phase0-test-secret-material-minimum-32-bytes"
@@ -142,3 +143,18 @@ def test_duplicate_baseline_participant_is_excluded(tmp_path):
     )
     assert result["baseline_participants"] == 0
     assert result["duplicate_or_ambiguous_baseline_participants"] == 1
+
+
+
+def test_validate_configured_header_checks_real_export_columns():
+    config = {
+        "tables": {
+            "PATIENT_STATUS": {
+                "source_to_target": {"PATNO": "participant", "COHORT": "cohort"},
+                "required_targets": ["participant", "cohort"],
+            }
+        }
+    }
+    validate_configured_header("PATIENT_STATUS", ["PATNO", "COHORT"], config)
+    with pytest.raises(ValueError, match="absent"):
+        validate_configured_header("PATIENT_STATUS", ["PATNO"], config)
