@@ -1,3 +1,18 @@
+## DBG-013 - Review local NIfTI affine diagnostics (2026-11-15)
+**Input:** Researcher-supplied aggregate counters from the corrected local ds005892 geometry inventory. No participant IDs or file paths were shared.
+
+**Findings:** All 55 T1w and 55 BOLD files have qform_code=1 and sform_code=1; sform is selected for the inventory affine. T1w qform/sform max absolute differences were 0 for 53 scans, 0.000004 for one and 0.000008 for one. BOLD differences ranged from 0 to 0.001743; three exceeded the inventory's 0.001 flag threshold. Orientation summaries were T1w RAS 54/LPS 1 and BOLD LAS 55.
+
+**Interpretation:** These qform/sform differences are numerically small and do not justify scan exclusion. The 0.001 threshold is a review flag, not a scientific exclusion criterion. RAS/LPS/LAS labels describe voxel-axis directions relative to RAS+ world axes; they do not alone indicate a bad scan. Keep original transforms and use a consistent selected-affine policy. Confirm anatomical orientation in voxel-level visual QC before any reorientation or preprocessing.
+
+**Tested:** This was an interpretation of local aggregate metadata supplied by the researcher. No new code, image voxel data, or participant-level records were processed in this session.
+
+**Not tested:** Full BIDS validation, anatomical image quality, BOLD motion/temporal quality, visual review, preprocessing, progression endpoint coverage, cohort freeze, participant-level splits or model training.
+
+**Next:** Run the full BIDS validator locally, then implement separate T1w structural QC and BOLD motion/temporal QC paths.
+
+---
+
 ## DBG-012 - Repair and merge NIfTI geometry audit CI (2026-11-15)
 **Failure evidence:** PR #14 run #43724991716 had two failures. The synthetic aggregate-inventory test created its BOLD image with the helper's default `1.0, 1.0, 1.5` spatial spacing while asserting `3.125, 3.125, 3.5`. The component-doc generator reported a stale generated block in `docs/components/data.md` because the BIDS inventory module's first-line responsibility comment had changed.
 
