@@ -1,3 +1,20 @@
+## 2026-11-15 - Add source-independent cohort and participant split contracts
+**Current phase:** Phase 1 cohort contract implementation; local MRI QC and preprocessing remain pending.
+
+**Implemented on branch** `phase1/cohort-and-split-contracts`:
+- `src/data/cohort.py` constructs a diagnosis cohort from explicit participant and scan metadata. It preserves source groups, maps HC/Control to HC and PD-NC/PD-MCI to PD, requires exactly one requested-modality scan per participant, requires an explicit sequence-verification flag, and counts exclusion reasons without echoing participant IDs.
+- `make_stratified_split` assigns each participant once to train/validation/test using caller-supplied fractions, seed, split version and stratification field. It does not prescribe unapproved split proportions.
+- `tests/test_data_cohort.py` adds synthetic tests for group preservation, sequence verification, ambiguous multiple scans, duplicate participants, deterministic assignments, stratification, fraction validation and identifier non-disclosure.
+- `docs/components/data.md` and `docs/phases.md` document the new metadata-only capability and its limits.
+
+**Not tested:** No local Ruff, pytest, compileall or CI result is claimed yet. The cohort helper has not been run against the local BIDS dataset. No participant-level split manifest has been generated or frozen. No voxel data, T1w QC, BOLD motion QC, visual review, registration, segmentation or preprocessing was run. No scan is approved or excluded based on image quality.
+
+**Decision boundary:** The split fractions remain caller-supplied because the research protocol does not predefine a train/validation/test ratio. This implementation does not authorize training. Phase 1 remains open.
+
+**Next:** Run CI for this branch, then implement and execute the local T1w QC pipeline before selecting/finalizing cohort exclusions or split proportions.
+
+---
+
 ## 2026-11-15 - Review local NIfTI affine diagnostics
 **Current phase:** Phase 0 metadata/geometry review; Phase 1 voxel-level QC remains open.
 
