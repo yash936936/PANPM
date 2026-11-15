@@ -6,10 +6,10 @@ Callers must supply a prespecified target date, tolerance, and state label.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date
 from math import isfinite
-from collections.abc import Iterable
 
 
 @dataclass(frozen=True)
