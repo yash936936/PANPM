@@ -54,7 +54,7 @@ See [`docs/ppmi-source-catalog.md`](../ppmi-source-catalog.md) for exact extract
 
 ## Known limits
 
-No approved PPMI participant-level exports, LONI metadata or MRI files have been inspected. No cohort counts, sequence coverage, scanner/site distribution or endpoint completeness has been computed. The source contracts are based on reference-document definitions only. The progression helper does not map PPMI source codes, set clinical target windows, derive LEDD or define DBS eligibility. No DICOM/NIfTI parsing, MRI sequence classification, preprocessing or QC has been implemented.
+No approved PPMI participant-level exports, LONI metadata or MRI files have been inspected. No real cohort counts, sequence coverage, scanner/site distribution or endpoint completeness has been computed. The example mapping is not validated against an actual release. The progression coverage function requires explicit source-state mapping, an allowed `PAG_NAME` form list, target states and date tolerance; it excludes ties and follow-up assessments not later than baseline. It does not settle clinical endpoint rules, derive time-aligned LEDD or define DBS eligibility. No DICOM/NIfTI parsing, image preprocessing, supervised models or RL has been implemented.
 
 <!-- BEGIN GENERATED: do not edit between markers -->
 
