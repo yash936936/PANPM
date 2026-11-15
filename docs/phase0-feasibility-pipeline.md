@@ -23,13 +23,17 @@ ingestion boundary.
 - `cohort_coverage`: distinct participant counts by raw cohort and enrollment
   status. It preserves source codes rather than silently normalizing them.
 - `mri_manifest_matching`: compares explicitly configured acquisition and
-  image-manifest keys and reports sequence-flag coverage. The caller must
-  supply the correct LONI/image manifest join keys and source-specific flag
-  interpretation after inspecting the actual release.
+  image-manifest keys and reports sequence-flag coverage, missing keys and
+  duplicate join-key groups. The caller must supply the correct LONI/image
+  manifest join keys and source-specific flag interpretation after inspecting
+  the actual release.
 - `progression_endpoint_coverage`: estimates same-state baseline and
-  12/24-month score availability using an explicit source-state map, target
-  states and date tolerance. Ties are excluded as ambiguous. It is a coverage
-  estimate, not a final clinical endpoint definition.
+  12/24-month score availability using an explicit source-state map, allowed
+  `PAG_NAME` form list, target states and date tolerance. Follow-up records
+  must occur after the selected baseline assessment. Ties and duplicate
+  baseline participants are excluded as ambiguous. It is a coverage estimate,
+  not a final clinical endpoint definition. The optional LEDD count means
+  “any LEDDLOG record exists”; it is not time-aligned medication exposure.
 - `build_phase0_report`: combines the three aggregate reports with release
   and download-date provenance.
 
