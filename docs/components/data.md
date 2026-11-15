@@ -9,6 +9,7 @@ Import approved PPMI exports, normalize participant/visit/scan relationships, va
 ## Implemented utilities
 
 - `source_mapping.py`: validates explicit mappings from source export columns to PANPM fields. It does not guess field names.
+- `audit.py`: audits caller-specified candidate keys and child-to-parent relationships, returning aggregate counts only. Composite keys are held as ephemeral keyed digests in an in-memory SQLite database.
 - `inventory.py`: discovers CSV exports recursively, skips hidden directories, reads headers, counts rows, summarizes missing values and records relative paths, file size, release identifier and SHA-256 checksum without retaining participant-level rows.
 - `scripts/inventory_exports.py`: command-line entry point for metadata-only inventory. Keep output outside Git.
 - `manifest.py`: creates keyed HMAC participant pseudonyms and aggregates series counts by supplied modality label. The HMAC secret remains outside Git.
@@ -60,6 +61,7 @@ No approved PPMI participant-level exports, LONI metadata or MRI files have been
 
 | File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
+| `src/data/audit.py` | `audit_csv_keys`, `audit_csv_relationship` | Aggregate candidate-key uniqueness and child-to-parent coverage without returning identifiers. |
 | `src/data/inventory.py` | `sha256_file`, `read_csv_header`, `inspect_csv`, `count_csv_rows`, `summarize_values`, `discover_csv_exports`, `inventory_csv_tree` | Inventory approved tabular exports and imaging metadata without loading images. |
 | `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Create pseudonymous participant coverage manifests from approved metadata. |
 | `src/data/ppmi_contracts.py` | `PPMISourceTable`, `validate_ppmi_source_header` | Source-level contracts transcribed from the supplied PPMI reference files. |
@@ -69,7 +71,7 @@ No approved PPMI participant-level exports, LONI metadata or MRI files have been
 
 **Imports other areas:** (none)
 
-**Tests:** `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_schema.py`, `tests/test_data_source_mapping.py`
+**Tests:** `tests/test_data_audit.py`, `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_schema.py`, `tests/test_data_source_mapping.py`
 
 <!-- END GENERATED -->
 
