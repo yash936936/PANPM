@@ -27,7 +27,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     payload = inventory_bids_dataset(args.root)
-    rendered = json.dumps(payload, indent=2, ensure_ascii=False) + "\\n"
+    rendered = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
     if args.output:
         output = args.output.resolve()
         repository_root = ROOT.resolve()
