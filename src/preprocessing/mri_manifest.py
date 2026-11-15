@@ -56,7 +56,7 @@ def _digest(value: str, secret: bytes, namespace: str) -> str:
         raise ValueError("HMAC secret must contain at least 32 bytes")
     if not value.strip():
         raise ValueError("Cannot pseudonymize an empty identifier")
-    message = f"panpm-mri-v1:{namespace}:{value.strip()}".encode("utf-8")
+    message = f"panpm-mri-v1:{namespace}:{value.strip()}".encode()
     return hmac.new(secret, message, hashlib.sha256).hexdigest()
 
 
@@ -127,8 +127,8 @@ def aggregate_header_rows(
             counters["series_identity_conflicts"] += 1
             continue
 
-        def unique_values(field: str) -> list[str]:
-            return sorted({r[field] for r in instances if r[field]})
+        def unique_values(field: str, records=instances) -> list[str]:
+            return sorted({r[field] for r in records if r[field]})
 
         conflicts = {
             field: values
@@ -246,16 +246,14 @@ def index_dicom_zip(
                         stop_before_pixels=True,
                         force=False,
                     )
-            except Exception:
+            except (pydicom.errors.InvalidDicomError, EOFError, OSError, ValueError):
                 unreadable += 1
                 continue
             row = {}
             for field in _HEADER_FIELDS:
                 value = getattr(dataset, field, None)
-                if field == "ImageType" and value is not None:
-                    row[field] = "\\\\".join(str(part) for part in value)
-                elif field == "PixelSpacing" and value is not None:
-                    row[field] = "\\\\".join(str(part) for part in value)
+                if field in {"ImageType", "PixelSpacing"} and value is not None:
+                    row[field] = "\\".join(str(part) for part in value)
                 else:
                     row[field] = _text(value)
             rows.append(row)
