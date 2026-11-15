@@ -33,7 +33,88 @@ _MOTION_COLUMNS = (
     "rot_y_rad",
     "rot_z_rad",
 )
+
 _HEAD_RADIUS_MM = 50.0
+_READOUT_TIME_ABSOLUTE_TOLERANCE_SECONDS = 1e-5
+_ALLOWED_PHASE_ENCODING_DIRECTIONS = {"i", "i-", "j", "j-", "k", "k-"}
+
+
+def _optional_positive_number(metadata: Mapping[str, Any], name: str) -> float | None:
+    """Read an optional positive finite numeric BIDS metadata value."""
+    value = metadata.get(name)
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError(f"BOLD sidecar {name} must be numeric when present")
+    numeric = float(value)
+    if not np.isfinite(numeric) or numeric <= 0:
+        raise ValueError(f"BOLD sidecar {name} must be finite and positive")
+    return numeric
+
+
+def _phase_encoding_vector_ras(
+    direction: str | None,
+    affine: np.ndarray,
+) -> list[float] | None:
+    """Map a BIDS voxel-axis phase-encoding direction into normalized RAS+."""
+    if direction is None:
+        return None
+    if not isinstance(direction, str) or direction not in _ALLOWED_PHASE_ENCODING_DIRECTIONS:
+        raise ValueError("BOLD PhaseEncodingDirection must be one of i, i-, j, j-, k, k-")
+    axis = {"i": 0, "j": 1, "k": 2}[direction[0]]
+    sign = -1.0 if direction.endswith("-") else 1.0
+    vector = sign * np.asarray(affine[:3, axis], dtype=np.float64)
+    norm = float(np.linalg.norm(vector))
+    if not np.isfinite(vector).all() or not np.isfinite(norm) or norm <= 0:
+        raise ValueError("Cannot derive a physical phase-encoding vector from the NIfTI affine")
+    return [float(value) for value in vector / norm]
+
+
+def _slice_timing_summary(metadata: Mapping[str, Any]) -> dict[str, float | int] | None:
+    """Summarize BIDS SliceTiming without copying the full per-slice array."""
+    values = metadata.get("SliceTiming")
+    if values is None:
+        return None
+    if not isinstance(values, list) or not values:
+        raise TypeError("BOLD sidecar SliceTiming must be a non-empty numeric array")
+    if any(isinstance(value, bool) or not isinstance(value, (int, float)) for value in values):
+        raise TypeError("BOLD sidecar SliceTiming values must be numeric")
+    timings = np.asarray(values, dtype=np.float64)
+    if not np.isfinite(timings).all() or np.any(timings < 0):
+        raise ValueError("BOLD sidecar SliceTiming values must be finite and non-negative")
+    return {
+        "count": int(timings.size),
+        "min_seconds": float(np.min(timings)),
+        "median_seconds": float(np.median(timings)),
+        "max_seconds": float(np.max(timings)),
+    }
+
+
+def _readout_time_check(
+    effective_echo_spacing: float | None,
+    total_readout_time: float | None,
+    recon_matrix_pe: int | None,
+) -> dict[str, float | bool | None]:
+    """Check BIDS readout time using a 10-microsecond absolute tolerance."""
+    if effective_echo_spacing is None or total_readout_time is None:
+        return {
+            "expected_seconds": None,
+            "absolute_difference_seconds": None,
+            "matches": None,
+            "absolute_tolerance_seconds": _READOUT_TIME_ABSOLUTE_TOLERANCE_SECONDS,
+        }
+    if recon_matrix_pe is None:
+        raise ValueError(
+            "ReconMatrixPE is required to check EffectiveEchoSpacing against TotalReadoutTime"
+        )
+    expected = effective_echo_spacing * (recon_matrix_pe - 1)
+    difference = abs(total_readout_time - expected)
+    return {
+        "expected_seconds": float(expected),
+        "absolute_difference_seconds": float(difference),
+        "matches": bool(difference <= _READOUT_TIME_ABSOLUTE_TOLERANCE_SECONDS),
+        "absolute_tolerance_seconds": _READOUT_TIME_ABSOLUTE_TOLERANCE_SECONDS,
+    }
 
 
 def _validate_thresholds(thresholds: Mapping[str, float]) -> None:
@@ -117,6 +198,42 @@ def inspect_bold(
     sidecar_tr = float(sidecar_tr)
     if not np.isfinite(sidecar_tr) or sidecar_tr <= 0:
         raise ValueError("BOLD sidecar RepetitionTime must be finite and positive")
+
+    phase_encoding_direction = metadata.get("PhaseEncodingDirection")
+    if phase_encoding_direction is not None and (
+        not isinstance(phase_encoding_direction, str)
+        or phase_encoding_direction not in _ALLOWED_PHASE_ENCODING_DIRECTIONS
+    ):
+        raise ValueError("BOLD PhaseEncodingDirection must be one of i, i-, j, j-, k, k-")
+    effective_echo_spacing = _optional_positive_number(metadata, "EffectiveEchoSpacing")
+    total_readout_time = _optional_positive_number(metadata, "TotalReadoutTime")
+    echo_time = _optional_positive_number(metadata, "EchoTime")
+    recon_matrix_pe_raw = metadata.get("ReconMatrixPE")
+    recon_matrix_pe = None
+    if recon_matrix_pe_raw is not None:
+        if (
+            isinstance(recon_matrix_pe_raw, bool)
+            or not isinstance(recon_matrix_pe_raw, int)
+            or recon_matrix_pe_raw < 2
+        ):
+            raise ValueError("BOLD sidecar ReconMatrixPE must be an integer of at least 2")
+        recon_matrix_pe = int(recon_matrix_pe_raw)
+    readout_time_check = _readout_time_check(
+        effective_echo_spacing,
+        total_readout_time,
+        recon_matrix_pe,
+    )
+    slice_timing_summary = _slice_timing_summary(metadata)
+    for string_field in (
+        "TaskName",
+        "MRAcquisitionType",
+        "ScanningSequence",
+        "SequenceName",
+        "SliceEncodingDirection",
+    ):
+        value = metadata.get(string_field)
+        if value is not None and not isinstance(value, str):
+            raise TypeError(f"BOLD sidecar {string_field} must be a string when present")
 
     image = nib.load(str(path))
     if len(image.shape) != 4:
@@ -206,6 +323,10 @@ def inspect_bold(
         orientation = nib.aff2axcodes(affine)
     else:
         orientation = (None, None, None)
+    phase_encoding_vector_ras = _phase_encoding_vector_ras(
+        phase_encoding_direction,
+        affine,
+    )
     tr_difference = abs(header_tr - sidecar_tr)
     flags: list[str] = []
     if nonfinite_fraction > limits.get("max_nonfinite_fraction", 0.0):
@@ -253,6 +374,19 @@ def inspect_bold(
         "header_repetition_time_seconds": header_tr,
         "nifti_temporal_unit": temporal_unit,
         "sidecar_repetition_time_seconds": sidecar_tr,
+        "PhaseEncodingDirection": phase_encoding_direction,
+        "PhaseEncodingVectorRAS": phase_encoding_vector_ras,
+        "EffectiveEchoSpacing": effective_echo_spacing,
+        "TotalReadoutTime": total_readout_time,
+        "ReconMatrixPE": recon_matrix_pe,
+        "ReadoutTimeConsistency": readout_time_check,
+        "EchoTime": echo_time,
+        "TaskName": metadata.get("TaskName"),
+        "MRAcquisitionType": metadata.get("MRAcquisitionType"),
+        "ScanningSequence": metadata.get("ScanningSequence"),
+        "SequenceName": metadata.get("SequenceName"),
+        "SliceEncodingDirection": metadata.get("SliceEncodingDirection"),
+        "SliceTimingSummary": slice_timing_summary,
         "repetition_time_absolute_difference_seconds": tr_difference,
         "repetition_time_matches": (
             tr_difference <= 0.001 if tr_difference is not None else None
@@ -330,6 +464,7 @@ def aggregate_bold_qc(records: list[Mapping[str, Any]]) -> dict[str, Any]:
     """Summarize BOLD QC without participant identifiers or file paths."""
     flag_counts: Counter[str] = Counter()
     orientation_counts: Counter[str] = Counter()
+    phase_encoding_direction_counts: Counter[str] = Counter()
     motion_available = 0
     automatic_exclusions = 0
     for record in records:
@@ -337,12 +472,15 @@ def aggregate_bold_qc(records: list[Mapping[str, Any]]) -> dict[str, Any]:
         codes = record.get("orientation_codes") or []
         orientation = "".join(str(code) for code in codes if code)
         orientation_counts.update([orientation or "unknown"])
+        direction = record.get("PhaseEncodingDirection")
+        phase_encoding_direction_counts.update([direction if direction is not None else "missing"])
         motion_available += record.get("motion") is not None
         automatic_exclusions += bool(record.get("automatic_exclusion", False))
     return {
         "scan_count": len(records),
         "review_flag_counts": dict(sorted(flag_counts.items())),
         "orientation_counts": dict(sorted(orientation_counts.items())),
+        "phase_encoding_direction_counts": dict(sorted(phase_encoding_direction_counts.items())),
         "motion_parameter_scan_count": motion_available,
         "automatic_exclusion_count": automatic_exclusions,
         "participant_level_identifiers_emitted": False,
