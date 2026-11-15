@@ -48,7 +48,7 @@ def _text(value: object) -> str:
     if value is None:
         return ""
     if isinstance(value, (list, tuple)):
-        return "\\ ".join(str(part) for part in value)
+        return "\\".join(str(part) for part in value)
     return str(value).strip()
 
 
