@@ -1,4 +1,5 @@
 """Run local-only DICOM header indexing; outputs must remain outside the Git worktree."""
+# ruff: noqa: I001
 from __future__ import annotations
 
 import argparse
