@@ -210,6 +210,7 @@ def test_readout_time_consistency_uses_documented_absolute_tolerance(tmp_path):
     )
     result = inspect_bold(path, sidecar)
     assert result["ReadoutTimeConsistency"]["matches"] is False
+    assert "effective_echo_spacing_total_readout_time_mismatch" in result["review_flags"]
 
 
 def test_inspect_bold_allows_missing_optional_acquisition_metadata(tmp_path):
