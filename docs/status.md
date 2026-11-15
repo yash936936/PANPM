@@ -1,3 +1,21 @@
+## 2026-11-15 - Pass CI for D-017 BOLD acquisition metadata QC
+**Current phase:** Phase 1. D-017 implementation is committed and CI-validated; local BOLD voxel QC and visual review remain open.
+
+**CI:** PR #20 run [#43733461737](https://github.com/yash936936/PANPM/actions/runs/43733461737) passed all jobs:
+- `ruff check .`
+- `python -m compileall -q src scripts tests`
+- `pytest -q`: 80 passed
+- Generated component/docs checks
+- Secret scan
+- `ci-pass`
+
+**Implemented:** Per-scan acquisition metadata preservation, normalized RAS phase-encoding vectors, BIDS direction validation, positive/finite numeric metadata checks, readout consistency with 1e-5-second absolute tolerance, mismatch review flag, SliceTiming summary and aggregate phase-encoding counts without participant identifiers.
+
+**Not done:** The code has not been run on the 55 local BOLD arrays. No BOLD montage review, motion estimation, field-map/reverse-PE audit, brain extraction, registration, segmentation, preprocessing, cohort freeze, participant-level split or model training has been completed. No source MRI files were modified.
+
+**PR:** [#20](https://github.com/yash936936/PANPM/pull/20) remains open, draft and unmerged.
+
+**Next:** Pull the latest branch, complete private sequence verification, run the BOLD QC CLI and review all 55 montages.
 ## 2026-11-15 - Implement D-017 acquisition metadata reporting in BOLD QC
 **Current phase:** Phase 1. D-017 code and synthetic tests are committed to the draft PR #20 branch; automated validation is pending.
 
