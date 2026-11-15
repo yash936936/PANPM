@@ -1,4 +1,5 @@
 """Synthetic tests for local-only DICOM header indexing."""
+# ruff: noqa: I001
 
 import pytest
 
