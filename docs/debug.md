@@ -1,3 +1,18 @@
+## DBG-016 - Add first-pass T1w voxel QC and private montages (2026-11-15)
+**Need:** Header-only BIDS inventory cannot detect intensity corruption, non-finite voxels or gross coverage problems. A local-only voxel QC step is required before preprocessing.
+
+**Change:** Added `src/preprocessing/qc.py`, `scripts/qc_t1w.py`, `requirements-imaging.txt` and synthetic tests. The CLI accepts only a private manifest with explicit sequence verification, validates scan paths remain inside the BIDS root, pseudonymizes participant IDs with a local HMAC secret, and writes private per-scan metrics, an aggregate JSON report and native-orientation montages outside the source and repository.
+
+**Metrics:** 3-D shape, spatial voxel sizes, orientation codes, affine determinant, non-finite count/fraction, zero/nonzero fractions, intensity percentiles, p99-p1 dynamic range and nonzero foreground bounds. Thresholds are caller-supplied. Nonzero foreground is explicitly not a brain mask. No automatic exclusions or source modifications occur.
+
+**Tested:** Not yet. A dedicated CI imaging job installs the optional imaging dependencies and runs the synthetic tests; CI is pending.
+
+**Not tested:** Actual ds005892 voxel data, montage review, BOLD motion/temporal QC, brain extraction, registration, segmentation or preprocessing.
+
+**Next:** Review CI, then execute on the local T1w manifest and manually inspect all montages.
+
+---
+
 ## DBG-013 - Review local NIfTI affine diagnostics (2026-11-15)
 **Input:** Researcher-supplied aggregate counters from the corrected local ds005892 geometry inventory. No participant IDs or file paths were shared.
 
