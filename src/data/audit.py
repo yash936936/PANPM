@@ -170,7 +170,7 @@ def audit_csv_relationship(
                 if values is None:
                     parent_missing += 1
                 else:
-                    _add_count(connection, "parent_keys", _key_digest(values))
+                    _add_count(connection, "parent_keys", _key_digest(values, digest_secret))
 
         duplicate_groups, duplicate_rows, distinct_parent_keys = _duplicate_summary(
             connection, "parent_keys"
@@ -191,7 +191,7 @@ def audit_csv_relationship(
                     continue
                 found = connection.execute(
                     "SELECT 1 FROM parent_keys WHERE digest = ?",
-                    (_key_digest(values),),
+                    (_key_digest(values, digest_secret),),
                 ).fetchone()
                 if found:
                     matched_rows += 1
