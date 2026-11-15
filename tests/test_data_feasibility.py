@@ -113,7 +113,31 @@ def test_progression_coverage_requires_same_state_and_excludes_ties(tmp_path):
 def test_phase0_report_does_not_claim_training_readiness():
     result = build_phase0_report(
         release_id="r1", download_date="2026-11-15",
+        source_checksums={"status.csv": "a" * 64},
+        mapping_config_sha256="b" * 64,
         cohort={"groups": []}, imaging={}, progression={},
     )
-    assert result["training_readiness"]["participant_level_data_fetch_verified"] is False
+    assert result["training_readiness"]["status"] == "not_assessed_by_phase0_report"
     assert result["training_readiness"]["model_training_authorized_by_report"] is False
+
+
+
+def test_duplicate_baseline_participant_is_excluded(tmp_path):
+    baseline = tmp_path / "baseline.csv"
+    assessments = tmp_path / "assessments.csv"
+    baseline.write_text(
+        "PATNO,INDEX_DATE\n001,2020-01-01\n001,2020-01-02\n",
+        encoding="utf-8",
+    )
+    assessments.write_text(
+        "PATNO,EXAMDT,NP3TOT,PDSTATE\n001,2020-01-01,20,OFF\n",
+        encoding="utf-8",
+    )
+    result = progression_endpoint_coverage(
+        baseline, assessments, participant_field="PATNO", index_date_field="INDEX_DATE",
+        assessment_date_field="EXAMDT", score_field="NP3TOT", state_field="PDSTATE",
+        state_map={"OFF": "OFF"}, target_states=["OFF"],
+        horizons_months=[12], tolerance_days=30, secret=SECRET,
+    )
+    assert result["baseline_participants"] == 0
+    assert result["duplicate_or_ambiguous_baseline_rows"] == 1
