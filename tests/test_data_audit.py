@@ -1,7 +1,7 @@
 """Synthetic tests for aggregate CSV key-grain and relationship audits."""
-import pytest
 
 from src.data.audit import audit_csv_keys, audit_csv_relationship
+import pytest
 
 
 def test_audit_csv_keys_reports_duplicates_and_missing_without_values(tmp_path):
