@@ -10,12 +10,15 @@ import csv
 import hashlib
 import hmac
 import json
+import os
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+os.environ.setdefault("MPLBACKEND", "Agg")
 
 from src.data.inventory import sha256_file
 from src.preprocessing.qc import aggregate_t1w_qc, inspect_t1w, render_t1w_montage
