@@ -1,3 +1,11 @@
+## D-016 - Preserve per-scan BOLD phase-encoding metadata (2026-11-15)
+**Decision:** Keep each BOLD scan's BIDS `PhaseEncodingDirection` and NIfTI affine together as scan-level acquisition metadata. Do not force one phase-encoding label across the cohort, infer equivalence from voxel orientation labels alone, or automatically exclude a scan because its direction differs. The observed direction difference must remain visible in QC reports and downstream preprocessing configuration.
+
+**Evidence:** The researcher audited all 55 local BOLD NIfTI/JSON pairs. All 55 have matching sidecars and consistent core acquisition values: TR 2 s, TE 0.029 s, 64 x 64 x 32 x 200 image shape, EffectiveEchoSpacing 0.000590001 s, TotalReadoutTime 0.0371701 s and ReconMatrixPE 64. All are LAS. PhaseEncodingDirection is j- for 54 scans and i for one scan. The exceptional scan's affine-derived physical direction is predominantly negative RAS X, whereas j- scans are predominantly negative RAS Y. Siemens TrioTim, 3 T and flip angle 90 degrees are consistent in the inspected metadata. The differing direction is therefore a genuine physical-direction difference in the supplied NIfTI affine/sidecar pair, not merely a relabeling of the same physical axis.
+
+**Consequences:** Preserve per-scan values and flag cohort heterogeneity for review; do not change source JSON/NIfTI files. No scan is excluded on this evidence alone. This audit does not establish the availability of reverse-phase-encoding companions or field maps, so susceptibility-distortion correction must not be assumed. Sequence verification, local BOLD QC execution and visual review remain separate gates.
+
+---
 ## D-015 - Keep BOLD temporal QC distinct from motion estimation (2026-11-15)
 **Decision:** The first-pass BOLD QC path may report acquisition geometry, header/sidecar TR agreement, finite-value summaries, temporal-SNR summaries, whole-volume RMS temporal differences and global-mean signal variation. It must not claim to estimate or correct head motion. Power FD may be calculated only from a separately generated motion TSV whose translation and rotation units and column names are explicit.
 
