@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-11-15",
+  "scope": "Public repository metadata and source inspection only. No external code was executed, no checkpoints were downloaded, and no participant-level data were accessed.",
+  "projects": [
+    {
+      "id": "kan-mri",
+      "repository": "https://github.com/salilp42/KAN-MRI",
+      "paper": "https://doi.org/10.1038/s43856-025-01009-9",
+      "claimed_datasets": [
+        "PPMI",
+        "Neurocon",
+        "Tao Wu"
+      ],
+      "task": "MRI-based PD versus control classification",
+      "architectures": [
+        "ConvKAN2D",
+        "ConvKAN3D",
+        "ResNet2D",
+        "ResNet3D",
+        "VGG",
+        "GCN",
+        "ViT"
+      ],
+      "input_contract_observed": {
+        "2d": "Dataset loader converts [N,H,W,S] to [N,S,H,W] and adds a channel dimension; README describes ViT2D input resized to 224x224.",
+        "3d": "Dataset loader adds a channel dimension to volumes; paper/repository descriptions refer to volumetric MRI. Exact trained checkpoint input shape is not established."
+      },
+      "preprocessing_observed": [
+        "Loader calls normalize_volume and resize_volume from a preprocessing module not present in the inspected repository tree.",
+        "README describes medical-image normalization and adaptive sizing.",
+        "The exact preprocessing implementation could not be verified from this repository snapshot."
+      ],
+      "checkpoint_status": "No .pt, .pth, .ckpt, .onnx or safetensors files were present in the inspected Git tree.",
+      "license_status": "No LICENSE file or declared license was present in the inspected repository tree. Do not copy or redistribute code until permission is clarified.",
+      "reproducibility_status": "Partial. Training script references modules absent from the inspected tree, including src/datasets/preprocessing.py and src/training/trainer.py. Config files referenced by the script were not present in the inspected tree. Do not assume the repository runs as-is.",
+      "reported_metrics": {
+        "status": "Paper reports experimental metrics; they are not PANPM results and have not been independently reproduced.",
+        "note": "Cross-dataset/hold-out performance should be considered separately from within-dataset validation. Inspect the paper's exact split definitions before comparing values."
+      },
+      "panpm_decision": "Use as a paper and architecture reference only. Reimplement independently after checking the paper's methods and resolving code licensing."
+    },
+    {
+      "id": "deepmri-pd",
+      "repository": "https://github.com/salilp42/DeepMRI-PD",
+      "claimed_datasets": [
+        "PPMI",
+        "Neurocon",
+        "Tao Wu"
+      ],
+      "task": "Structural MRI PD versus control classification",
+      "architectures": [
+        "CNN2D",
+        "CNN3D",
+        "GCN2D",
+        "GCN3D",
+        "ConvKAN2D",
+        "ConvKAN3D"
+      ],
+      "input_contract_observed": {
+        "3d": "CNN3D accepts a single-channel 3D tensor; preprocessing utility resizes volumes to 64x64x64.",
+        "2d": "2D model files are present; exact common input contract was not established in this inspection."
+      },
+      "preprocessing_observed": [
+        "Min-max intensity normalization.",
+        "Trilinear-style interpolation through scipy.ndimage.zoom with order=1 to 64x64x64.",
+        "Neurocon loader reads NIfTI files under subject/anat and labels folders containing 'patient' as PD, other folders as control."
+      ],
+      "checkpoint_status": "No trained checkpoint files were present in the inspected Git tree.",
+      "license_status": "MIT license file is present; verify attribution and license text before any code reuse.",
+      "reproducibility_status": "Low/partial. The inspected 3D experiment initializes models outside the cross-validation fold loop, so weights carry across folds. Some imports referenced by the inspected scripts do not match the repository tree. These issues must be fixed before trusting results.",
+      "reported_metrics": {
+        "status": "No verified numerical results were established by this source inspection."
+      },
+      "panpm_decision": "Use only as an architecture and preprocessing reference. Do not reuse reported performance without reproducing the experiment."
+    },
+    {
+      "id": "pie",
+      "repository": "https://github.com/MJFF-ResearchCommunity/PIE",
+      "claimed_datasets": [
+        "PPMI"
+      ],
+      "task": "PPMI data processing, imaging-derived phenotypes, statistical analysis and tabular ML workflows",
+      "architectures": [],
+      "input_contract_observed": {
+        "imaging": "DICOM-to-NIfTI and modality-specific pipelines; MRI processing includes T1, DWI, neuromelanin and FLAIR; fMRI workflows are documented separately."
+      },
+      "preprocessing_observed": [
+        "FastSurfer-derived structural measures and head-size adjustment are documented.",
+        "Diffusion free-water, JHU tract FA/MD, neuromelanin, FLAIR lesion and fMRI connectivity workflows are documented.",
+        "README explicitly says PPMI data are not included.",
+        "README's classification report example explicitly uses synthetic data."
+      ],
+      "checkpoint_status": "Not a pretrained MRI classification checkpoint repository.",
+      "license_status": "MIT license file is present. Check third-party dependencies and atlas notices separately.",
+      "reproducibility_status": "Workflow and documentation are available; actual PPMI pipeline execution requires approved local PPMI data and the documented environments.",
+      "reported_metrics": {
+        "status": "Synthetic demonstration metrics must not be presented as real PPMI performance."
+      },
+      "panpm_decision": "Use as a workflow reference, not as a pretrained classifier."
+    },
+    {
+      "id": "livingpark-utils",
+      "repository": "https://github.com/LivingPark-MRI/livingpark-utils",
+      "claimed_datasets": [
+        "PPMI"
+      ],
+      "task": "PPMI study-file and T1 NIfTI retrieval utilities",
+      "architectures": [],
+      "input_contract_observed": {
+        "ppmi": "Downloader helpers and cohort file interface use PATNO, EVENT_ID and Description."
+      },
+      "preprocessing_observed": [
+        "README documents T1 NIfTI retrieval and metadata/status notebooks."
+      ],
+      "checkpoint_status": "Not a model repository; no checkpoint reuse expected.",
+      "license_status": "A LICENSE file is present in the inspected repository tree; confirm its exact terms before reuse.",
+      "reproducibility_status": "Utility workflows are documented; requires authorized PPMI access for PPMI downloads.",
+      "reported_metrics": {
+        "status": "Not applicable."
+      },
+      "panpm_decision": "Use as an optional workflow reference after checking license and PPMI access conditions."
+    },
+    {
+      "id": "imaging-validated-parkinsons-subtypes",
+      "repository": "https://github.com/Moado/Imaging-Validated-Parkinson-s",
+      "paper": "https://doi.org/pending",
+      "claimed_datasets": [
+        "PPMI"
+      ],
+      "task": "Longitudinal clinical subtype modelling with imaging validation and conditional normalizing-flow generation",
+      "architectures": [
+        "z-score SuStaIn approximation",
+        "conditional Real NVP"
+      ],
+      "input_contract_observed": {
+        "modalities": "README describes clinical features, DaTscan SBR and R2* MRI relaxometry across longitudinal visits."
+      },
+      "preprocessing_observed": [
+        "README describes multi-source fusion and MissForest imputation.",
+        "README describes a 96-configuration sensitivity grid for subtype analysis."
+      ],
+      "checkpoint_status": "README names best_flow_model.pt and versioned result artefacts, but the repository tree inspected did not expose checkpoint files for verification.",
+      "license_status": "README declares MIT; verify the actual LICENSE file and any data/artifact restrictions before reuse.",
+      "reproducibility_status": "Promising documentation, but manuscript is described as under review and the claimed metrics/artifacts have not been independently verified. Raw and processed PPMI data are explicitly not redistributed.",
+      "reported_metrics": {
+        "status": "README reports internal results including validation NLL 42.41; these are author-reported, not independently reproduced."
+      },
+      "panpm_decision": "Potential reference for longitudinal subtype methodology, not a ready-made structural-MRI PD classifier. Contact authors and inspect Zenodo artefacts before considering weights."
+    }
+  ],
+  "global_reuse_rules": [
+    "Repository license, model-weight license and dataset license are separate checks.",
+    "A paper reporting a trained model does not prove that downloadable weights are available.",
+    "Never use participant-level PPMI data outside the PPMI Data Use Agreement and approved environment.",
+    "Never combine visits from one participant across train, validation and test partitions.",
+    "Do not compare metrics across studies unless modality, cohort definition, split unit, preprocessing and evaluation protocol match.",
+    "Treat synthetic demonstrations and author-reported results as distinct from independently reproduced PANPM results."
+  ]
+}
