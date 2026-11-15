@@ -1,3 +1,16 @@
+## 2026-11-15 - Review local NIfTI affine diagnostics
+**Current phase:** Phase 0 metadata/geometry review; Phase 1 voxel-level QC remains open.
+
+**Local aggregate evidence supplied by the researcher:** All 55 T1w and 55 BOLD images have qform_code=1 and sform_code=1, and the inventory selects sform. T1w qform/sform max absolute differences: 53 exact matches, one 0.000008 and one 0.000004. BOLD differences range from 0 to 0.001743; three exceed the inventory's 0.001 review threshold. Orientation counts: T1w RAS 54 and LPS 1; BOLD LAS 55.
+
+**Interpretation:** The qform/sform differences are very small and do not support excluding any scan on this criterion. RAS/LPS/LAS are voxel-axis direction summaries in RAS+ world coordinates, not standalone quality failures. Keep the sform selection policy consistent, retain the original qform/sform metadata, and perform anatomical orientation checks during voxel-level QC. No scan was reoriented or modified by this metadata-only review.
+
+**Not verified:** Full BIDS validation, voxel-level anatomical/functional QC, motion estimates, visual review, preprocessing, progression-label coverage, cohort freeze or participant-level splits. The local diagnostic is aggregate-only and no participant identifiers or file paths were supplied.
+
+**Next:** Run a full BIDS validator on the local snapshot, then implement independent T1w structural QC and BOLD motion/temporal QC. Do not start model training.
+
+---
+
 ## 2026-11-15 - Merge NIfTI geometry audit and repair PR #14 CI
 **Current phase:** Phase 0 metadata gate merged; local geometry rerun is still required before Phase 0 closure. Phase 1 image QC and preprocessing remain open.
 
