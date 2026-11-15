@@ -2,6 +2,21 @@
 
 > Running project log. Newest entry goes at the top. Update this file at the end of every work session.
 
+## 2026-11-15 - Add configured Phase 0 feasibility coverage pipeline
+**Current phase:** Phase 0 - source-independent ingestion and feasibility tooling. No approved participant-level PPMI exports have been audited.
+
+**Added:** `src/data/feasibility.py` supports release-specific JSON mapping validation, explicit record normalization, participant cohort counts, MRI acquisition-to-image-manifest matching, same-medication-state progression coverage and aggregate report assembly. Added `configs/ppmi_mapping.example.json` and synthetic tests in `tests/test_data_feasibility.py`. Documentation is in `docs/phase0-feasibility-pipeline.md`.
+
+**Safety and research limits:** All participant join keys are ephemeral HMAC digests; outputs contain aggregate counts only. Source state mapping, LONI join keys, sequence flag interpretation, target states and tolerance must be explicitly reviewed. Duplicate baseline participants and tied nearest assessments are excluded as ambiguous. The example config is not validated against a real PPMI release.
+
+**CI:** Pending for this branch. The previous PR #5 CI run failed Ruff on import ordering in `tests/test_data_manifest.py`; PR #5 was merged, but this is not a passing CI result. The import-order issue has been corrected in the current branch and must be rechecked.
+
+**Not verified:** PPMI access/download, actual row grains, cohort or image coverage, valid progression endpoint counts, MRI sequence identity, local tests, model training or RL training.
+
+**Next:** Run CI, repair any failures, and keep the pipeline in aggregate-only mode until approved exports and release-specific source mappings are available.
+
+---
+
 ## 2026-11-15 - Add metadata-only table-grain and relationship audit
 **Current phase:** Phase 0 - source-independent audit tooling; actual PPMI feasibility still awaits approved exports.
 **Branch:** `research/phase0-table-grain-audit`.
