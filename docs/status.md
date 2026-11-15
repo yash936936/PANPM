@@ -9,7 +9,7 @@
 
 **Added:** `src/data/audit.py` reports candidate-key completeness, distinct-key counts, duplicate groups/rows, child-to-parent matches and unmatched rows. Composite key values are HMACed with a per-run random secret before temporary in-memory SQLite storage. Outputs contain no participant or image identifiers. Synthetic tests are in `tests/test_data_audit.py`.
 
-**CI follow-up:** PR #4's docs and secret-scan jobs passed. Python setup and dependency installation passed, but Ruff failed on import modernization and import formatting in existing modules/tests. This branch applies those lint fixes; its CI result is pending. No tests are claimed as passed yet.
+**CI follow-up:** PR #4's docs and secret-scan jobs passed. Python setup and dependency installation passed, but Ruff failed on import modernization and import formatting in existing modules/tests. This branch applies those lint fixes. The first PR #5 run passed docs and secret scanning but Ruff still reported the prior import-order state in its merge checkout; the latest branch file has been reordered and a fresh run is required. No tests are claimed as passed yet.
 
 **Not verified:** actual PPMI row grain, key cardinality, table relationships, participant counts, image coverage or clinical endpoint coverage. No participant-level data were used.
 
