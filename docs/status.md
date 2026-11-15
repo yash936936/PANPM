@@ -1,3 +1,18 @@
+## 2026-11-15 - Add metadata-only BIDS inventory for OpenNeuro
+**Current phase:** Phase 0 - BIDS inventory implementation added; real local execution pending.
+
+**Added:** `src/data/bids_inventory.py` reads `dataset_description.json`, `participants.tsv`, BIDS JSON sidecars and NIfTI-1 headers without loading voxel arrays. It reports aggregate group counts, T1w/BOLD file and participant coverage, unknown/missing subject counts, NIfTI shape/spacing distributions, selected sidecar-field presence and SHA-256 checksums for the dataset description and participant table. `scripts/inventory_bids.py` provides the local CLI and rejects output paths inside the PANPM worktree. Synthetic tests cover NIfTI geometry, aggregate coverage, duplicate participant IDs and invalid headers.
+
+**Scope limits:** This is not a full BIDS validator. It does not parse NIfTI-2, validate affine orientation, inspect all BIDS entities, run image QC, load voxels, create participant-level splits or establish progression endpoints. No OpenNeuro image files have been downloaded or processed in this work session.
+
+**Documentation:** `docs/bids-metadata-inventory.md` describes the CLI and acceptance checks. `docs/openneuro-ds005892.md` records the run command. Phase 0 status updated.
+
+**CI:** Pending for the latest branch head. The previous PR #12 CI failed only in the docs check because the new dataset document lacked the required `Next: ... context.md` navigation footer. The footer was corrected. Python verification, secret scan and gates-not-run jobs had passed on that earlier PR run.
+
+**Next:** Wait for the updated PR #12 checks. After merge, download OpenNeuro ds005892 v1.0.0 locally and run the metadata-only inventory; review aggregate output for modality coverage, geometry and metadata completeness before calling Phase 0 complete.
+
+---
+
 ## 2026-11-15 - Select public OpenNeuro development dataset
 **Current phase:** Phase 0 - public development dataset selected; BIDS inventory and local feasibility execution pending.
 
