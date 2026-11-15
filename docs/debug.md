@@ -5,7 +5,9 @@
 
 **Scientific boundaries:** No motion estimation or correction is performed. FD is available only when a compatible motion TSV is supplied. Whole-volume RMS temporal differences are not standardized brain-masked DVARS. Nonzero foreground is not a brain mask. No default cohort-derived thresholds or automatic exclusions are used. Source images are read-only.
 
-**Tested:** Synthetic tests were added for geometry/TR, TR mismatch, dimensionality rejection, supplied-motion FD, montage non-modification and aggregate identifier privacy. CI has not yet run on this branch; no local BOLD scans have been processed.
+**CI evidence:** The first attempt exposed generated component-doc drift. The next attempt exposed Ruff findings: import formatting, a type-related exception, two nested-if simplifications and two unused montage indices. These were repaired; the component block was regenerated in the exact source/test discovery order. Final CI run #43731175121 passed Ruff, compilation, all 73 pytest tests, docs/component checks, secret scan, gates-not-run and `ci-pass`.
+
+**Tested:** Synthetic tests cover geometry/TR, TR mismatch, dimensionality rejection, supplied-motion FD, montage non-modification and aggregate identifier privacy. No local BOLD scans have been processed.
 
 **Not tested:** Real ds005892 BOLD arrays, motion estimation, visual montage review, brain extraction, registration, segmentation, preprocessing, participant splits or model training.
 
