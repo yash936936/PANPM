@@ -1,3 +1,22 @@
+## 2026-11-15 - Implement first-pass T1w voxel QC
+**Current phase:** Phase 1 T1w QC implementation; local image execution and visual review remain pending.
+
+**Implemented on branch** `phase1/t1w-voxel-qc`:
+- `src/preprocessing/qc.py` loads 3-D T1w NIfTI data and reports dimensions, voxel sizes, orientation, affine determinant, finite/non-finite voxel counts, zero/nonzero fractions, intensity percentiles, dynamic range and nonzero foreground bounds.
+- Caller-supplied thresholds generate review flags. No learned or cohort-derived thresholds are used.
+- `render_t1w_montage` saves native-orientation axial/coronal/sagittal center slices and an intensity histogram.
+- `scripts/qc_t1w.py` requires a private manifest with `participant_id`, `scan_path` and explicit `sequence_verified=true`; it writes pseudonymous private per-scan output, an aggregate report and private montages outside the repository and BIDS source.
+- `requirements-imaging.txt` declares optional NumPy, NiBabel and Matplotlib dependencies. CI now has a separate imaging QC test job.
+- Synthetic tests cover image metrics, non-finite voxels, dimensionality rejection, threshold validation, montage generation and identifier non-disclosure.
+
+**Scientific boundary:** Nonzero foreground bounds are not a brain mask and are not used to estimate brain volume. Orientation is recorded, not treated as an automatic failure. No scan is automatically excluded. Source images are read-only.
+
+**Not tested:** CI is pending. The code has not been run against the local ds005892 scans. No visual QC has been reviewed. No BOLD motion/temporal QC, brain extraction, registration, segmentation, preprocessing derivatives, cohort freeze or participant split has been produced. Phase 1 remains open.
+
+**Next:** Verify CI, then run the T1w QC CLI locally with a privately curated sequence-verified manifest and protocol-approved thresholds. Review every montage before defining exclusions.
+
+---
+
 ## 2026-11-15 - Review local NIfTI affine diagnostics
 **Current phase:** Phase 0 metadata/geometry review; Phase 1 voxel-level QC remains open.
 
