@@ -31,9 +31,9 @@ No PPMI series inventory, MRI files or segmentation QC data have been provided. 
 
 | File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
+| `src/preprocessing/bold_qc.py` | `inspect_bold`, `render_bold_montage`, `aggregate_bold_qc` | First-pass temporal and geometry QC for resting-state BOLD MRI. |
 | `src/preprocessing/mri_manifest.py` | `aggregate_header_rows`, `index_dicom_zip` | Local-only DICOM header indexing for PANPM MRI intake. |
 | `src/preprocessing/qc.py` | `inspect_t1w`, `render_t1w_montage`, `aggregate_t1w_qc` | Voxel-level structural MRI QC metrics and private visual montages. |
-| `src/preprocessing/bold_qc.py` | `inspect_bold`, `render_bold_montage`, `aggregate_bold_qc` | First-pass temporal and geometry QC for resting-state BOLD MRI. |
 
 **Imports other areas:** (none)
 
