@@ -1,3 +1,11 @@
+## DBG-023 - Validate D-017 BOLD metadata QC implementation (2026-11-15)
+**CI evidence:** PR #20 run [#43733461737](https://github.com/yash936936/PANPM/actions/runs/43733461737) passed every job: Ruff, `python -m compileall -q src scripts tests`, all 80 pytest tests, generated component/docs checks, secret scan and `ci-pass`.
+
+**Coverage:** New tests exercise j-/i phase-encoding mapping into normalized RAS vectors, invalid direction rejection, acquisition metadata preservation, slice-timing summary, readout-time agreement within 1e-5 seconds, mismatch flagging, missing optional metadata and aggregate phase-encoding counts without participant identifiers.
+
+**Implementation boundary:** CI uses synthetic images. It validates code behavior, not the quality of the 55 local BOLD scans. No local BOLD QC CLI run or visual montage review is claimed. No source MRI files were modified. PR #20 remains draft and unmerged.
+
+**Next:** Pull the latest branch locally, run the same commands if desired, complete private sequence verification, then run the BOLD QC CLI and review all 55 montages. Keep field-map/reverse-PE availability as a separate preprocessing gate.
 ## DBG-022 - Implement D-017 BOLD acquisition metadata reporting (2026-11-15)
 **Change:** Extended `src/preprocessing/bold_qc.py` to preserve optional BIDS acquisition metadata in each private scan record: phase-encoding direction, effective echo spacing, total readout time, PE reconstruction matrix, echo time, task name, acquisition type, scanning sequence, sequence name, slice-encoding direction and a compact slice-timing summary. The phase-encoding vector is calculated from the NIfTI affine column and direction sign, then normalized in RAS+ coordinates. Aggregate QC now reports phase-encoding-direction counts, including a `missing` category, without participant identifiers.
 
