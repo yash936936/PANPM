@@ -1,6 +1,6 @@
 # Component: preprocessing
 
- > Location: `src/preprocessing/`. Initial local-only DICOM header indexing is implemented in `mri_manifest.py`; sequence classification, conversion and image preprocessing remain unimplemented.
+> Location: `src/preprocessing/`. Initial local-only DICOM header indexing is implemented in `mri_manifest.py`; sequence classification, conversion and image preprocessing remain unimplemented.
 
 ## Purpose
 
