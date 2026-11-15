@@ -9,7 +9,7 @@
 
 **Safety and research limits:** All participant join keys are ephemeral HMAC digests; outputs contain aggregate counts only. Source state mapping, LONI join keys, sequence flag interpretation, target states and tolerance must be explicitly reviewed. Duplicate baseline participants and tied nearest assessments are excluded as ambiguous. The example config is not validated against a real PPMI release.
 
-**CI:** Pending for this branch. The previous PR #5 CI run failed Ruff on import ordering in `tests/test_data_manifest.py`; PR #5 was merged, but this is not a passing CI result. The import-order issue has been corrected in the current branch and must be rechecked.
+**CI:** Pending for this branch. The previous PR #5 CI run failed Ruff on import ordering in `tests/test_data_manifest.py`; PR #5 was merged, but this is not a passing CI result. Import blocks have been corrected in the current branch; fresh CI must verify them.
 
 **Not verified:** PPMI access/download, actual row grains, cohort or image coverage, valid progression endpoint counts, MRI sequence identity, local tests, model training or RL training.
 
