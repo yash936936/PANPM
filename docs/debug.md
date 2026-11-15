@@ -1,3 +1,16 @@
+## DBG-018 - Record cohort/split PR hold after repeated Ruff failure (2026-11-15)
+**Failure evidence:** PR #16 CI runs #43728681409, #43728751962 and #43728828396 failed at Ruff import sorting in `src/data/cohort.py`. The third run also reported UP012. Documentation/component drift and secret scanning passed; compilation and pytest did not run because Ruff failed first.
+
+**Attempt history:** The module initially used `import random`, then `from random import Random`, then removed the random import and used seeded SHA-256 ordering. I001 persisted. Per AGENTS.md, no further import-order retries were made in this session.
+
+**Disposition:** D-014 keeps PR #16 in draft. Resume only from a local checkout to inspect Ruff's autofix diff or replace the import approach in a separately reviewed change. No cohort/split code from PR #16 is merged or authorized for use.
+
+**Not tested:** Cohort helper tests, local dataset execution, split generation, MRI QC or preprocessing from this PR.
+
+**Next:** Continue with the independently merged T1w QC work; resolve PR #16 only from a local checkout.
+
+---
+
 ## DBG-017 - Verify and merge T1w voxel QC (2026-11-15)
 **CI evidence:** PR #17 initially failed documentation drift because the generated preprocessing component table incorrectly included the CLI script. It also failed the imaging tests because the singular-affine fixture attempted to construct a NIfTI image directly with a singular affine, which NiBabel rejects. The main verification job initially lacked the optional imaging dependencies.
 
