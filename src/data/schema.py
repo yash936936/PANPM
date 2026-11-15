@@ -6,8 +6,8 @@ limited to the keys needed to identify each table's documented grain.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
 from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
