@@ -24,7 +24,7 @@
 
 **Done when:** each included scan is linked to one participant and visit; sequence identity is verified from metadata; preprocessing outputs pass documented QC; a participant-level split manifest is frozen; raw data remain unchanged.
 
-**Status:** Metadata-validation code is merged and CI-tested. Local DICOM header intake code exists for a future approved DICOM source. Actual T1w voxel-level QC, separate BOLD motion/temporal QC, visual anatomical review, preprocessing, cohort freeze and participant-level split generation have not started. Phase 1 remains open.
+**Status:** Initial source-independent cohort and split contracts are implemented on branch `phase1/cohort-and-split-contracts`: `build_diagnosis_cohort` preserves HC/PD-NC/PD-MCI source groups, requires one explicitly sequence-verified T1w scan per participant, and excludes ambiguous/missing scans with aggregate reason counts; `make_stratified_split` requires caller-supplied train/validation/test fractions and seed, stratifies by diagnosis, and assigns each participant once. Synthetic tests were added but have not yet run in CI. These helpers have not been executed against the local BIDS snapshot, and no split proportions have been approved or frozen. Voxel-level T1w QC, BOLD motion/temporal QC, visual review, preprocessing, registration, segmentation and local cohort freeze remain outstanding. Phase 1 remains open.
 
 ## Phase 2 - Supervised MRI and clinical baselines
 
