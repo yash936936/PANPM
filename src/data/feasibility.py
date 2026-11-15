@@ -51,6 +51,22 @@ def load_mapping_config(path: str | Path) -> dict[str, Any]:
     return config
 
 
+def validate_configured_header(
+    table_name: str,
+    source_columns: Sequence[str],
+    config: Mapping[str, Any],
+) -> None:
+    """Validate a real export header against one configured table mapping."""
+    try:
+        table = config["tables"][table_name]
+    except (KeyError, TypeError) as exc:
+        raise ValueError(f"No configured mapping for table: {table_name}") from exc
+    spec = MappingSpec(
+        table["source_to_target"], frozenset(table.get("required_targets", []))
+    )
+    spec.validate(source_columns)
+
+
 def normalize_configured_rows(
     table_name: str,
     rows: Sequence[Mapping[str, object]],
