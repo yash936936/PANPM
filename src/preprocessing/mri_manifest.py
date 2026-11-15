@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import hashlib
 import hmac
-import io
 import zipfile
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping
@@ -241,11 +240,12 @@ def index_dicom_zip(
             if member.is_dir():
                 continue
             try:
-                dataset = pydicom.dcmread(
-                    io.BytesIO(archive.read(member)),
-                    stop_before_pixels=True,
-                    force=False,
-                )
+                with archive.open(member) as stream:
+                    dataset = pydicom.dcmread(
+                        stream,
+                        stop_before_pixels=True,
+                        force=False,
+                    )
             except Exception:
                 unreadable += 1
                 continue
@@ -261,7 +261,6 @@ def index_dicom_zip(
             rows.append(row)
 
     result = aggregate_header_rows(rows, secret=secret)
-    result["archive_name"] = Path(archive_path).name
     result["counts"]["unreadable_archive_members"] = unreadable
     result["counts"]["archive_members_examined"] = len(rows) + unreadable
     return result
