@@ -1,3 +1,20 @@
+## 2026-11-15 - Implement D-017 acquisition metadata reporting in BOLD QC
+**Current phase:** Phase 1. D-017 code and synthetic tests are committed to the draft PR #20 branch; automated validation is pending.
+
+**Implemented on** `phase1/bold-temporal-qc`:
+- Private per-scan QC records preserve phase-encoding direction, normalized physical vector in RAS+, effective echo spacing, total readout time, ReconMatrixPE, EchoTime, TaskName, MRAcquisitionType, ScanningSequence, SequenceName, SliceEncodingDirection and SliceTiming summary.
+- Phase-encoding direction is validated against the six BIDS axis/sign values. Optional numeric acquisition metadata is checked for finite positive values.
+- Readout consistency is checked against `EffectiveEchoSpacing * (ReconMatrixPE - 1)` with an absolute tolerance of 1e-5 seconds. Mismatches create a review flag, never an automatic exclusion.
+- Aggregate output reports phase-encoding direction counts, including missing metadata, without participant identifiers.
+- Synthetic tests cover direction/vector mapping, invalid direction, readout consistency and mismatch, optional metadata absence, field preservation, slice-timing summary and privacy of aggregate counts.
+
+**Documentation:** D-017 now records the formula and tolerance; preprocessing component docs describe the additional metadata output.
+
+**Validation boundary:** I updated the GitHub branch through the repository connector, not a local checkout. I could not execute Ruff, compileall or pytest in this environment. No successful CI run for the latest head is confirmed yet. The previously passing CI run predates D-017 and does not validate these changes.
+
+**Not done:** Local BOLD QC execution, montage review, motion estimation, field-map/reverse-PE audit, preprocessing, cohort freeze, split generation or model training.
+
+**Next:** Confirm latest PR #20 CI and run the requested local commands. Keep PR #20 draft and do not merge.
 ## 2026-11-15 - Require acquisition metadata in BOLD QC reports before local run
 **Current phase:** Phase 1. Local BOLD sidecar audit is complete, but the QC implementation needs one small extension before running against the cohort.
 
