@@ -5,9 +5,9 @@ voxels, infers source group codes, or writes participant-level manifests.
 """
 from __future__ import annotations
 
-import random
 from collections import Counter
 from collections.abc import Mapping, Sequence
+from random import Random
 from typing import Any
 
 
@@ -150,7 +150,7 @@ def make_stratified_split(
         seen_ids.add(participant_id)
         by_stratum.setdefault(stratum, []).append(row)
 
-    rng = random.Random(seed)
+    rng = Random(seed)
     split_rows: list[dict[str, Any]] = []
     for stratum in sorted(by_stratum):
         members = sorted(by_stratum[stratum], key=lambda row: str(row["participant_id"]))
