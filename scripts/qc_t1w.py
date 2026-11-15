@@ -6,6 +6,7 @@ montages contain pseudonymous participant keys and must remain private.
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import hmac
 import json
@@ -43,8 +44,6 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
-    import csv
-
     args = parse_args()
     bids_root = args.bids_root.resolve()
     manifest_path = args.manifest.resolve()
@@ -73,7 +72,6 @@ def main() -> int:
             raise TypeError("Threshold configuration must be a JSON object")
         thresholds = payload
 
-    rows = []
     with manifest_path.open("r", encoding="utf-8-sig", newline="") as stream:
         reader = csv.DictReader(stream)
         required = {"participant_id", "scan_path", "sequence_verified"}
