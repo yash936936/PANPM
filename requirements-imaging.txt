@@ -1,0 +1,4 @@
+# Optional local neuroimaging QC runtime. Install alongside requirements-dev.txt.
+numpy>=1.26,<3
+nibabel>=5.2,<6
+matplotlib>=3.8,<4
