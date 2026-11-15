@@ -198,8 +198,10 @@ def test_readout_time_consistency_uses_documented_absolute_tolerance(tmp_path):
         1e-5
     )
 
+    mismatch_dir = tmp_path / "mismatch"
+    mismatch_dir.mkdir()
     path, sidecar = _write_bold(
-        tmp_path / "mismatch",
+        mismatch_dir,
         metadata={
             "EffectiveEchoSpacing": 0.001,
             "TotalReadoutTime": 0.064,
