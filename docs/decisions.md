@@ -1,3 +1,12 @@
+## D-015 - Keep BOLD temporal QC distinct from motion estimation (2026-11-15)
+**Decision:** The first-pass BOLD QC path may report acquisition geometry, header/sidecar TR agreement, finite-value summaries, temporal-SNR summaries, whole-volume RMS temporal differences and global-mean signal variation. It must not claim to estimate or correct head motion. Power FD may be calculated only from a separately generated motion TSV whose translation and rotation units and column names are explicit.
+
+**Reason:** The raw BOLD time series and NIfTI headers do not provide realignment parameters. Motion estimates require a defined registration/realignment method and validated outputs. Whole-volume temporal differences are not equivalent to standardized, brain-masked DVARS.
+
+**Consequences:** Raw BOLD QC and motion estimation remain separate workflow stages. No FD threshold is applied without supplied motion parameters; no cohort-derived thresholds or automatic exclusions are introduced. Visual review and preprocessing remain mandatory before cohort freeze.
+
+---
+
 ## D-014 - Hold cohort/split PR after repeated Ruff import-order failure - 2026-11-15
 **Decision:** Keep the Phase 1 cohort/split implementation in draft PR #16. Do not merge or use it until the Ruff import-order failure is resolved from a local checkout where the autofix diff can be inspected and tested.
 
