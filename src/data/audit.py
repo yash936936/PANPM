@@ -8,7 +8,9 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import hmac
 import json
+import secrets
 import sqlite3
 from collections.abc import Iterable, Sequence
 from pathlib import Path
@@ -30,10 +32,10 @@ def _validate_key_fields(
     return fields
 
 
-def _key_digest(values: Sequence[str]) -> str:
-    """Hash a length-safe JSON encoding of a normalized composite key."""
+def _key_digest(values: Sequence[str], secret: bytes) -> str:
+    """Create an ephemeral keyed digest of a normalized composite key."""
     payload = json.dumps(list(values), ensure_ascii=False, separators=(",", ":"))
-    return hashlib.sha256(payload.encode()).hexdigest()
+    return hmac.new(secret, payload.encode(), hashlib.sha256).hexdigest()
 
 
 def _complete_key(row: dict[str, str], fields: Sequence[str]) -> tuple[str, ...] | None:
@@ -94,6 +96,7 @@ def audit_csv_keys(
         _validate_key_fields(key, column_set, "candidate key") for key in candidates
     ]
     counters = sqlite3.connect(":memory:")
+    digest_secret = secrets.token_bytes(32)
     try:
         for index in range(len(validated)):
             _new_counter_table(counters, f"key_{index}")
@@ -102,6 +105,7 @@ def audit_csv_keys(
         missing_counts = [0] * len(validated)
         with Path(path).open("r", encoding="utf-8-sig", newline="") as stream:
             reader = csv.DictReader(stream)
+            reader.fieldnames = [name.strip() for name in (reader.fieldnames or [])]
             for row in reader:
                 row_count += 1
                 for index, fields in enumerate(validated):
@@ -109,7 +113,7 @@ def audit_csv_keys(
                     if values is None:
                         missing_counts[index] += 1
                     else:
-                        _add_count(counters, f"key_{index}", _key_digest(values))
+                        _add_count(counters, f"key_{index}", _key_digest(values, digest_secret))
 
         results = []
         for index, fields in enumerate(validated):
@@ -152,12 +156,15 @@ def audit_csv_relationship(
     child_fields = _validate_key_fields(child_key, child_columns, "child key")
 
     connection = sqlite3.connect(":memory:")
+    digest_secret = secrets.token_bytes(32)
     try:
         _new_counter_table(connection, "parent_keys")
         parent_rows = 0
         parent_missing = 0
         with Path(parent_path).open("r", encoding="utf-8-sig", newline="") as stream:
-            for row in csv.DictReader(stream):
+            reader = csv.DictReader(stream)
+            reader.fieldnames = [name.strip() for name in (reader.fieldnames or [])]
+            for row in reader:
                 parent_rows += 1
                 values = _complete_key(row, parent_fields)
                 if values is None:
@@ -174,7 +181,9 @@ def audit_csv_relationship(
         matched_rows = 0
         unmatched_rows = 0
         with Path(child_path).open("r", encoding="utf-8-sig", newline="") as stream:
-            for row in csv.DictReader(stream):
+            reader = csv.DictReader(stream)
+            reader.fieldnames = [name.strip() for name in (reader.fieldnames or [])]
+            for row in reader:
                 child_rows += 1
                 values = _complete_key(row, child_fields)
                 if values is None:
