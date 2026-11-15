@@ -1,4 +1,5 @@
 """Synthetic tests for the aggregate Phase 0 feasibility pipeline."""
+
 import json
 import pytest
 from src.data.feasibility import (
