@@ -1,3 +1,18 @@
+## DBG-019 - Add first-pass BOLD temporal QC (2026-11-15)
+**Need:** The local ds005892 inventory contains 55 four-dimensional resting-state BOLD scans, but T1w QC cannot assess functional time-series stability. A separate BOLD path is required.
+
+**Change:** Added `src/preprocessing/bold_qc.py`, `scripts/qc_bold.py` and synthetic tests. The module reports 4-D shape, spatial geometry, NIfTI temporal units and sidecar TR agreement, non-finite/zero fractions, temporal-SNR summaries, whole-volume RMS temporal differences, global-mean signal variation and optional Power FD from an explicitly specified six-column motion TSV. The CLI requires a private sequence-verified manifest, derives and checks each matching BIDS JSON sidecar, HMAC-pseudonymizes participant IDs and writes private aggregate/per-scan reports and montages outside Git and the BIDS source.
+
+**Scientific boundaries:** No motion estimation or correction is performed. FD is available only when a compatible motion TSV is supplied. Whole-volume RMS temporal differences are not standardized brain-masked DVARS. Nonzero foreground is not a brain mask. No default cohort-derived thresholds or automatic exclusions are used. Source images are read-only.
+
+**Tested:** Synthetic tests were added for geometry/TR, TR mismatch, dimensionality rejection, supplied-motion FD, montage non-modification and aggregate identifier privacy. CI has not yet run on this branch; no local BOLD scans have been processed.
+
+**Not tested:** Real ds005892 BOLD arrays, motion estimation, visual montage review, brain extraction, registration, segmentation, preprocessing, participant splits or model training.
+
+**Next:** Review the branch CI. If it passes, create a private verified BOLD manifest, run the CLI locally and review the 55 montages.
+
+---
+
 ## DBG-018 - Record cohort/split PR hold after repeated Ruff failure (2026-11-15)
 **Failure evidence:** PR #16 CI runs #43728681409, #43728751962 and #43728828396 failed at Ruff import sorting in `src/data/cohort.py`. The third run also reported UP012. Documentation/component drift and secret scanning passed; compilation and pytest did not run because Ruff failed first.
 
