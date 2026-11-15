@@ -11,10 +11,10 @@ import hashlib
 import hmac
 import json
 import secrets
+import calendar
 from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from datetime import date, datetime
-import calendar
 from pathlib import Path
 from typing import Any
 
@@ -94,6 +94,8 @@ def _require_fields(rows: Sequence[Mapping[str, str]], fields: Sequence[str]) ->
 
 
 def _digest(values: Sequence[str], secret: bytes) -> str:
+    if len(secret) < 32:
+        raise ValueError("HMAC secret must contain at least 32 bytes")
     payload = json.dumps(list(values), separators=(",", ":"), ensure_ascii=False)
     return hmac.new(secret, payload.encode(), hashlib.sha256).hexdigest()
 
@@ -249,18 +251,21 @@ def progression_endpoint_coverage(
         [participant_field, assessment_date_field, score_field, state_field],
     )
 
-    baseline_by_id: dict[str, date] = {}
-    baseline_ambiguous = 0
+    baseline_candidates: dict[str, list[date]] = defaultdict(list)
     for row in baselines:
         pid = row.get(participant_field, "")
         index_date = _date(row.get(index_date_field, ""))
-        if not pid or index_date is None:
-            continue
-        digest = _digest([pid], secret)
-        if digest in baseline_by_id:
-            baseline_ambiguous += 1
-        else:
-            baseline_by_id[digest] = index_date
+        if pid and index_date is not None:
+            baseline_candidates[_digest([pid], secret)].append(index_date)
+    ambiguous_baseline_keys = {
+        key for key, values in baseline_candidates.items() if len(values) > 1
+    }
+    baseline_by_id = {
+        key: values[0]
+        for key, values in baseline_candidates.items()
+        if len(values) == 1
+    }
+    baseline_ambiguous = len(ambiguous_baseline_keys)
 
     by_participant_state: dict[tuple[str, str], list[tuple[date, float]]] = defaultdict(list)
     unknown_states = 0
@@ -387,23 +392,33 @@ def build_phase0_report(
     *,
     release_id: str,
     download_date: str,
+    source_checksums: Mapping[str, str],
+    mapping_config_sha256: str,
     cohort: Mapping[str, Any],
     imaging: Mapping[str, Any],
     progression: Mapping[str, Any],
 ) -> dict[str, Any]:
-    """Assemble a reproducible report with no participant-level records."""
-    if not release_id.strip() or _date(download_date) is None:
-        raise ValueError("A release_id and ISO or recognized download_date are required")
+    """Assemble a provenance-backed report with no participant-level records."""
+    try:
+        date.fromisoformat(download_date)
+    except ValueError as exc:
+        raise ValueError("download_date must use ISO YYYY-MM-DD format") from exc
+    if not release_id.strip() or not source_checksums or len(mapping_config_sha256) != 64:
+        raise ValueError("release_id, source checksums and mapping config SHA-256 are required")
+    if any(len(value) != 64 for value in source_checksums.values()):
+        raise ValueError("Every source checksum must be a SHA-256 hex digest")
     return {
         "report_schema_version": "1.0",
         "release_id": release_id,
         "download_date": download_date,
+        "source_sha256": dict(sorted(source_checksums.items())),
+        "mapping_config_sha256": mapping_config_sha256,
         "evidence_class": "metadata_feasibility_only",
         "cohort_coverage": dict(cohort),
         "mri_image_manifest_matching": dict(imaging),
         "progression_endpoint_coverage": dict(progression),
         "training_readiness": {
-            "participant_level_data_fetch_verified": False,
+            "status": "not_assessed_by_phase0_report",
             "model_training_authorized_by_report": False,
             "requires_manual_review": True,
         },
