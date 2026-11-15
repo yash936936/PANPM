@@ -113,7 +113,7 @@ def inspect_bold(
         raise TypeError("BOLD sidecar must contain a JSON object")
     sidecar_tr = metadata.get("RepetitionTime")
     if isinstance(sidecar_tr, bool) or not isinstance(sidecar_tr, (int, float)):
-        raise ValueError("BOLD sidecar requires numeric RepetitionTime in seconds")
+        raise TypeError("BOLD sidecar requires numeric RepetitionTime in seconds")
     sidecar_tr = float(sidecar_tr)
     if not np.isfinite(sidecar_tr) or sidecar_tr <= 0:
         raise ValueError("BOLD sidecar RepetitionTime must be finite and positive")
@@ -218,12 +218,18 @@ def inspect_bold(
         flags.append("header_sidecar_repetition_time_mismatch")
     if "max_zero_fraction" in limits and zero_fraction > limits["max_zero_fraction"]:
         flags.append("high_zero_fraction")
-    if "min_tsnr_median" in limits and tsnr_values.size:
-        if float(np.median(tsnr_values)) < limits["min_tsnr_median"]:
-            flags.append("low_median_tsnr")
-    if "max_dvars_p95" in limits and dvars.size:
-        if float(np.percentile(dvars, 95)) > limits["max_dvars_p95"]:
-            flags.append("high_whole_volume_dvars_p95")
+    if (
+        "min_tsnr_median" in limits
+        and tsnr_values.size
+        and float(np.median(tsnr_values)) < limits["min_tsnr_median"]
+    ):
+        flags.append("low_median_tsnr")
+    if (
+        "max_dvars_p95" in limits
+        and dvars.size
+        and float(np.percentile(dvars, 95)) > limits["max_dvars_p95"]
+    ):
+        flags.append("high_whole_volume_dvars_p95")
     if motion_metrics is not None:
         if "max_fd_mean_mm" in limits and motion_metrics["mean_mm"] > limits["max_fd_mean_mm"]:
             flags.append("high_mean_framewise_displacement")
@@ -298,7 +304,7 @@ def render_bold_montage(
         valid = spatial_mask & finite[..., index]
         signal.append(float(np.mean(data[..., index][valid])) if np.any(valid) else float("nan"))
 
-    x, y, z = (dimension // 2 for dimension in data.shape[:3])
+    z = data.shape[2] // 2
     codes = nib.aff2axcodes(image.affine)
     orientation = "".join(str(code) for code in codes if code) or "unknown"
     figure, axes = plt.subplots(2, 2, figsize=(10, 8))
