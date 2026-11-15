@@ -1,6 +1,7 @@
 """Synthetic tests for aggregate CSV key-grain and relationship audits."""
 
 import pytest
+
 from src.data.audit import audit_csv_keys, audit_csv_relationship
 
 
