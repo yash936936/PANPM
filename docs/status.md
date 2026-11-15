@@ -1,3 +1,17 @@
+## 2026-11-15 - Audit all local BOLD sidecars and phase-encoding metadata
+**Current phase:** Phase 1. BOLD sidecar audit is complete at metadata level; local voxel QC and visual review remain open.
+
+**Local evidence supplied by the researcher:** All 55 BOLD scans have matching JSON sidecars. The inspected metadata reports consistent TR (2 s), TE (0.029 s), 64 x 64 x 32 x 200 dimensions, EffectiveEchoSpacing (0.000590001 s), TotalReadoutTime (0.0371701 s), ReconMatrixPE (64), Siemens TrioTim scanner, 3 T field strength and 90-degree flip angle. All 55 images are LAS. PhaseEncodingDirection is j- for 54 scans and i for one scan. The affine-derived physical direction for the exceptional scan is predominantly negative RAS X, while the j- scans are predominantly negative RAS Y.
+
+**Decision:** D-016 records that phase-encoding direction is scan-specific. No scan is excluded and no source metadata is changed. Preserve each JSON direction with its NIfTI affine. The audit does not establish reverse-PE or field-map availability.
+
+**Not verified:** The BOLD QC CLI has not run on local arrays. No BOLD montages have been reviewed. Sequence verification is not complete merely because sidecars exist. Motion estimation, susceptibility-distortion correction, brain extraction, registration, segmentation, preprocessing derivatives, cohort freeze and participant-level split remain outstanding. PR #20 remains draft. PR #16 remains held under D-014. No model training is authorized.
+
+**Next:** Complete explicit sequence verification in a private manifest, run the BOLD QC CLI locally, inspect all 55 BOLD montages, and separately inventory field-map/reverse-PE data before deciding whether distortion correction is supported.
+
+---
+
+
 ## 2026-11-15 - Run local T1w QC and add first-pass BOLD temporal QC
 **Current phase:** Phase 1. T1w automated voxel QC has run locally; visual review and all preprocessing/cohort gates remain open.
 
