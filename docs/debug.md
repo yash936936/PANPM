@@ -1,7 +1,7 @@
 # Debug log - PANPM
 
 ## DBG-010 - Aggregate Phase 0 feasibility coverage pipeline (2026-11-15)
-**Change:** Added release-configured JSON mappings and aggregate reporting functions for cohort coverage, MRI acquisition/image-manifest matching, medication-state-specific baseline/follow-up availability and report provenance.
+**Change:** Added release-configured JSON mappings, export-header validation, a CLI report builder and aggregate reporting functions for cohort coverage, MRI acquisition/image-manifest matching, medication-state-specific baseline/follow-up availability and report provenance.
 
 **Privacy:** Participant join keys are HMACed with a supplied secret of at least 32 bytes. The functions return aggregate counts and configured field names, not identifiers. The report records release ID, download date, source SHA-256 values and mapping-config SHA-256.
 
