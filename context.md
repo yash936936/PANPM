@@ -61,7 +61,7 @@ PANPM/
     `-- logs/events.jsonl
 ```
 
-The directory structure and generic Phase 0 metadata utilities are implemented. PPMI source table contracts now reflect the supplied annotated dictionary; medication-state-aware progression selection helpers are also implemented. Approved-release ingestion, MRI preprocessing, models, genetics and RL remain unimplemented.
+The directory structure, metadata inventory, PPMI source contracts, aggregate table-grain audits, explicit mapping configuration and aggregate Phase 0 coverage-report functions are implemented. These utilities are source-independent and have not yet been run on approved participant-level PPMI exports. Approved-release ingestion, MRI preprocessing, models, genetics and RL remain unimplemented.
 
 ## Where to look by task
 
@@ -116,4 +116,4 @@ A passing unit test is not clinical validation. A model metric is not evidence o
 
 ## Current task
 
-Continue Phase 0. The repository implementation state is extracted in `docs/repo-extraction.md`. Obtain approved PPMI access and actual Participant Status, MRI, MRI Acquisition, MRIQC, NUPDRS3TRT, LEDDLOG and LONI metadata exports. Inventory them outside Git, audit table grain and state/sequence coverage, then define release-specific mappings and freeze the clinical target rule. Do not train models or PPO until cohort feasibility and participant-level splits are established.
+Continue Phase 0. The repository implementation state is extracted in `docs/repo-extraction.md`. The aggregate feasibility pipeline is implemented but not yet CI-verified or run on real exports. Obtain approved PPMI access and actual Participant Status, MRI, MRI Acquisition, MRIQC, NUPDRS3TRT, LEDDLOG and LONI metadata exports. Validate the example mappings and LONI join keys against the exact release, inventory outside Git, audit table grain and state/sequence coverage, then freeze the clinical target rule. Do not train models or PPO until cohort feasibility and participant-level splits are established.
