@@ -24,7 +24,7 @@ def load_mapping_config(path: str | Path) -> dict[str, Any]:
     """Load and validate a release-specific JSON mapping configuration."""
     config = json.loads(Path(path).read_text(encoding="utf-8"))
     if not isinstance(config, dict):
-        raise ValueError("Mapping configuration must be a JSON object")
+        raise TypeError("Mapping configuration must be a JSON object")
     if not str(config.get("release_id", "")).strip():
         raise ValueError("Configuration requires a non-empty release_id")
     tables = config.get("tables")
@@ -32,11 +32,11 @@ def load_mapping_config(path: str | Path) -> dict[str, Any]:
         raise ValueError("Configuration requires a non-empty tables object")
     for table_name, table in tables.items():
         if not isinstance(table, dict):
-            raise ValueError(f"Table configuration must be an object: {table_name}")
+            raise TypeError(f"Table configuration must be an object: {table_name}")
         mapping = table.get("source_to_target")
         required = table.get("required_targets", [])
         if not isinstance(mapping, dict) or not isinstance(required, list):
-            raise ValueError(f"Invalid mapping definition for table: {table_name}")
+            raise TypeError(f"Invalid mapping definition for table: {table_name}")
         spec = MappingSpec(mapping, frozenset(required))
         # Validate target uniqueness and required target coverage now.
         targets = list(mapping.values())
