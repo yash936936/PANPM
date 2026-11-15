@@ -1,3 +1,11 @@
+## 2026-11-15 - Require acquisition metadata in BOLD QC reports before local run
+**Current phase:** Phase 1. Local BOLD sidecar audit is complete, but the QC implementation needs one small extension before running against the cohort.
+
+**Code review finding:** PR #20's current `inspect_bold` reads sidecar TR but does not serialize phase-encoding direction, echo spacing, total readout time, PE matrix size, echo time, task/acquisition fields or slice-timing summary. The aggregate report also lacks phase-encoding-direction counts. Running it now would omit the important 54-versus-1 direction difference from the QC artifact.
+
+**Decision:** D-017 requires these fields, the affine-derived physical PE vector, metadata validation and aggregate direction counts before local BOLD QC execution. This is a code change, not something established by the already-passed synthetic CI.
+
+**Next:** Implement D-017 on `phase1/bold-temporal-qc`, add synthetic tests, run Ruff/compileall/pytest, push and confirm CI. Only then create the private verified manifest, run the local CLI and review all 55 montages.
 ## 2026-11-15 - Audit all local BOLD sidecars and phase-encoding metadata
 **Current phase:** Phase 1. BOLD sidecar audit is complete at metadata level; local voxel QC and visual review remain open.
 
