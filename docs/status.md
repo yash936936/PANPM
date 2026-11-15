@@ -1,3 +1,18 @@
+## 2026-11-15 - Add NIfTI affine and spatial-temporal metadata audit
+**Current phase:** Phase 1 metadata validation; Phase 0 OpenNeuro aggregate inventory executed locally.
+
+**Local evidence supplied by the researcher:** `ds005892-inventory.json` was created successfully (2,461 bytes). It reports 55 participants (22 Control, 18 PD-NC, 15 PD-MCI), 55 T1w and 55 BOLD files, complete participant coverage for both modalities, zero missing/empty sidecars, zero invalid NIfTI headers and zero unknown participant files. T1w dimensions are 256 x 256 x 191 for one scan and 256 x 256 x 192 for 54 scans, all at 1 mm isotropic. BOLD dimensions are 64 x 64 x 32 x 200 for all scans; spatial spacing is 3.125 x 3.125 x 3.5 mm and sidecar TR is 2 seconds.
+
+**Finding:** the previous report grouped the fourth BOLD NIfTI `pixdim` value (2 seconds) under `voxel_spacing_mm_counts`. This was a field-labeling error. It did not change the source images. The new implementation reports spatial spacing, header temporal spacing and sidecar `RepetitionTime` separately.
+
+**Implemented on branch `phase1/nifti-affine-validation`:** NIfTI-1 sform/qform parsing, affine determinant/finite checks, closest cardinal orientation codes, qform/sform disagreement counts, separate spatial and temporal spacing summaries, synthetic tests and output-path guards that keep reports outside both the repository and source BIDS tree.
+
+**Not yet verified:** CI for this branch, rerun against the local dataset, visual anatomical orientation, image-level T1w QC, BOLD motion QC, participant-level split manifest, preprocessing, supervised models or RL. The existing aggregate report does not contain affine results, so no real-scan affine findings are claimed yet.
+
+**Next:** review the PR and CI, pull the branch after merge, rerun the aggregate inventory locally and inspect only permitted aggregate geometry results. Then implement T1w and BOLD image QC as separate workflows.
+
+---
+
 ## 2026-11-15 - Repair BIDS inventory CI findings
 **Current phase:** Phase 0 - source-independent BIDS inventory implementation; local dataset execution pending.
 

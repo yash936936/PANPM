@@ -4,7 +4,7 @@
 
 ## What this project is
 
-**PANPM (Parkinson's Active Neuroimaging and Progression Model)** is a research system using PPMI longitudinal data to study Parkinson's disease through MRI-based classification, motor-progression forecasting, genetically informed regional interpretation, and a reinforcement-learning agent that sequentially selects MRI brain regions for computational inspection. The RL agent's first task is active ROI inspection, not treatment selection and not physical MRI sequence ordering. The project is in Phase 0. Official PPMI reference documents have been inspected, but no approved participant-level exports or MRI images have been processed and no model has been trained.
+**PANPM (Parkinson's Active Neuroimaging and Progression Model)** is a research system for MRI-based Parkinson's disease analysis, with planned motor-progression modelling, regional interpretation and an RL agent for sequential computational ROI inspection. The RL task is active inspection of an already acquired scan, not treatment selection or physical MRI sequence ordering. OpenNeuro ds005892 v1.0.0 is the active public development dataset because approved PPMI access is not currently available. PPMI source contracts remain a future adapter. The researcher has run the local aggregate BIDS inventory; affine validation and image QC are the next gates. No model has been trained.
 
 ## Project location
 
@@ -61,7 +61,7 @@ PANPM/
     `-- logs/events.jsonl
 ```
 
-The directory structure, metadata inventory, PPMI source contracts, aggregate table-grain audits, explicit mapping configuration and aggregate Phase 0 coverage-report functions are implemented. A local-only DICOM header indexer and private series-manifest CLI are now implemented and have synthetic metadata tests. No approved participant-level PPMI exports or MRI archives have been processed. Sequence classification, image conversion, MRI preprocessing, models, genetics and RL remain unimplemented.
+The directory structure, PPMI source contracts, aggregate table-grain audits, explicit mapping configuration, aggregate feasibility tools, local DICOM header indexer and BIDS metadata inventory are implemented. The OpenNeuro local inventory has been run and reports complete T1w/BOLD file coverage across 55 participants. NIfTI affine/orientation validation is being added. No approved participant-level PPMI exports have been processed. Image-level QC, preprocessing, supervised models, genetics and RL remain unimplemented.
 
 ## Where to look by task
 
@@ -116,6 +116,6 @@ A passing unit test is not clinical validation. A model metric is not evidence o
 
 ## Current task
 
-Continue Phase 0. The repository implementation state is extracted in `docs/repo-extraction.md`. The aggregate feasibility pipeline and CLI report builder are implemented but not yet CI-verified or run on real exports. Obtain approved PPMI access and actual Participant Status, MRI, MRI Acquisition, MRIQC, NUPDRS3TRT, LEDDLOG and LONI metadata exports. Validate the example mappings and LONI join keys against the exact release, inventory outside Git, audit table grain and state/sequence coverage, then freeze the clinical target rule. Do not train models or PPO until cohort feasibility and participant-level splits are established.
+Continue Phase 1 using the local OpenNeuro ds005892 v1.0.0 snapshot. Review and merge the NIfTI affine/spatial-temporal metadata audit PR only after CI passes. Rerun the inventory locally and review aggregate affine/orientation counts. Next implement T1w image QC and BOLD motion/temporal QC as separate paths, then define a participant-level split manifest and reproducible T1w preprocessing. Do not train models until QC exclusions, cohort rules and leakage-safe participant splits are frozen. Keep all participant-level data and derived manifests local. PPMI access and PPMI-specific feasibility remain a separate future gate.
 
 External pretrained MRI model selection: BrainIAC is excluded from primary PPMI held-out evaluation because an independent 2026 benchmark explicitly reports that BrainIAC was pretrained on PPMI. Exact participant/scan overlap is unknown. Triad is the next candidate to audit, but its pretraining cohort must be checked for PPMI overlap and its checkpoint license confirmed before use. Every pretrained model needs a documented upstream cohort-overlap audit; a participant-disjoint downstream split alone cannot remove pretraining contamination.
