@@ -1,18 +1,20 @@
 # Phases - PANPM
 
+**Active development dataset:** OpenNeuro `ds005892` v1.0.0 (CC0 1.0). PPMI remains a future dataset adapter and validation target; no PPMI access is currently available.
+
 > Complete phases in order. A phase is done only when its files exist, its checks pass, its evidence is recorded in `debug.md`, and its real status is recorded here and in `status.md`.
 
-## Phase 0 - PPMI access and feasibility audit
+## Phase 0 - dataset access and feasibility audit
 
-**Goal:** establish what can actually be studied before selecting MRI modalities or training models.
+**Goal:** establish what can actually be studied from the active dataset before selecting MRI modalities or training models.
 
 **Files touched:** `src/data/source_mapping.py`, `src/data/inventory.py`, `src/data/manifest.py`, `src/data/schema.py`, `src/data/ppmi_contracts.py`, `src/data/progression_targets.py`, `docs/ppmi-source-catalog.md`, `docs/progression-targets.md`, `src/data/load_ppmi.py` (planned), `configs/dataset.yaml` (after export audit).
 
-**Work:** official reference-document review is complete for the supplied guide, annotated dictionary and code list. Obtain approved data access; record download date and terms; inventory actual participant, clinical, MRI and LONI exports; validate table grains and joins; compute participant-by-sequence and participant-by-endpoint overlap; generate a feasibility report.
+**Work:** PPMI reference-document review is complete, but PPMI access is unavailable. Use the versioned public OpenNeuro ds005892 release for immediate development: record its version, license, download date and checksums; inventory BIDS participants, T1w, BOLD and fieldmap files; validate BIDS metadata, participant-to-file matching, group counts and image geometry; report missingness and cohort balance. Keep PPMI source contracts as a separate future adapter. Do not claim progression endpoint coverage from ds005892 unless longitudinal clinical labels are actually present.
 
-**Done when:** cohort counts, modality coverage, scanner/site distribution, endpoint completeness and missingness are reproducible; unknowns and exclusions are documented; no direct identifiers appear in outputs.
+**Done when:** dataset/version/license provenance, participant counts by group, participant-to-modality matching, BIDS metadata completeness, acquisition/geometry summaries, QC exclusions and missingness are reproducible; unknowns and exclusions are documented; no participant-level files are committed. PPMI-specific feasibility remains explicitly pending until approved PPMI access is obtained.
 
-**Status:** In progress. Generic inventory, conservative PPMI source contracts and medication-state-aware progression target selection safeguards exist. Approved participant-level exports and image metadata are still required to establish actual coverage, row grain, endpoint completeness and the final clinical target parameters. No MRI preprocessing or model training has started.
+**Status:** In progress. Generic source-independent tooling exists. OpenNeuro ds005892 v1.0.0 is selected as the active public development source (55 participants: 22 Control, 18 PD-NC, 15 PD-MCI; T1w and resting-state BOLD are present in the BIDS release; CC0 1.0). Dataset-specific BIDS inventory, file matching, metadata/QC and aggregate feasibility execution are still required. The release describes Year 1 optional neuroimaging; 12/24-month motor progression labels are not established. PPMI-specific coverage remains pending. No model training has started.
 
 ## Phase 1 - Cohort definition and MRI preprocessing
 
