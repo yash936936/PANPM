@@ -14,6 +14,7 @@ import secrets
 from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from datetime import date, datetime
+import calendar
 from pathlib import Path
 from typing import Any
 
@@ -49,6 +50,26 @@ def load_mapping_config(path: str | Path) -> dict[str, Any]:
         if not spec.required_targets.issubset(set(targets)):
             raise ValueError(f"Required targets are unmapped in table: {table_name}")
     return config
+
+
+def normalize_configured_rows(
+    table_name: str,
+    rows: Sequence[Mapping[str, object]],
+    config: Mapping[str, Any],
+) -> list[dict[str, object]]:
+    """Normalize records using only a configured source-to-target mapping."""
+    try:
+        table = config["tables"][table_name]
+    except (KeyError, TypeError) as exc:
+        raise ValueError(f"No configured mapping for table: {table_name}") from exc
+    spec = MappingSpec(
+        table["source_to_target"], frozenset(table.get("required_targets", []))
+    )
+    normalized = []
+    for row in rows:
+        spec.validate(row.keys())
+        normalized.append(spec.normalize_record(row))
+    return normalized
 
 
 def _read_rows(path: str | Path) -> list[dict[str, str]]:
@@ -305,7 +326,6 @@ def progression_endpoint_coverage(
                 month_index = index_date.month - 1 + horizon
                 year = index_date.year + month_index // 12
                 month = month_index % 12 + 1
-                import calendar
                 target_day = min(index_date.day, calendar.monthrange(year, month)[1])
                 target_date = date(year, month, target_day)
                 follow_status, _ = closest(candidates, target_date)
@@ -341,8 +361,8 @@ def progression_endpoint_coverage(
         }
         ledd_summary = {
             "rows": len(ledd_rows),
-            "participants_with_any_led d_record".replace(" ", ""): len(ledd_ids),
-            "baseline_participants_with_any_led d_record".replace(" ", ""):
+            "participants_with_any_ledd_record": len(ledd_ids),
+            "baseline_participants_with_any_ledd_record":
                 len(ledd_ids.intersection(baseline_by_id)),
         }
     return {
@@ -378,13 +398,12 @@ def build_phase0_report(
         "report_schema_version": "1.0",
         "release_id": release_id,
         "download_date": download_date,
-        "generated_at_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
         "evidence_class": "metadata_feasibility_only",
         "cohort_coverage": dict(cohort),
         "mri_image_manifest_matching": dict(imaging),
         "progression_endpoint_coverage": dict(progression),
         "training_readiness": {
-            "data_fetch_verified": True,
+            "participant_level_data_fetch_verified": False,
             "model_training_authorized_by_report": False,
             "requires_manual_review": True,
         },
