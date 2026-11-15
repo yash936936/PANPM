@@ -1,0 +1,113 @@
+{
+  "config_schema_version": "1.0",
+  "release_id": "REPLACE_WITH_APPROVED_PPMI_RELEASE_IDENTIFIER",
+  "mapping_status": "example_not_validated_against_an_export",
+  "tables": {
+    "PATIENT_STATUS": {
+      "source_to_target": {
+        "PATNO": "source_participant_id",
+        "COHORT": "source_cohort_code",
+        "COHORT_DEFINITION": "source_cohort_definition",
+        "ENROLL_STATUS": "source_enrollment_status",
+        "ENROLL_DATE": "source_enrollment_date",
+        "ENROLL_AGE": "source_enrollment_age",
+        "STATUS_DATE": "source_status_date",
+        "REC_ID": "source_record_id"
+      },
+      "required_targets": [
+        "source_participant_id",
+        "source_cohort_code"
+      ],
+      "restricted_fields": [
+        "source_participant_id",
+        "source_record_id"
+      ]
+    },
+    "MRI_ACQUISITION": {
+      "source_to_target": {
+        "PATNO": "source_participant_id",
+        "EVENT_ID": "source_event_id",
+        "MRI_SCAN_DATE": "source_acquisition_date",
+        "PROTOCOL": "source_protocol",
+        "MRI_SCAN_ANALYZED": "source_analysis_status",
+        "MRI_NOT_ANALYZED_REASON": "source_analysis_exclusion_reason",
+        "MRI_SCAN_QUALITY_RATING": "source_quality_rating",
+        "MRI_SEQ_T1_WEIGHTED": "source_t1_flag",
+        "MRI_SEQ_T2_WEIGHTED": "source_t2_flair_flag",
+        "MRI_SEQ_DTI": "source_dti_flag",
+        "MRI_SEQ_RS": "source_resting_state_flag",
+        "MRI_SEQ_NM_MT": "source_neuromelanin_mt_flag"
+      },
+      "required_targets": [
+        "source_participant_id",
+        "source_event_id",
+        "source_acquisition_date"
+      ],
+      "restricted_fields": [
+        "source_participant_id"
+      ]
+    },
+    "NUPDRS3TRT": {
+      "source_to_target": {
+        "PATNO": "source_participant_id",
+        "EVENT_ID": "source_event_id",
+        "PAG_NAME": "source_assessment_form",
+        "EXAMDT": "source_assessment_date",
+        "EXAMTM": "source_assessment_time",
+        "NP3TOT": "source_mds_updrs_part_iii_total",
+        "PDSTATE": "source_pd_state",
+        "ONOFFORDER": "source_on_off_order",
+        "PDMEDYN": "source_medication_use_flag",
+        "PDTRTMNT": "source_treatment_flag",
+        "PDMEDDT": "source_medication_date",
+        "PDMEDTM": "source_medication_time",
+        "HRPOSTMED": "source_hours_post_medication",
+        "DBSYN": "source_dbs_flag",
+        "REC_ID": "source_record_id"
+      },
+      "required_targets": [
+        "source_participant_id",
+        "source_assessment_date",
+        "source_mds_updrs_part_iii_total",
+        "source_pd_state",
+        "source_assessment_form"
+      ],
+      "restricted_fields": [
+        "source_participant_id",
+        "source_record_id"
+      ]
+    },
+    "LEDDLOG": {
+      "source_to_target": {
+        "PATNO": "source_participant_id",
+        "EVENT_ID": "source_event_id",
+        "LEDTRT": "source_medication_name",
+        "LEDD": "source_ledd",
+        "LEDDOSE": "source_dose",
+        "LEDDOSFRQ": "source_dose_frequency",
+        "LEDDOSSTR": "source_dose_strength",
+        "LEDDSTRMG": "source_dose_strength_mg",
+        "STARTDT": "source_medication_start_date",
+        "STOPDT": "source_medication_stop_date",
+        "TOTDDA": "source_total_daily_dose",
+        "REC_ID": "source_record_id"
+      },
+      "required_targets": [
+        "source_participant_id",
+        "source_medication_name",
+        "source_medication_start_date"
+      ],
+      "restricted_fields": [
+        "source_participant_id",
+        "source_record_id"
+      ]
+    }
+  },
+  "progression_rules": {
+    "source_state_map": {},
+    "target_states": [],
+    "horizons_months": [12, 24],
+    "date_tolerance_days": 45,
+    "status": "UNSET_UNTIL_APPROVED_SOURCE_CODES_AND_PROTOCOL_ARE_REVIEWED"
+  }
+}
