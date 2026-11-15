@@ -42,6 +42,12 @@ Relevant walkthrough: https://github.com/netneurolab/markello_ppmisnf/blob/maste
 
 The walkthrough describes the PPMI data-use agreement requirement, manual LONI image-collection download, and use of archived DICOMs for subsequent conversion. It is useful as a workflow reference, not as permission to bypass current PPMI access requirements.
 
+### Additional public workflow references
+
+- [sameerd/ppmi](https://github.com/sameerd/ppmi): older SQLite import/query workflow, data dictionary and code-list use, plus historical UPDRS and DTI utilities. Its README says the repository contains no PPMI data. Its SQL examples are historical and are not PANPM target definitions.
+- [AgingLab/PPMI_Data_Wrangling](https://github.com/AgingLab/PPMI_Data_Wrangling): R scripts for raw-to-wide conversion, cleaned/processed clinical and imaging tables, biospecimen processing and final merges. The wrapper includes baseline/screening visit collapsing; PANPM must not adopt that without a separately justified, versioned rule because it can erase longitudinal timing.
+- Detailed findings and PANPM decisions are recorded in [third-party-methods-review.md](third-party-methods-review.md). The review covers PIE, PIE-clean, sameerd/ppmi and AgingLab/PPMI_Data_Wrangling.
+
 ### Official PPMI data resources
 
 https://www.ppmi-info.org/access-data-specimens/guidance-resources

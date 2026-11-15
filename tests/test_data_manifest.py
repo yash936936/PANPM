@@ -1,11 +1,11 @@
 """Tests for privacy-preserving participant coverage manifests."""
+
 import pytest
 
 from src.data.manifest import (
     build_coverage_manifest,
     pseudonymize,
 )
-
 
 SECRET = b"test-only-secret-material-at-least-32-bytes"
 

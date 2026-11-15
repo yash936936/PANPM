@@ -1,4 +1,5 @@
 """Synthetic tests for aggregate CSV key-grain and relationship audits."""
+
 import pytest
 
 from src.data.audit import audit_csv_keys, audit_csv_relationship
@@ -39,7 +40,7 @@ def test_audit_csv_keys_requires_candidate_key(tmp_path):
     path = tmp_path / "table.csv"
     path.write_text("PATNO\n001\n", encoding="utf-8")
 
-    with pytest.raises(ValueError, match="at least one"):
+    with pytest.raises(ValueError, match="[Aa]t least one"):
         audit_csv_keys(path, candidate_keys=[])
 
 
