@@ -1,3 +1,16 @@
+## DBG-012 - Repair and merge NIfTI geometry audit CI (2026-11-15)
+**Failure evidence:** PR #14 run #43724991716 had two failures. The synthetic aggregate-inventory test created its BOLD image with the helper's default `1.0, 1.0, 1.5` spatial spacing while asserting `3.125, 3.125, 3.5`. The component-doc generator reported a stale generated block in `docs/components/data.md` because the BIDS inventory module's first-line responsibility comment had changed.
+
+**Repairs:** Updated the synthetic BOLD fixture to set the expected three spatial spacings and 2-second temporal spacing explicitly. Updated the generated data component row to match the current source header comment.
+
+**Tested:** PR run #43725333584 passed Python lint, compilation, all pytest tests, component-doc generation, documentation checks and secret scan. PR #14 was merged by squash as `d18458345b653ce79a0ce6a84baf3798f4d540ba`. CI on the merge commit passed all jobs in run #43725395612.
+
+**Not tested:** The corrected geometry inventory has not been run against the researcher's local ds005892 directory. No voxel-level image QC, BOLD motion/temporal QC, visual anatomical review, preprocessing or participant-level split manifest exists yet.
+
+**Next:** Update local `main`, rerun the geometry inventory to a path outside the BIDS tree and repository, and review aggregate affine/orientation counts before starting the modality-specific QC pipelines.
+
+---
+
 ## DBG-011 - Local DICOM header indexing and series manifest (2026-11-15)
 **Need:** MRI modality and sequence coverage remain unknown. A first-stage index is needed to inspect actual DICOM acquisition headers without assuming T1 from labels or descriptions.
 
