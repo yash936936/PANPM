@@ -29,6 +29,10 @@ def main() -> int:
     payload = inventory_bids_dataset(args.root)
     rendered = json.dumps(payload, indent=2, ensure_ascii=False) + "\\n"
     if args.output:
+        output = args.output.resolve()
+        repository_root = ROOT.resolve()
+        if output == repository_root or repository_root in output.parents:
+            raise ValueError("Aggregate output must be outside the PANPM Git worktree")
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(rendered, encoding="utf-8")
     else:
