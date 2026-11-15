@@ -6,7 +6,7 @@ provided by the researcher after inspecting the exact export headers.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, Mapping
+from collections.abc import Iterable, Mapping
 
 
 @dataclass(frozen=True)
