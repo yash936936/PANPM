@@ -69,7 +69,11 @@ def test_inventory_reports_aggregate_group_and_modality_coverage(tmp_path):
     )
     _write_nifti(tmp_path / "sub-001" / "anat" / "sub-001_T1w.nii.gz")
     _write_nifti(tmp_path / "sub-002" / "anat" / "sub-002_T1w.nii.gz")
-    _write_nifti(tmp_path / "sub-001" / "func" / "sub-001_task-rest_bold.nii.gz", shape=(64, 64, 32, 120))
+    _write_nifti(
+        tmp_path / "sub-001" / "func" / "sub-001_task-rest_bold.nii.gz",
+        shape=(64, 64, 32, 120),
+        spacing=(3.125, 3.125, 3.5, 2.0),
+    )
     report = inventory_bids_dataset(tmp_path)
     assert report["participant_count"] == 2
     assert report["source_provenance"]["license"] == "CC0"
