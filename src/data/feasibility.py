@@ -6,12 +6,11 @@ provenance metadata, never source identifiers or file-system paths.
 """
 from __future__ import annotations
 
+import calendar
 import csv
 import hashlib
 import hmac
 import json
-import secrets
-import calendar
 from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from datetime import date, datetime
@@ -167,7 +166,6 @@ def mri_manifest_matching(
     manifest = _read_rows(image_manifest_csv)
     _require_fields(acquisitions, [*acquisition_key, *sequence_flags.values()])
     _require_fields(manifest, manifest_key)
-    secret = secret or secrets.token_bytes(32)
 
     acq_counts: Counter[str] = Counter()
     manifest_keys: set[str] = set()
