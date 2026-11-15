@@ -1,3 +1,13 @@
+## DBG-021 - Identify BOLD QC acquisition-metadata reporting gap (2026-11-15)
+**Finding:** Review of `src/preprocessing/bold_qc.py` on PR #20 shows that `inspect_bold` currently reads `RepetitionTime` from the JSON sidecar but does not include `PhaseEncodingDirection`, `EffectiveEchoSpacing`, `TotalReadoutTime`, `ReconMatrixPE`, `EchoTime`, `TaskName`, `MRAcquisitionType`, `ScanningSequence` or `SliceTiming` in the private per-scan report. `aggregate_bold_qc` also does not report phase-encoding-direction counts.
+
+**Risk:** The local metadata audit found 54 `j-` scans and one `i` scan with distinct physical directions. Running the current CLI would produce temporal metrics but omit the acquisition metadata needed to preserve and audit this difference in the resulting QC artifact.
+
+**Decision:** D-017 requires those fields, a normalized affine-derived RAS phase-encoding vector, basic metadata validation, a readout-time consistency check and aggregate direction counts before local execution.
+
+**Not tested:** No code changes or local BOLD QC execution have been performed for this gap. Existing CI covers the prior implementation only.
+
+**Next:** Ask the local coding agent to implement D-017 on `phase1/bold-temporal-qc`, add synthetic tests for valid/invalid directions, physical-vector calculation, readout-time consistency and aggregate counts, then run Ruff, compileall and pytest locally before pushing.
 ## DBG-020 - Audit local BOLD sidecars and phase-encoding directions (2026-11-15)
 **Input:** Researcher-supplied local audit output for all 55 BOLD NIfTI files and their matching JSON sidecars. Participant-level identifiers and local paths are not recorded here.
 
