@@ -11,6 +11,8 @@ import json
 import struct
 from collections import Counter, defaultdict
 from pathlib import Path
+
+from src.data.inventory import sha256_file
 from typing import BinaryIO
 
 MODALITY_PATTERNS = {
@@ -104,7 +106,17 @@ def inventory_bids_dataset(root: str | Path) -> dict[str, object]:
     base = Path(root)
     if not base.is_dir():
         raise NotADirectoryError(f"BIDS root is not a directory: {base}")
-    participants = _read_participants(base / "participants.tsv")
+    description_path = base / "dataset_description.json"
+    if not description_path.is_file():
+        raise FileNotFoundError(f"Missing BIDS dataset_description.json: {description_path}")
+    try:
+        description = json.loads(description_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise ValueError("Invalid BIDS dataset_description.json") from exc
+    if not isinstance(description, dict):
+        raise ValueError("dataset_description.json must contain an object")
+    participants_path = base / "participants.tsv"
+    participants = _read_participants(participants_path)
     groups = Counter(participants.values())
     files_by_modality: dict[str, dict[str, list[Path]]] = {
         modality: defaultdict(list) for modality in MODALITY_PATTERNS
@@ -156,6 +168,14 @@ def inventory_bids_dataset(root: str | Path) -> dict[str, object]:
 
     return {
         "dataset_root_name": base.name,
+        "source_provenance": {
+            "name": description.get("Name"),
+            "bids_version": description.get("BIDSVersion"),
+            "license": description.get("License"),
+            "dataset_doi": description.get("DatasetDOI"),
+            "participants_tsv_sha256": sha256_file(participants_path),
+            "dataset_description_sha256": sha256_file(description_path),
+        },
         "participant_count": len(participants),
         "participant_group_counts": dict(sorted(groups.items())),
         "modalities": modality_summary,
