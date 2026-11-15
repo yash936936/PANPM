@@ -23,7 +23,7 @@ The initial route reads DICOM headers from a local ZIP without extracting pixel 
 
 ## Known limits
 
-No PPMI series inventory, MRI files or segmentation QC data have been provided. The T1w QC code has synthetic tests pending CI but has not been run on ds005892. BOLD motion QC, visual review, brain extraction, registration and segmentation remain unimplemented.
+No PPMI series inventory, MRI files or segmentation QC data have been provided. The T1w QC code's synthetic tests passed CI run #43729401420, but it has not been run on ds005892. BOLD motion QC, visual review, brain extraction, registration and segmentation remain unimplemented.
 
 <!-- BEGIN GENERATED: do not edit between markers -->
 

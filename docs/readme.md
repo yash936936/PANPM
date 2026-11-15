@@ -4,11 +4,11 @@ PANPM is a proposed research pipeline for studying Parkinson's disease using PPM
 
 ## Status
 
-Documentation and engineering scaffold created on 2026-11-15. No PPMI data have been imported. MRI sequence availability is not yet audited. MRI preprocessing, supervised models, RL environment, PPO agent, genetic analysis and scientific evaluation are not implemented. No performance results are available.
+Documentation and engineering scaffold created on 2026-11-15. No PPMI data have been imported and PPMI MRI sequence availability is not audited. A first-pass T1w voxel-QC module and private montage CLI are implemented and CI-tested, but have not been run on the local OpenNeuro images or visually reviewed. BOLD motion QC, brain extraction, registration, segmentation, MRI preprocessing, supervised models, RL environment, PPO agent, genetic analysis and scientific evaluation are not implemented. No performance results are available.
 
 ## Setup
 
-The project targets Python 3.11. Install the development tools with `python -m pip install -r requirements-dev.txt`. Neuroimaging and ML dependencies are listed in `docs/trd.md`; they will be pinned after an environment and data-pilot check. Node.js 22 is used for documentation/event scripts.
+The project targets Python 3.11. Install development tools with `python -m pip install -r requirements-dev.txt`. Install optional first-pass T1w QC dependencies with `python -m pip install -r requirements-imaging.txt`. Additional preprocessing and ML dependencies remain subject to a local pilot and version pinning. Node.js 22 is used for documentation/event scripts.
 
 The first research task is the PPMI data and imaging metadata inventory, not model training. See `docs/phases.md` Phase 0.
 
