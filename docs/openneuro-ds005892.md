@@ -60,4 +60,4 @@ Use `ds005892` as PANPM's immediate public development dataset. Retain PPMI cont
 
 ---
 
-**Next:** Return to [`context.md`](../context.md) before starting a new task.
+**Next:** Run `python scripts/inventory_bids.py --root /path/to/ds005892 --output /secure/panpm-reports/ds005892-bids-inventory.json` after downloading the dataset locally, then inspect aggregate coverage and metadata QC.
