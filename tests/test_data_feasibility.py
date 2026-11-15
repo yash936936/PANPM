@@ -140,4 +140,4 @@ def test_duplicate_baseline_participant_is_excluded(tmp_path):
         horizons_months=[12], tolerance_days=30, secret=SECRET,
     )
     assert result["baseline_participants"] == 0
-    assert result["duplicate_or_ambiguous_baseline_rows"] == 1
+    assert result["duplicate_or_ambiguous_baseline_participants"] == 1
