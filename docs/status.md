@@ -1,3 +1,80 @@
+## 2026-11-15 - Pass CI for D-017 BOLD acquisition metadata QC
+**Current phase:** Phase 1. D-017 implementation is committed and CI-validated; local BOLD voxel QC and visual review remain open.
+
+**CI:** PR #20 run [#43733461737](https://github.com/yash936936/PANPM/actions/runs/43733461737) passed all jobs:
+- `ruff check .`
+- `python -m compileall -q src scripts tests`
+- `pytest -q`: 80 passed
+- Generated component/docs checks
+- Secret scan
+- `ci-pass`
+
+**Implemented:** Per-scan acquisition metadata preservation, normalized RAS phase-encoding vectors, BIDS direction validation, positive/finite numeric metadata checks, readout consistency with 1e-5-second absolute tolerance, mismatch review flag, SliceTiming summary and aggregate phase-encoding counts without participant identifiers.
+
+**Not done:** The code has not been run on the 55 local BOLD arrays. No BOLD montage review, motion estimation, field-map/reverse-PE audit, brain extraction, registration, segmentation, preprocessing, cohort freeze, participant-level split or model training has been completed. No source MRI files were modified.
+
+**PR:** [#20](https://github.com/yash936936/PANPM/pull/20) remains open, draft and unmerged.
+
+**Next:** Pull the latest branch, complete private sequence verification, run the BOLD QC CLI and review all 55 montages.
+## 2026-11-15 - Implement D-017 acquisition metadata reporting in BOLD QC
+**Current phase:** Phase 1. D-017 code and synthetic tests are committed to the draft PR #20 branch; automated validation is pending.
+
+**Implemented on** `phase1/bold-temporal-qc`:
+- Private per-scan QC records preserve phase-encoding direction, normalized physical vector in RAS+, effective echo spacing, total readout time, ReconMatrixPE, EchoTime, TaskName, MRAcquisitionType, ScanningSequence, SequenceName, SliceEncodingDirection and SliceTiming summary.
+- Phase-encoding direction is validated against the six BIDS axis/sign values. Optional numeric acquisition metadata is checked for finite positive values.
+- Readout consistency is checked against `EffectiveEchoSpacing * (ReconMatrixPE - 1)` with an absolute tolerance of 1e-5 seconds. Mismatches create a review flag, never an automatic exclusion.
+- Aggregate output reports phase-encoding direction counts, including missing metadata, without participant identifiers.
+- Synthetic tests cover direction/vector mapping, invalid direction, readout consistency and mismatch, optional metadata absence, field preservation, slice-timing summary and privacy of aggregate counts.
+
+**Documentation:** D-017 now records the formula and tolerance; preprocessing component docs describe the additional metadata output.
+
+**Validation boundary:** I updated the GitHub branch through the repository connector, not a local checkout. I could not execute Ruff, compileall or pytest in this environment. No successful CI run for the latest head is confirmed yet. The previously passing CI run predates D-017 and does not validate these changes.
+
+**Not done:** Local BOLD QC execution, montage review, motion estimation, field-map/reverse-PE audit, preprocessing, cohort freeze, split generation or model training.
+
+**Next:** Confirm latest PR #20 CI and run the requested local commands. Keep PR #20 draft and do not merge.
+## 2026-11-15 - Require acquisition metadata in BOLD QC reports before local run
+**Current phase:** Phase 1. Local BOLD sidecar audit is complete, but the QC implementation needs one small extension before running against the cohort.
+
+**Code review finding:** PR #20's current `inspect_bold` reads sidecar TR but does not serialize phase-encoding direction, echo spacing, total readout time, PE matrix size, echo time, task/acquisition fields or slice-timing summary. The aggregate report also lacks phase-encoding-direction counts. Running it now would omit the important 54-versus-1 direction difference from the QC artifact.
+
+**Decision:** D-017 requires these fields, the affine-derived physical PE vector, metadata validation and aggregate direction counts before local BOLD QC execution. This is a code change, not something established by the already-passed synthetic CI.
+
+**Next:** Implement D-017 on `phase1/bold-temporal-qc`, add synthetic tests, run Ruff/compileall/pytest, push and confirm CI. Only then create the private verified manifest, run the local CLI and review all 55 montages.
+## 2026-11-15 - Audit all local BOLD sidecars and phase-encoding metadata
+**Current phase:** Phase 1. BOLD sidecar audit is complete at metadata level; local voxel QC and visual review remain open.
+
+**Local evidence supplied by the researcher:** All 55 BOLD scans have matching JSON sidecars. The inspected metadata reports consistent TR (2 s), TE (0.029 s), 64 x 64 x 32 x 200 dimensions, EffectiveEchoSpacing (0.000590001 s), TotalReadoutTime (0.0371701 s), ReconMatrixPE (64), Siemens TrioTim scanner, 3 T field strength and 90-degree flip angle. All 55 images are LAS. PhaseEncodingDirection is j- for 54 scans and i for one scan. The affine-derived physical direction for the exceptional scan is predominantly negative RAS X, while the j- scans are predominantly negative RAS Y.
+
+**Decision:** D-016 records that phase-encoding direction is scan-specific. No scan is excluded and no source metadata is changed. Preserve each JSON direction with its NIfTI affine. The audit does not establish reverse-PE or field-map availability.
+
+**Not verified:** The BOLD QC CLI has not run on local arrays. No BOLD montages have been reviewed. Sequence verification is not complete merely because sidecars exist. Motion estimation, susceptibility-distortion correction, brain extraction, registration, segmentation, preprocessing derivatives, cohort freeze and participant-level split remain outstanding. PR #20 remains draft. PR #16 remains held under D-014. No model training is authorized.
+
+**Next:** Complete explicit sequence verification in a private manifest, run the BOLD QC CLI locally, inspect all 55 BOLD montages, and separately inventory field-map/reverse-PE data before deciding whether distortion correction is supported.
+
+---
+
+
+## 2026-11-15 - Run local T1w QC and add first-pass BOLD temporal QC
+**Current phase:** Phase 1. T1w automated voxel QC has run locally; visual review and all preprocessing/cohort gates remain open.
+
+**Local T1w evidence supplied by the researcher:** The CLI inspected 55 scans, reported zero configured review flags, recorded orientations RAS 54/LPS 1, made zero automatic exclusions and did not modify source images. The aggregate report emitted no participant-level identifiers. This is evidence of the configured automated checks only, not expert anatomical acceptance. All 55 private montages still require manual review.
+
+**Implemented on branch** `phase1/bold-temporal-qc` (draft PR #20). CI run #43731175121 passed Ruff, compilation, all 73 pytest tests, documentation/component checks, secret scan and `ci-pass`.
+- Added `src/preprocessing/bold_qc.py` for 4-D BOLD geometry, NIfTI temporal-unit-aware header TR versus sidecar `RepetitionTime`, finite/zero fractions, temporal-SNR summaries, whole-volume RMS temporal differences and global-mean signal variation.
+- Added private montage generation showing temporal mean, a temporal-SNR proxy and the global mean signal trace.
+- Added optional Power framewise displacement from a supplied TSV with named translation-in-mm and rotation-in-radians columns. The module does not estimate or correct motion.
+- Added `scripts/qc_bold.py`, requiring an explicitly sequence-verified private manifest and matching BIDS JSON sidecars. Reports are pseudonymous/private and source images are read-only.
+- Added synthetic tests in `tests/test_preprocessing_bold_qc.py`.
+
+**Scientific limits:** The whole-volume RMS temporal-difference metric is not standardized, brain-masked DVARS. Nonzero foreground is not a brain mask. No motion metric is produced unless motion parameters are supplied. No thresholds are set from this small cohort; optional thresholds are caller-supplied and only create review flags. No automatic exclusions are made.
+
+**Not verified:** The code has not run on local ds005892 BOLD scans. T1w montage review is not yet reported. BOLD visual review, motion-estimation workflow, brain extraction, registration, segmentation, preprocessing derivatives, cohort freeze and participant-level split remain outstanding. PR #16 remains draft/held under D-014. No model training is authorized.
+
+**Next:** Verify the BOLD branch CI, then create a private BOLD manifest after checking the 55 matching sidecars and sequence metadata. Run BOLD QC locally and review all montages. Keep motion-estimation outputs separate and document their software/configuration before supplying them.
+
+---
+
 ## 2026-11-15 - Merge and verify first-pass T1w voxel QC
 **Current phase:** Phase 1 T1w QC implementation is merged and CI-tested; local image execution and visual review remain pending.
 

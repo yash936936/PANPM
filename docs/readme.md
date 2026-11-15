@@ -4,7 +4,7 @@ PANPM is a proposed research pipeline for studying Parkinson's disease using PPM
 
 ## Status
 
-Documentation and engineering scaffold created on 2026-11-15. No PPMI data have been imported and PPMI MRI sequence availability is not audited. A first-pass T1w voxel-QC module and private montage CLI are implemented and CI-tested, but have not been run on the local OpenNeuro images or visually reviewed. BOLD motion QC, brain extraction, registration, segmentation, MRI preprocessing, supervised models, RL environment, PPO agent, genetic analysis and scientific evaluation are not implemented. No performance results are available.
+Documentation and engineering scaffold created on 2026-11-15. No PPMI data have been imported and PPMI MRI sequence availability is not audited. The first-pass T1w voxel-QC module and private montage CLI passed CI and were run locally on 55 OpenNeuro scans with zero configured review flags; expert visual review of all montages remains outstanding. A separate BOLD temporal-QC module and private CLI passed CI run #43731175121 (73 tests), but have not yet been run on local BOLD scans. This BOLD module does not estimate or correct motion; optional FD requires external motion estimates. Brain extraction, registration, segmentation, MRI preprocessing, supervised models, RL environment, PPO agent, genetic analysis and scientific evaluation are not implemented. No performance results are available.
 
 ## Setup
 

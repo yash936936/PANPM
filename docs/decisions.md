@@ -1,3 +1,28 @@
+## D-017 - Include BOLD acquisition metadata in QC outputs (2026-11-15)
+**Decision:** Before running the BOLD QC CLI on the local cohort, extend each private per-scan QC record to preserve the sidecar's `PhaseEncodingDirection`, `EffectiveEchoSpacing`, `TotalReadoutTime`, `ReconMatrixPE`, `EchoTime`, `TaskName`, `MRAcquisitionType`, `ScanningSequence`, and slice-timing summary. Include an affine-derived normalized phase-encoding vector in RAS coordinates when the direction is valid. Add aggregate phase-encoding-direction counts without participant identifiers. Summarize SliceTiming as count/minimum/median/maximum rather than copying the full array. Validate BIDS direction syntax and numeric metadata; when EffectiveEchoSpacing, TotalReadoutTime and ReconMatrixPE are all present, check `TotalReadoutTime` against `EffectiveEchoSpacing * (ReconMatrixPE - 1)` using an absolute tolerance of 1e-5 seconds (10 microseconds). A missing optional field leaves the consistency result unavailable; both readout values present without ReconMatrixPE is an error because the check cannot be performed.
+
+**Reason:** D-016 establishes a genuine phase-encoding difference in one scan. The current `inspect_bold` report includes TR and geometry but does not serialize the phase-encoding and readout metadata, so the current QC JSON would lose a key acquisition distinction.
+
+**Consequences:** Update `src/preprocessing/bold_qc.py`, aggregate output and synthetic tests in PR #20 before local execution. Do not rewrite source sidecars or force a cohort-wide phase-encoding direction. Local QC remains blocked on this small implementation gap and explicit sequence verification.
+
+---
+## D-016 - Preserve per-scan BOLD phase-encoding metadata (2026-11-15)
+**Decision:** Keep each BOLD scan's BIDS `PhaseEncodingDirection` and NIfTI affine together as scan-level acquisition metadata. Do not force one phase-encoding label across the cohort, infer equivalence from voxel orientation labels alone, or automatically exclude a scan because its direction differs. The observed direction difference must remain visible in QC reports and downstream preprocessing configuration.
+
+**Evidence:** The researcher audited all 55 local BOLD NIfTI/JSON pairs. All 55 have matching sidecars and consistent core acquisition values: TR 2 s, TE 0.029 s, 64 x 64 x 32 x 200 image shape, EffectiveEchoSpacing 0.000590001 s, TotalReadoutTime 0.0371701 s and ReconMatrixPE 64. All are LAS. PhaseEncodingDirection is j- for 54 scans and i for one scan. The exceptional scan's affine-derived physical direction is predominantly negative RAS X, whereas j- scans are predominantly negative RAS Y. Siemens TrioTim, 3 T and flip angle 90 degrees are consistent in the inspected metadata. The differing direction is therefore a genuine physical-direction difference in the supplied NIfTI affine/sidecar pair, not merely a relabeling of the same physical axis.
+
+**Consequences:** Preserve per-scan values and flag cohort heterogeneity for review; do not change source JSON/NIfTI files. No scan is excluded on this evidence alone. This audit does not establish the availability of reverse-phase-encoding companions or field maps, so susceptibility-distortion correction must not be assumed. Sequence verification, local BOLD QC execution and visual review remain separate gates.
+
+---
+## D-015 - Keep BOLD temporal QC distinct from motion estimation (2026-11-15)
+**Decision:** The first-pass BOLD QC path may report acquisition geometry, header/sidecar TR agreement, finite-value summaries, temporal-SNR summaries, whole-volume RMS temporal differences and global-mean signal variation. It must not claim to estimate or correct head motion. Power FD may be calculated only from a separately generated motion TSV whose translation and rotation units and column names are explicit.
+
+**Reason:** The raw BOLD time series and NIfTI headers do not provide realignment parameters. Motion estimates require a defined registration/realignment method and validated outputs. Whole-volume temporal differences are not equivalent to standardized, brain-masked DVARS.
+
+**Consequences:** Raw BOLD QC and motion estimation remain separate workflow stages. No FD threshold is applied without supplied motion parameters; no cohort-derived thresholds or automatic exclusions are introduced. Visual review and preprocessing remain mandatory before cohort freeze.
+
+---
+
 ## D-014 - Hold cohort/split PR after repeated Ruff import-order failure - 2026-11-15
 **Decision:** Keep the Phase 1 cohort/split implementation in draft PR #16. Do not merge or use it until the Ruff import-order failure is resolved from a local checkout where the autofix diff can be inspected and tested.
 

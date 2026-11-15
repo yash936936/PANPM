@@ -30,8 +30,8 @@ jobs:
             requirements-imaging.txt
       - run: pip install -r requirements-dev.txt -r requirements-imaging.txt
       - run: ruff check .
-      - name: Compile Python sources
-        run: python -m compileall -q src
+      - name: Compile Python sources and tests
+        run: python -m compileall -q src scripts tests
       - name: Run tests when present
         shell: bash
         run: |

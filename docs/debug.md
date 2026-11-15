@@ -1,3 +1,58 @@
+## DBG-023 - Validate D-017 BOLD metadata QC implementation (2026-11-15)
+**CI evidence:** PR #20 run [#43733461737](https://github.com/yash936936/PANPM/actions/runs/43733461737) passed every job: Ruff, `python -m compileall -q src scripts tests`, all 80 pytest tests, generated component/docs checks, secret scan and `ci-pass`.
+
+**Coverage:** New tests exercise j-/i phase-encoding mapping into normalized RAS vectors, invalid direction rejection, acquisition metadata preservation, slice-timing summary, readout-time agreement within 1e-5 seconds, mismatch flagging, missing optional metadata and aggregate phase-encoding counts without participant identifiers.
+
+**Implementation boundary:** CI uses synthetic images. It validates code behavior, not the quality of the 55 local BOLD scans. No local BOLD QC CLI run or visual montage review is claimed. No source MRI files were modified. PR #20 remains draft and unmerged.
+
+**Next:** Pull the latest branch locally, run the same commands if desired, complete private sequence verification, then run the BOLD QC CLI and review all 55 montages. Keep field-map/reverse-PE availability as a separate preprocessing gate.
+## DBG-022 - Implement D-017 BOLD acquisition metadata reporting (2026-11-15)
+**Change:** Extended `src/preprocessing/bold_qc.py` to preserve optional BIDS acquisition metadata in each private scan record: phase-encoding direction, effective echo spacing, total readout time, PE reconstruction matrix, echo time, task name, acquisition type, scanning sequence, sequence name, slice-encoding direction and a compact slice-timing summary. The phase-encoding vector is calculated from the NIfTI affine column and direction sign, then normalized in RAS+ coordinates. Aggregate QC now reports phase-encoding-direction counts, including a `missing` category, without participant identifiers.
+
+**Validation rules:** PhaseEncodingDirection accepts only `i`, `i-`, `j`, `j-`, `k`, `k-`. Optional echo/readout/echo-time values must be positive and finite; ReconMatrixPE must be an integer of at least 2. When EffectiveEchoSpacing, TotalReadoutTime and ReconMatrixPE are all available, the check compares TotalReadoutTime with EffectiveEchoSpacing x (ReconMatrixPE - 1), using an absolute tolerance of 1e-5 seconds (10 microseconds). Inconsistent values add a review flag; they do not exclude scans. SliceTiming is summarized as count/minimum/median/maximum.
+
+**Tests added:** Synthetic tests cover j- and i-axis mapping, normalized RAS vectors, invalid direction rejection, readout-time agreement and mismatch, mismatch review flags, missing optional metadata, acquisition-field preservation, slice-timing summary and aggregate direction counts without identifiers.
+
+**Not tested in this session:** Ruff, compileall, pytest, CI on the latest branch head, local BOLD QC execution, real-array QC or visual montage review. GitHub file editing was used to update the branch; no local checkout was available to run the requested commands. Do not claim the tests passed until CI or a local checkout confirms them.
+
+**Next:** Verify CI on the latest PR #20 head. If CI passes, run `ruff check .`, `python -m compileall src scripts tests` and `pytest` from the local checkout, then proceed to sequence-verified local BOLD QC and manual montage review.
+## DBG-021 - Identify BOLD QC acquisition-metadata reporting gap (2026-11-15)
+**Finding:** Review of `src/preprocessing/bold_qc.py` on PR #20 shows that `inspect_bold` currently reads `RepetitionTime` from the JSON sidecar but does not include `PhaseEncodingDirection`, `EffectiveEchoSpacing`, `TotalReadoutTime`, `ReconMatrixPE`, `EchoTime`, `TaskName`, `MRAcquisitionType`, `ScanningSequence` or `SliceTiming` in the private per-scan report. `aggregate_bold_qc` also does not report phase-encoding-direction counts.
+
+**Risk:** The local metadata audit found 54 `j-` scans and one `i` scan with distinct physical directions. Running the current CLI would produce temporal metrics but omit the acquisition metadata needed to preserve and audit this difference in the resulting QC artifact.
+
+**Decision:** D-017 requires those fields, a normalized affine-derived RAS phase-encoding vector, basic metadata validation, a readout-time consistency check and aggregate direction counts before local execution.
+
+**Not tested:** No code changes or local BOLD QC execution have been performed for this gap. Existing CI covers the prior implementation only.
+
+**Next:** Ask the local coding agent to implement D-017 on `phase1/bold-temporal-qc`, add synthetic tests for valid/invalid directions, physical-vector calculation, readout-time consistency and aggregate counts, then run Ruff, compileall and pytest locally before pushing.
+## DBG-020 - Audit local BOLD sidecars and phase-encoding directions (2026-11-15)
+**Input:** Researcher-supplied local audit output for all 55 BOLD NIfTI files and their matching JSON sidecars. Participant-level identifiers and local paths are not recorded here.
+
+**Findings:** All 55 scans have matching JSON sidecars. The inspected acquisition metadata is consistent: `TaskName=rest`, `RepetitionTime=2` s, `EchoTime=0.029` s, `MRAcquisitionType=2D`, `ScanningSequence=EP`, `SequenceName=*epfid2d1_64`, Siemens TrioTim, 3 T and flip angle 90 degrees. All images have shape 64 x 64 x 32 x 200 and LAS orientation. `EffectiveEchoSpacing=0.000590001` s, `TotalReadoutTime=0.0371701` s and `ReconMatrixPE=64` are consistent across the cohort. `PhaseEncodingDirection` is `j-` for 54 scans and `i` for one scan. The affine-derived physical vector for the exceptional scan is predominantly negative RAS X; the `j-` scans are predominantly negative RAS Y. SliceTiming is present in the inspected sidecars; SliceEncodingDirection, MultibandAccelerationFactor, ProtocolName and SeriesDescription are not populated in the inspected metadata.
+
+**Interpretation:** The single `i` scan is a real phase-encoding direction difference in physical coordinates, not a harmless alternate label for `j-`. It is not by itself evidence of corruption or a reason for automatic exclusion. Keep phase-encoding direction paired with each scan's affine and JSON sidecar. Do not rewrite metadata or configure all scans using one direction.
+
+**Not tested:** The BOLD QC CLI has not yet run on the 55 local arrays. No motion estimation, reverse-PE/field-map availability audit, susceptibility correction, montage review, brain extraction, registration, segmentation, preprocessing, cohort freeze, split generation or model training has been completed. The metadata audit is not sequence-level expert approval.
+
+**Next:** Run the BOLD QC CLI with a private manifest only after the researcher completes sequence verification. Keep per-scan acquisition metadata in the private manifest; report only aggregate counts in Git. Review all 55 BOLD montages and investigate field-map/reverse-PE availability before selecting distortion correction.
+## DBG-019 - Add first-pass BOLD temporal QC (2026-11-15)
+**Need:** The local ds005892 inventory contains 55 four-dimensional resting-state BOLD scans, but T1w QC cannot assess functional time-series stability. A separate BOLD path is required.
+
+**Change:** Added `src/preprocessing/bold_qc.py`, `scripts/qc_bold.py` and synthetic tests. The module reports 4-D shape, spatial geometry, NIfTI temporal units and sidecar TR agreement, non-finite/zero fractions, temporal-SNR summaries, whole-volume RMS temporal differences, global-mean signal variation and optional Power FD from an explicitly specified six-column motion TSV. The CLI requires a private sequence-verified manifest, derives and checks each matching BIDS JSON sidecar, HMAC-pseudonymizes participant IDs and writes private aggregate/per-scan reports and montages outside Git and the BIDS source.
+
+**Scientific boundaries:** No motion estimation or correction is performed. FD is available only when a compatible motion TSV is supplied. Whole-volume RMS temporal differences are not standardized brain-masked DVARS. Nonzero foreground is not a brain mask. No default cohort-derived thresholds or automatic exclusions are used. Source images are read-only.
+
+**CI evidence:** The first attempt exposed generated component-doc drift. The next attempt exposed Ruff findings: import formatting, a type-related exception, two nested-if simplifications and two unused montage indices. These were repaired; the component block was regenerated in the exact source/test discovery order. Final CI run #43731175121 passed Ruff, compilation, all 73 pytest tests, docs/component checks, secret scan, gates-not-run and `ci-pass`.
+
+**Tested:** Synthetic tests cover geometry/TR, TR mismatch, dimensionality rejection, supplied-motion FD, montage non-modification and aggregate identifier privacy. No local BOLD scans have been processed.
+
+**Not tested:** Real ds005892 BOLD arrays, motion estimation, visual montage review, brain extraction, registration, segmentation, preprocessing, participant splits or model training.
+
+**Next:** Review the branch CI. If it passes, create a private verified BOLD manifest, run the CLI locally and review the 55 montages.
+
+---
+
 ## DBG-018 - Record cohort/split PR hold after repeated Ruff failure (2026-11-15)
 **Failure evidence:** PR #16 CI runs #43728681409, #43728751962 and #43728828396 failed at Ruff import sorting in `src/data/cohort.py`. The third run also reported UP012. Documentation/component drift and secret scanning passed; compilation and pytest did not run because Ruff failed first.
 
