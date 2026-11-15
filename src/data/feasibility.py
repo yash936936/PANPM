@@ -168,7 +168,7 @@ def mri_manifest_matching(
     _require_fields(manifest, manifest_key)
 
     acq_counts: Counter[str] = Counter()
-    manifest_keys: set[str] = set()
+    manifest_counts: Counter[str] = Counter()
     for row in acquisitions:
         values = [row.get(field, "") for field in acquisition_key]
         if all(values):
@@ -176,7 +176,8 @@ def mri_manifest_matching(
     for row in manifest:
         values = [row.get(field, "") for field in manifest_key]
         if all(values):
-            manifest_keys.add(_digest(values, secret))
+            manifest_counts[_digest(values, secret)] += 1
+    manifest_keys = set(manifest_counts)
 
     matched = sum(count for key, count in acq_counts.items() if key in manifest_keys)
     unmatched = sum(count for key, count in acq_counts.items() if key not in manifest_keys)
@@ -201,8 +202,13 @@ def mri_manifest_matching(
     return {
         "acquisition_rows": len(acquisitions),
         "acquisition_rows_with_complete_key": sum(acq_counts.values()),
+        "acquisition_rows_missing_join_key": len(acquisitions) - sum(acq_counts.values()),
         "acquisition_duplicate_key_groups": sum(1 for n in acq_counts.values() if n > 1),
         "image_manifest_rows": len(manifest),
+        "manifest_rows_with_complete_key": sum(manifest_counts.values()),
+        "manifest_rows_missing_join_key": len(manifest) - sum(manifest_counts.values()),
+        "manifest_duplicate_key_groups": sum(1 for n in manifest_counts.values() if n > 1),
+        "manifest_duplicate_rows": sum(n - 1 for n in manifest_counts.values() if n > 1),
         "distinct_manifest_keys": len(manifest_keys),
         "acquisition_rows_matched": matched,
         "acquisition_rows_unmatched": unmatched,
@@ -386,7 +392,7 @@ def progression_endpoint_coverage(
         }
     return {
         "baseline_participants": len(baseline_by_id),
-        "duplicate_or_ambiguous_baseline_rows": baseline_ambiguous,
+        "duplicate_or_ambiguous_baseline_participants": baseline_ambiguous,
         "assessment_rows": len(assessments),
         "assessment_rows_with_unknown_state": unknown_states,
         "assessment_rows_excluded_by_form": excluded_form_rows,
@@ -421,8 +427,14 @@ def build_phase0_report(
         raise ValueError("download_date must use ISO YYYY-MM-DD format") from exc
     if not release_id.strip() or not source_checksums or len(mapping_config_sha256) != 64:
         raise ValueError("release_id, source checksums and mapping config SHA-256 are required")
-    if any(len(value) != 64 for value in source_checksums.values()):
-        raise ValueError("Every source checksum must be a SHA-256 hex digest")
+    digests = [*source_checksums.values(), mapping_config_sha256]
+    try:
+        if any(len(value) != 64 for value in digests):
+            raise ValueError
+        for value in digests:
+            int(value, 16)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("Every source and config checksum must be a SHA-256 hex digest") from exc
     return {
         "report_schema_version": "1.0",
         "release_id": release_id,
