@@ -51,3 +51,29 @@ codes, add a reviewed mapping rather than guessing. Image matching is only as
 valid as the configured keys. Progression counts do not establish that the
 endpoint is clinically appropriate. A successful report does not mean the
 dataset is complete or ready for training.
+
+## Run the report
+
+After reviewing and completing every release-specific placeholder in the private
+mapping configuration, run the CLI with all inputs stored outside the repository:
+
+```bash
+python scripts/build_phase0_report.py \
+  --config /secure/ppmi-mapping.json \
+  --status /secure/exports/PATIENT_STATUS.csv \
+  --acquisitions /secure/exports/MRI_ACQUISITION.csv \
+  --image-manifest /secure/loni/image_manifest.csv \
+  --baseline /secure/derived/baseline_index.csv \
+  --assessments /secure/exports/NUPDRS3TRT.csv \
+  --ledd /secure/exports/LEDDLOG.csv \
+  --secret-file /secure/keys/panpm-hmac.key \
+  --download-date YYYY-MM-DD \
+  --output /secure/reports/phase0.json
+```
+
+The CLI checks mapped export headers, requires a 32-byte HMAC secret, and
+records SHA-256 checksums for each input and the mapping config. It fails
+closed when state codes, allowed assessment forms, baseline date fields or
+image-manifest join keys remain unset. Use the actual download date and keep
+the generated report outside Git if its aggregate counts are subject to the
+data-use agreement.
