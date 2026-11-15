@@ -12,7 +12,7 @@
 
 **Done when:** cohort counts, modality coverage, scanner/site distribution, endpoint completeness and missingness are reproducible; unknowns and exclusions are documented; no direct identifiers appear in outputs.
 
-**Status:** In progress. Generic inventory, conservative PPMI source contracts and medication-state-aware progression target selection safeguards exist. Approved participant-level exports and image metadata are still required to establish actual coverage, row grain, endpoint completeness and the final clinical target parameters. No MRI preprocessing or model training has started.
+**Status:** Source-independent Phase 0 tooling is implemented. The latest main CI passed Python verification (Ruff, compilation and tests) and secret scanning, but the overall check is red because the documentation integrity check rejects two unbolded `Next:` lines; a documentation-only repair is in progress. The real PPMI access and feasibility audit remains incomplete: approved exports, LONI metadata and a local MRI archive are required to establish cohort counts, table grain, modality coverage, scanner/site distribution, endpoint completeness and final target parameters. No participant-level PPMI data have been processed.
 
 ## Phase 1 - Cohort definition and MRI preprocessing
 
