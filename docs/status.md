@@ -1,3 +1,31 @@
+## 2026-11-15 - Repair BIDS inventory CI findings
+**Current phase:** Phase 0 - source-independent BIDS inventory implementation; local dataset execution pending.
+
+**CI findings from PR #13:** Python verification found import ordering and two exception-type lint findings in `src/data/bids_inventory.py`. The docs/component job found the generated `docs/components/data.md` block was stale. The secret scan and gates-not-run job passed.
+
+**Repairs:** Reordered imports, changed invalid JSON object-type errors to `TypeError`, renamed the new test to `test_data_bids_inventory.py` so the component generator discovers it, and updated the generated data component inventory and hand-written capability notes.
+
+**Not verified:** CI after these repairs, local dataset download, BIDS inventory execution, full BIDS validation, affine orientation, image QC or progression-label coverage.
+
+**Next:** Verify all PR #13 checks. Then run the inventory on the local versioned ds005892 snapshot and review aggregate outputs before declaring the dataset-specific Phase 0 complete.
+
+---
+
+## 2026-11-15 - Add metadata-only BIDS inventory for OpenNeuro
+**Current phase:** Phase 0 - BIDS inventory implementation added; real local execution pending.
+
+**Added:** `src/data/bids_inventory.py` reads `dataset_description.json`, `participants.tsv`, BIDS JSON sidecars and NIfTI-1 headers without loading voxel arrays. It reports aggregate group counts, T1w/BOLD file and participant coverage, unknown/missing subject counts, NIfTI shape/spacing distributions, selected sidecar-field presence and SHA-256 checksums for the dataset description and participant table. `scripts/inventory_bids.py` provides the local CLI and rejects output paths inside the PANPM worktree. Synthetic tests cover NIfTI geometry, aggregate coverage, duplicate participant IDs and invalid headers.
+
+**Scope limits:** This is not a full BIDS validator. It does not parse NIfTI-2, validate affine orientation, inspect all BIDS entities, run image QC, load voxels, create participant-level splits or establish progression endpoints. No OpenNeuro image files have been downloaded or processed in this work session.
+
+**Documentation:** `docs/bids-metadata-inventory.md` describes the CLI and acceptance checks. `docs/openneuro-ds005892.md` records the run command. Phase 0 status updated.
+
+**CI:** Pending for the latest branch head. The previous PR #12 CI failed only in the docs check because the new dataset document lacked the required `Next: ... context.md` navigation footer. The footer was corrected. Python verification, secret scan and gates-not-run jobs had passed on that earlier PR run.
+
+**Next:** Wait for the updated PR #12 checks. After merge, download OpenNeuro ds005892 v1.0.0 locally and run the metadata-only inventory; review aggregate output for modality coverage, geometry and metadata completeness before calling Phase 0 complete.
+
+---
+
 ## 2026-11-15 - Select public OpenNeuro development dataset
 **Current phase:** Phase 0 - public development dataset selected; BIDS inventory and local feasibility execution pending.
 

@@ -12,6 +12,7 @@ Import approved PPMI exports, normalize participant/visit/scan relationships, va
 - `feasibility.py`: loads release-specific JSON mappings, normalizes explicitly mapped rows and computes aggregate cohort, MRI/image-manifest and medication-state progression coverage reports. It never emits participant IDs.
 - `audit.py`: audits caller-specified candidate keys and child-to-parent relationships, returning aggregate counts only. Composite keys are held as ephemeral keyed digests in an in-memory SQLite database.
 - `inventory.py`: discovers CSV exports recursively, skips hidden directories, reads headers, counts rows, summarizes missing values and records relative paths, file size, release identifier and SHA-256 checksum without retaining participant-level rows.
+- `bids_inventory.py`: reads BIDS participants, dataset provenance, selected JSON sidecar fields and NIfTI-1 headers; emits aggregate T1w/BOLD coverage and geometry summaries without loading voxels or emitting participant IDs.
 - `scripts/inventory_exports.py`: command-line entry point for metadata-only inventory. Keep output outside Git.
 - `manifest.py`: creates keyed HMAC participant pseudonyms and aggregates series counts by supplied modality label. The HMAC secret remains outside Git.
 - `schema.py`: defines PANPM internal table contracts and validates declared keys and participant links.
@@ -54,7 +55,7 @@ See [`docs/ppmi-source-catalog.md`](../ppmi-source-catalog.md) for exact extract
 
 ## Known limits
 
-No approved PPMI participant-level exports, LONI metadata or MRI files have been inspected. No real cohort counts, sequence coverage, scanner/site distribution or endpoint completeness has been computed. The example mapping is not validated against an actual release. The progression coverage function requires explicit source-state mapping, an allowed `PAG_NAME` form list, target states and date tolerance; it excludes ties and follow-up assessments not later than baseline. It does not settle clinical endpoint rules, derive time-aligned LEDD or define DBS eligibility. No DICOM/NIfTI parsing, image preprocessing, supervised models or RL has been implemented.
+No approved PPMI participant-level exports, LONI metadata or MRI files have been inspected. No real cohort counts, sequence coverage, scanner/site distribution or endpoint completeness has been computed. The example mapping is not validated against an actual release. The progression coverage function requires explicit source-state mapping, an allowed `PAG_NAME` form list, target states and date tolerance; it excludes ties and follow-up assessments not later than baseline. It does not settle clinical endpoint rules, derive time-aligned LEDD or define DBS eligibility. No image preprocessing, image QC, supervised models or RL has been implemented. The BIDS inventory parses NIfTI-1 headers only; it is not a full BIDS validator.
 
 <!-- BEGIN GENERATED: do not edit between markers -->
 
@@ -63,6 +64,7 @@ No approved PPMI participant-level exports, LONI metadata or MRI files have been
 | File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
 | `src/data/audit.py` | `audit_csv_keys`, `audit_csv_relationship` | Aggregate CSV key-grain and relationship audits without exposing identifiers. |
+| `src/data/bids_inventory.py` | `read_nifti_header`, `inventory_bids_dataset` | Metadata-only BIDS inventory for local OpenNeuro development datasets. |
 | `src/data/feasibility.py` | `load_mapping_config`, `validate_configured_header`, `normalize_configured_rows`, `cohort_coverage`, `mri_manifest_matching`, `progression_endpoint_coverage`, `build_phase0_report` | Build aggregate Phase 0 coverage reports from explicitly configured CSV exports. |
 | `src/data/inventory.py` | `sha256_file`, `read_csv_header`, `inspect_csv`, `count_csv_rows`, `summarize_values`, `discover_csv_exports`, `inventory_csv_tree` | Inventory approved tabular exports and imaging metadata without loading images. |
 | `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Create pseudonymous participant coverage manifests from approved metadata. |
@@ -73,7 +75,7 @@ No approved PPMI participant-level exports, LONI metadata or MRI files have been
 
 **Imports other areas:** (none)
 
-**Tests:** `tests/test_data_audit.py`, `tests/test_data_feasibility.py`, `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_schema.py`, `tests/test_data_source_mapping.py`
+**Tests:** `tests/test_data_audit.py`, `tests/test_data_bids_inventory.py`, `tests/test_data_feasibility.py`, `tests/test_data_inventory.py`, `tests/test_data_manifest.py`, `tests/test_data_schema.py`, `tests/test_data_source_mapping.py`
 
 <!-- END GENERATED -->
 
