@@ -42,7 +42,6 @@ def main() -> int:
     report = index_dicom_zip(archive, secret=secret)
     report["provenance"] = {
         "archive_sha256": sha256_file(archive),
-        "archive_name": archive.name,
         "manifest_schema_version": report["schema_version"],
     }
     output.parent.mkdir(parents=True, exist_ok=True)
