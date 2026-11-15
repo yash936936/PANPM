@@ -1,9 +1,7 @@
 """Synthetic tests for the aggregate Phase 0 feasibility pipeline."""
 import json
-
-
-from src.data.feasibility import (
 import pytest
+from src.data.feasibility import (
     build_phase0_report,
     cohort_coverage,
     load_mapping_config,
