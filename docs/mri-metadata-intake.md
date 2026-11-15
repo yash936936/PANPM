@@ -38,3 +38,6 @@ The CLI rejects an output path inside the PANPM Git worktree. It writes a privat
 - No DICOM archive has been run through this code in this session. The tests use synthetic metadata only.
 
 Do not begin dcm2niix conversion or FastSurfer until a release-specific sequence mapping and a representative local QC pilot are approved.
+
+---
+**Next:** Return to [`context.md`](../context.md) before starting a new task.
