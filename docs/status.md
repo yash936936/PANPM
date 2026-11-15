@@ -1,3 +1,18 @@
+## 2026-11-15 - Add local-only DICOM header index and MRI series manifest
+**Current phase:** Phase 0 - MRI metadata intake; no approved PPMI participant-level data or MRI archive has been processed.
+
+**Added:** `src/preprocessing/mri_manifest.py` reads DICOM headers from a local ZIP without extracting pixel data, aggregates instances by series, HMACs patient/study/series identifiers, records scanner/acquisition metadata, and reports missing identifiers, duplicate SOP instance UIDs and intra-series metadata conflicts. `scripts/index_mri_archive.py` writes a private JSON manifest and rejects output paths inside the Git worktree. Added synthetic tests in `tests/test_mri_manifest.py` and instructions in `docs/mri-metadata-intake.md`.
+
+**Sequence policy:** No sequence family is inferred from a filename, description or LONI Weighting field. `sequence_family` remains null and `selection_status` remains `needs_sequence_review`. The first-stage checks only report explicit DICOM Modality, MRAcquisitionType and ImageType values. This is not image QC or evidence that a series is suitable for modelling.
+
+**Privacy:** Raw PatientID, SeriesInstanceUID, StudyInstanceUID, SOPInstanceUID and archive member names are not emitted. HMAC identifiers and all participant-level derived metadata remain restricted data, not anonymized data. The manifest and source archive must stay in the institution-approved environment and outside Git/ChatGPT.
+
+**Not verified:** No PPMI DICOM archive was read; no LONI CSV/XML or PPMI MRI_ACQUISITION metadata was reconciled; no T1 selection, dcm2niix conversion, FastSurfer, image QC, supervised training or RL training has been run. Tests are synthetic only.
+
+**Next:** Run the header index locally on an approved, representative MRI archive, inspect aggregate QC outcomes privately, then reconcile candidate series against the exact release's MRI acquisition metadata and LONI manifest before implementing sequence-family mapping or conversion.
+
+---
+
 # Status - PANPM
 
 > Running project log. Newest entry goes at the top. Update this file at the end of every work session.
