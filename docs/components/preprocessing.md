@@ -29,6 +29,7 @@ No PPMI series inventory, MRI files or segmentation QC data have been provided. 
 
 | File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
+| `src/preprocessing/mri_manifest.py` | `aggregate_header_rows`, `index_dicom_zip` | Local-only DICOM header indexing for PANPM MRI intake. |
 
 **Imports other areas:** (none)
 
