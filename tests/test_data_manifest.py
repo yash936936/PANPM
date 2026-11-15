@@ -1,7 +1,7 @@
 """Tests for privacy-preserving participant coverage manifests."""
 
-from src.data.manifest import (
 import pytest
+from src.data.manifest import (
     build_coverage_manifest,
     pseudonymize,
 )
