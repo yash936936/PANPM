@@ -1,3 +1,13 @@
+## DBG-022 - Implement D-017 BOLD acquisition metadata reporting (2026-11-15)
+**Change:** Extended `src/preprocessing/bold_qc.py` to preserve optional BIDS acquisition metadata in each private scan record: phase-encoding direction, effective echo spacing, total readout time, PE reconstruction matrix, echo time, task name, acquisition type, scanning sequence, sequence name, slice-encoding direction and a compact slice-timing summary. The phase-encoding vector is calculated from the NIfTI affine column and direction sign, then normalized in RAS+ coordinates. Aggregate QC now reports phase-encoding-direction counts, including a `missing` category, without participant identifiers.
+
+**Validation rules:** PhaseEncodingDirection accepts only `i`, `i-`, `j`, `j-`, `k`, `k-`. Optional echo/readout/echo-time values must be positive and finite; ReconMatrixPE must be an integer of at least 2. When EffectiveEchoSpacing, TotalReadoutTime and ReconMatrixPE are all available, the check compares TotalReadoutTime with EffectiveEchoSpacing x (ReconMatrixPE - 1), using an absolute tolerance of 1e-5 seconds (10 microseconds). Inconsistent values add a review flag; they do not exclude scans. SliceTiming is summarized as count/minimum/median/maximum.
+
+**Tests added:** Synthetic tests cover j- and i-axis mapping, normalized RAS vectors, invalid direction rejection, readout-time agreement and mismatch, mismatch review flags, missing optional metadata, acquisition-field preservation, slice-timing summary and aggregate direction counts without identifiers.
+
+**Not tested in this session:** Ruff, compileall, pytest, CI on the latest branch head, local BOLD QC execution, real-array QC or visual montage review. GitHub file editing was used to update the branch; no local checkout was available to run the requested commands. Do not claim the tests passed until CI or a local checkout confirms them.
+
+**Next:** Verify CI on the latest PR #20 head. If CI passes, run `ruff check .`, `python -m compileall src scripts tests` and `pytest` from the local checkout, then proceed to sequence-verified local BOLD QC and manual montage review.
 ## DBG-021 - Identify BOLD QC acquisition-metadata reporting gap (2026-11-15)
 **Finding:** Review of `src/preprocessing/bold_qc.py` on PR #20 shows that `inspect_bold` currently reads `RepetitionTime` from the JSON sidecar but does not include `PhaseEncodingDirection`, `EffectiveEchoSpacing`, `TotalReadoutTime`, `ReconMatrixPE`, `EchoTime`, `TaskName`, `MRAcquisitionType`, `ScanningSequence` or `SliceTiming` in the private per-scan report. `aggregate_bold_qc` also does not report phase-encoding-direction counts.
 
