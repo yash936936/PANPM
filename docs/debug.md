@@ -1,5 +1,12 @@
 # Debug log - PANPM
 
+## DBG-009 - Aggregate source table grain and relationship audit (2026-11-15)
+**Change:** Added `src/data/audit.py` with candidate-key completeness/uniqueness summaries and child-to-parent relationship coverage. Results contain field names and aggregate counts only. Composite keys are stored as ephemeral HMAC digests in an in-memory SQLite database; no key values are returned.
+
+**Tests added:** Synthetic fixtures cover duplicate and missing composite keys, unmatched child rows, duplicate parent keys, mismatched key arity and identifier non-disclosure. CI must execute them before this work is marked tested.
+
+**Not tested:** No PPMI export has been audited. No local Ruff or pytest run is claimed.
+
 ## DBG-008 - Add explicit medication-state progression target helpers (2026-11-15)
 **Need:** The PPMI reference documents identify ON/OFF state and medication context for `NP3TOT`, but actual visit coverage and the correct state/window rule are unknown.
 

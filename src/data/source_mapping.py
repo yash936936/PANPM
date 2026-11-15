@@ -5,8 +5,8 @@ provided by the researcher after inspecting the exact export headers.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from typing import Iterable, Mapping
 
 
 @dataclass(frozen=True)

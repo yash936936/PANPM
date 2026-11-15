@@ -3,7 +3,13 @@ import hashlib
 
 import pytest
 
-from src.data.inventory import count_csv_rows, inspect_csv, read_csv_header, sha256_file, summarize_values
+from src.data.inventory import (
+    count_csv_rows,
+    inspect_csv,
+    read_csv_header,
+    sha256_file,
+    summarize_values,
+)
 
 
 def test_inspect_csv_records_checksum_and_header(tmp_path):
@@ -45,7 +51,7 @@ def test_inventory_csv_tree_discovers_nested_exports_and_skips_hidden_dirs(tmp_p
     nested = tmp_path / "Motor___MDS-UPDRS"
     nested.mkdir()
     (nested / "assessment.csv").write_text(
-        "PATNO,EVENT_ID\\n001,BL\\n", encoding="utf-8"
+        "PATNO,EVENT_ID\n001,BL\\n", encoding="utf-8"
     )
     hidden = tmp_path / ".cache"
     hidden.mkdir()

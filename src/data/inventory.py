@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import csv
 import hashlib
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 
 def sha256_file(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
