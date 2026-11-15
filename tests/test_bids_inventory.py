@@ -37,6 +37,9 @@ def test_read_nifti_header_reads_geometry_without_voxels(tmp_path):
 
 
 def test_inventory_reports_aggregate_group_and_modality_coverage(tmp_path):
+    (tmp_path / "dataset_description.json").write_text(
+        json.dumps({"Name": "Synthetic", "BIDSVersion": "1.8.0", "License": "CC0", "DatasetDOI": "doi:test"})
+    )
     (tmp_path / "participants.tsv").write_text(
         "participant_id\tgroup\nsub-001\tControl\nsub-002\tPD-NC\n",
         encoding="utf-8",
@@ -46,6 +49,8 @@ def test_inventory_reports_aggregate_group_and_modality_coverage(tmp_path):
     _write_nifti(tmp_path / "sub-001" / "func" / "sub-001_task-rest_bold.nii.gz", shape=(64, 64, 32, 120))
     report = inventory_bids_dataset(tmp_path)
     assert report["participant_count"] == 2
+    assert report["source_provenance"]["license"] == "CC0"
+    assert len(report["source_provenance"]["participants_tsv_sha256"]) == 64
     assert report["participant_group_counts"] == {"Control": 1, "PD-NC": 1}
     assert report["modalities"]["T1w"]["participant_count"] == 2
     assert report["modalities"]["bold"]["participant_count"] == 1
@@ -55,6 +60,7 @@ def test_inventory_reports_aggregate_group_and_modality_coverage(tmp_path):
 
 
 def test_duplicate_participant_ids_are_rejected(tmp_path):
+    (tmp_path / "dataset_description.json").write_text(json.dumps({"Name": "Synthetic"}))
     (tmp_path / "participants.tsv").write_text(
         "participant_id\tgroup\nsub-001\tControl\nsub-001\tPD-NC\n",
         encoding="utf-8",
