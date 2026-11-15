@@ -337,6 +337,8 @@ def inspect_bold(
         flags.append("unknown_nifti_temporal_unit")
     elif tr_difference > 0.001:
         flags.append("header_sidecar_repetition_time_mismatch")
+    if readout_time_check["matches"] is False:
+        flags.append("effective_echo_spacing_total_readout_time_mismatch")
     if "max_zero_fraction" in limits and zero_fraction > limits["max_zero_fraction"]:
         flags.append("high_zero_fraction")
     if (
