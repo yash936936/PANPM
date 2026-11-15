@@ -15,7 +15,8 @@ Import approved PPMI exports, normalize participant/visit/scan relationships, va
 - `bids_inventory.py`: reads BIDS participants, dataset provenance, selected JSON sidecar fields and NIfTI-1 headers; emits aggregate T1w/BOLD coverage and geometry summaries without loading voxels or emitting participant IDs.
 - `scripts/inventory_exports.py`: command-line entry point for metadata-only inventory. Keep output outside Git.
 - `manifest.py`: creates keyed HMAC participant pseudonyms and aggregates series counts by supplied modality label. The HMAC secret remains outside Git.
-- `schema.py`: defines PANPM internal table contracts and validates declared keys and participant links.\n- `cohort.py`: builds an explicit one-T1w-scan-per-participant diagnosis cohort, preserves source groups and creates deterministic stratified participant assignments when split fractions are supplied.
+- `schema.py`: defines PANPM internal table contracts and validates declared keys and participant links.
+- `cohort.py`: builds an explicit one-T1w-scan-per-participant diagnosis cohort, preserves source groups and creates deterministic stratified participant assignments when split fractions are supplied.
 - `ppmi_contracts.py`: records selected source table fields from the supplied annotated PPMI dictionary and validates only documented linkage fields.
 - `progression_targets.py`: selects a closest eligible motor assessment using an explicit target date, tolerance and exact normalized medication state; rejects ties and mixed-state score changes.
 
@@ -64,7 +65,8 @@ No approved PPMI participant-level exports, LONI metadata or MRI files have been
 | File | Exports | Responsibility (first header-comment line) |
 |---|---|---|
 | `src/data/audit.py` | `audit_csv_keys`, `audit_csv_relationship` | Aggregate CSV key-grain and relationship audits without exposing identifiers. |
-| `src/data/bids_inventory.py` | `read_nifti_header`, `inventory_bids_dataset` | Metadata-only BIDS inventory and NIfTI-1 geometry validation. |\n| `src/data/cohort.py` | `build_diagnosis_cohort`, `make_stratified_split` | Build explicit diagnosis cohorts and leakage-safe participant splits. |
+| `src/data/bids_inventory.py` | `read_nifti_header`, `inventory_bids_dataset` | Metadata-only BIDS inventory and NIfTI-1 geometry validation. |
+| `src/data/cohort.py` | `build_diagnosis_cohort`, `make_stratified_split` | Build explicit diagnosis cohorts and leakage-safe participant splits. |
 | `src/data/feasibility.py` | `load_mapping_config`, `validate_configured_header`, `normalize_configured_rows`, `cohort_coverage`, `mri_manifest_matching`, `progression_endpoint_coverage`, `build_phase0_report` | Build aggregate Phase 0 coverage reports from explicitly configured CSV exports. |
 | `src/data/inventory.py` | `sha256_file`, `read_csv_header`, `inspect_csv`, `count_csv_rows`, `summarize_values`, `discover_csv_exports`, `inventory_csv_tree` | Inventory approved tabular exports and imaging metadata without loading images. |
 | `src/data/manifest.py` | `pseudonymize`, `build_coverage_manifest` | Create pseudonymous participant coverage manifests from approved metadata. |
